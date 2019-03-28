@@ -1,0 +1,16 @@
+{
+  "configurationSettings": [{
+    "category": "General",
+    "fields": [{
+      "type": "itembrowser",
+      "fieldName": "webmap",
+      "label": "Select a web map",
+      "itemTypes": [
+        "Web Map"
+      ]
+    }, {
+      "type": "appproxies"
+    }]
+  }],
+  "values": {}
+}
