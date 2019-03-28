@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
     "lib": ["es5", "es6", "dom"],
-    "sourceMap": true,
     "declaration": false,
     "noImplicitAny": false,
     "module": "amd",
@@ -12,7 +11,8 @@
     "jsxFactory": "tsx",
     "outDir": "./dist",
     "preserveConstEnums": true,
-    "suppressImplicitAnyIndexErrors": true
+    "suppressImplicitAnyIndexErrors": true,
+    "sourceMap": true
   },
   "include": ["./src/app/*"],
   "exclude": ["./node_modules", "./tsrules"],

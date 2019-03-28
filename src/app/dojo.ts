@@ -35,10 +35,24 @@
     },
     locale: dojoLocale,
     packages: [
-      { name: "Application", location: `${distPath}/app`, main: "Main" },
+      {
+        name: "Application",
+        location: `${distPath}`,
+        main: "Main"
+      },
       {
         name: "ApplicationBase",
-        location: `${distPath}/node_modules/@esri/application-base-js`,
+        location: `${appPath}/node_modules/@esri/application-base-js`,
+        main: "ApplicationBase"
+      },
+      {
+        name: "TemplateApplicationBase",
+        location: `${templateAppPath}/node_modules/@esri/application-base-js`,
+        main: "ApplicationBase"
+      },
+      {
+        name: "ApplicationBase",
+        location: `${appPath}/node_modules/@esri/application-base-js`,
         main: "ApplicationBase"
       },
       { name: "config", location: `${distPath}/config` }
