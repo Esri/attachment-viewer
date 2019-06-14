@@ -2,6 +2,8 @@
 
 Attachment Viewer is a configurable app template that allows you to view photos and videos stored as feature attachments. 
 
+![Attachment Viewer Preview](images/attachment-viewer.png)
+
 ## Features
 
 1. Scroll through features to view feature information and attachments or simply click on a feature in the map.
