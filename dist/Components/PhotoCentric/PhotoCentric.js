@@ -388,13 +388,13 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                             this.imageIsLoaded &&
                             !this._onboardingPanelIsOpen
                             ? false
-                            : true, tabIndex: 0, class: CSS.leftArrowContainer }, this.docDirection === "rtl" ? (widget_1.tsx("span", { class: this.classes(CSS.calcite.rightArrow, CSS.calcite.flush) })) : (widget_1.tsx("span", { class: this.classes(CSS.calcite.leftArrow, CSS.calcite.flush) }))),
+                            : true, tabIndex: 0, class: CSS.leftArrowContainer, title: i18n.previousImage }, this.docDirection === "rtl" ? (widget_1.tsx("span", { class: this.classes(CSS.calcite.rightArrow, CSS.calcite.flush) })) : (widget_1.tsx("span", { class: this.classes(CSS.calcite.leftArrow, CSS.calcite.flush) }))),
                     widget_1.tsx("span", { class: CSS.attachmentNumberText }, currentIndex + " " + i18n.of + " " + totalNumberOfAttachments + " " + i18n.attachments),
                     widget_1.tsx("button", { bind: this, onclick: this._nextImage, onkeydown: this._nextImage, disabled: hasMoreThanOneAttachment &&
                             this.imageIsLoaded &&
                             !this._onboardingPanelIsOpen
                             ? false
-                            : true, tabIndex: 0, class: CSS.rightArrowContainer }, this.docDirection === "rtl" ? (widget_1.tsx("span", { class: this.classes(CSS.calcite.leftArrow, CSS.calcite.flush) })) : (widget_1.tsx("span", { class: this.classes(CSS.calcite.rightArrow, CSS.calcite.flush) }))))) : null,
+                            : true, tabIndex: 0, class: CSS.rightArrowContainer, title: i18n.nextImage }, this.docDirection === "rtl" ? (widget_1.tsx("span", { class: this.classes(CSS.calcite.leftArrow, CSS.calcite.flush) })) : (widget_1.tsx("span", { class: this.classes(CSS.calcite.rightArrow, CSS.calcite.flush) }))))) : null,
                 attachment &&
                     attachment.contentType &&
                     attachment.contentType.indexOf("video") === -1 &&
@@ -420,7 +420,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                 widget_1.tsx("div", { class: CSS.headerContainer },
                     widget_1.tsx("div", { class: CSS.titleInfoContainer },
                         widget_1.tsx("h1", { class: CSS.headerText }, title),
-                        widget_1.tsx("span", { bind: this, onclick: this._toggleOnboardingPanel, onkeydown: this._toggleOnboardingPanel, tabIndex: 0, class: this.classes(CSS.infoButton, CSS.calcite.descriptionIcon, CSS.calcite.flush) }))),
+                        widget_1.tsx("span", { bind: this, onclick: this._toggleOnboardingPanel, onkeydown: this._toggleOnboardingPanel, tabIndex: 0, class: this.classes(CSS.infoButton, CSS.calcite.descriptionIcon, CSS.calcite.flush), title: i18n.viewDetails }))),
                 widget_1.tsx("div", { class: CSS.shareWidgetContainer }, shareWidget)));
         };
         // _renderShareWidget
@@ -461,14 +461,18 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                         ? this._nextFeature
                         : this._previousFeature, onkeydown: this.docDirection === "rtl"
                         ? this._nextFeature
-                        : this._previousFeature, tabIndex: 0, class: CSS.leftArrowContainer, disabled: this._onboardingPanelIsOpen ? true : false },
+                        : this._previousFeature, tabIndex: 0, class: CSS.leftArrowContainer, disabled: this._onboardingPanelIsOpen ? true : false, title: this.docDirection === "rtl"
+                        ? i18n.nextLocation
+                        : i18n.previousLocation },
                     widget_1.tsx("span", { class: this.classes(CSS.calcite.leftArrow, CSS.calcite.flush) })),
                 featureTotal ? (widget_1.tsx("div", { class: CSS.paginationTextContainer }, currentlayerFeatureIndex + " " + i18n.of + " " + featureTotal + " " + i18n.locations)) : null,
                 widget_1.tsx("button", { bind: this, onclick: this.docDirection === "rtl"
                         ? this._previousFeature
                         : this._nextFeature, onkeydown: this.docDirection === "rtl"
                         ? this._previousFeature
-                        : this._nextFeature, tabIndex: 0, class: CSS.rightArrowContainer, disabled: this._onboardingPanelIsOpen ? true : false },
+                        : this._nextFeature, tabIndex: 0, class: CSS.rightArrowContainer, disabled: this._onboardingPanelIsOpen ? true : false, title: this.docDirection === "rtl"
+                        ? i18n.previousLocation
+                        : i18n.nextLocation },
                     widget_1.tsx("span", { class: this.classes(CSS.calcite.rightArrow, CSS.calcite.flush) }))));
         };
         // _renderExpandCollapse
@@ -580,12 +584,9 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             var attachmentCount = selectedFeatureAttachments && selectedFeatureAttachments.length > 0
                 ? selectedFeatureAttachments.length
                 : null;
-            var attachmentsUpperCase = "" + i18n.attachments
-                .charAt(0)
-                .toUpperCase() + i18n.attachments.slice(1);
             return (widget_1.tsx("div", { class: CSS.mobileFeatureContent },
                 attachmentCount ? (widget_1.tsx("div", { class: CSS.mobileAttachmentCount },
-                    widget_1.tsx("span", { class: CSS.mobileAttachmentText }, attachmentsUpperCase),
+                    widget_1.tsx("span", { class: CSS.mobileAttachmentText }, i18n.upperCaseAttachments),
                     widget_1.tsx("div", { class: CSS.attachmentCountNumber }, selectedFeatureAttachments.length),
                     !this.imageIsLoaded ? (widget_1.tsx("div", { class: CSS.widgetLoader, key: buildKey("base-loader") },
                         widget_1.tsx("span", { class: CSS.animationLoader }))) : null)) : null,

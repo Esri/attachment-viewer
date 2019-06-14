@@ -205,7 +205,8 @@ define(["require", "exports", "ApplicationBase/support/itemUtils", "ApplicationB
                 view: this.view,
                 content: this.searchWidget,
                 mode: "floating",
-                expanded: true
+                expanded: true,
+                expandTooltip: i18n.search
             });
             this.view.ui.add(expand, "top-right");
         };
