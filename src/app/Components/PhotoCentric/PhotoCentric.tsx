@@ -652,6 +652,7 @@ class PhotoCentric extends declared(Widget) {
               }
               tabIndex={0}
               class={CSS.leftArrowContainer}
+              title={i18n.previousImage}
             >
               {this.docDirection === "rtl" ? (
                 <span
@@ -685,6 +686,7 @@ class PhotoCentric extends declared(Widget) {
               }
               tabIndex={0}
               class={CSS.rightArrowContainer}
+              title={i18n.nextImage}
             >
               {this.docDirection === "rtl" ? (
                 <span
@@ -776,6 +778,7 @@ class PhotoCentric extends declared(Widget) {
                 CSS.calcite.descriptionIcon,
                 CSS.calcite.flush
               )}
+              title={i18n.viewDetails}
             />
           </div>
         </div>
@@ -868,6 +871,11 @@ class PhotoCentric extends declared(Widget) {
           tabIndex={0}
           class={CSS.leftArrowContainer}
           disabled={this._onboardingPanelIsOpen ? true : false}
+          title={
+            this.docDirection === "rtl"
+              ? i18n.nextLocation
+              : i18n.previousLocation
+          }
         >
           <span
             class={this.classes(CSS.calcite.leftArrow, CSS.calcite.flush)}
@@ -895,6 +903,11 @@ class PhotoCentric extends declared(Widget) {
           tabIndex={0}
           class={CSS.rightArrowContainer}
           disabled={this._onboardingPanelIsOpen ? true : false}
+          title={
+            this.docDirection === "rtl"
+              ? i18n.previousLocation
+              : i18n.nextLocation
+          }
         >
           <span
             class={this.classes(CSS.calcite.rightArrow, CSS.calcite.flush)}
@@ -1132,15 +1145,14 @@ class PhotoCentric extends declared(Widget) {
       selectedFeatureAttachments && selectedFeatureAttachments.length > 0
         ? selectedFeatureAttachments.length
         : null;
-    const attachmentsUpperCase = `${i18n.attachments
-      .charAt(0)
-      .toUpperCase()}${i18n.attachments.slice(1)}`;
 
     return (
       <div class={CSS.mobileFeatureContent}>
         {attachmentCount ? (
           <div class={CSS.mobileAttachmentCount}>
-            <span class={CSS.mobileAttachmentText}>{attachmentsUpperCase}</span>
+            <span class={CSS.mobileAttachmentText}>
+              {i18n.upperCaseAttachments}
+            </span>
             <div class={CSS.attachmentCountNumber}>
               {selectedFeatureAttachments.length}
             </div>

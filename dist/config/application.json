@@ -26,7 +26,7 @@
   "onboardingImage": null,
   "onboardingButtonText": null,
   "order": "ASC",
-  "oauthappid": "arcgisWebApps",
+  "oauthappid": "",
   "proxyUrl": "",
   "units": "",
   "helperServices": {

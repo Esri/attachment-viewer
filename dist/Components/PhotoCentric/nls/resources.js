@@ -9,7 +9,7 @@ define({
     subtitle: "View a layer's photo attachments",
     instructionHeading: "Use the following methods to view feature details and photo attachments:",
     stepOne: "Select a feature on the map.",
-    stepTwo: "Click the left and right arrows below the map to browse through all the features.",
+    stepTwo: "Click the left and right arrows above the map to browse through all the features.",
     stepThree: "If a search box is available, search for a specific feature.",
     noInfo: "No information available.",
     pleaseWait: "Downloading...",
@@ -20,7 +20,13 @@ define({
     image: "images",
     notSupported: "Selected layer does not support photo attachments",
     doesNotSupportVideo: "Your browser does not support the video tag.",
-    otherAttachments: "Other attachments"
+    otherAttachments: "Other attachments",
+    viewDetails: "View details",
+    previousLocation: "Previous location",
+    nextLocation: "Next location",
+    previousImage: "Previous image",
+    nextImage: "Next image",
+    upperCaseAttachments: "Attachments"
   }),
   "ar": 1,
   "bs": 1,
