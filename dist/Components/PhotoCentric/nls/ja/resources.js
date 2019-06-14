@@ -1,0 +1,23 @@
+define({
+  "loadingImages": "須_Loading_____________________鷗...",
+  "of": "須_of_____鷗",
+  "attachments": "須_attachments____________鷗",
+  "download": "須_Download_________________鷗",
+  "start": "須_Start___________鷗",
+  "welcome": "須_Welcome_________________鷗!",
+  "subtitle": "須_View a layer's photo attachments_________________鷗",
+  "instructionHeading": "須_Use the following methods to view feature details and photo attachments_____________________________________鷗:",
+  "stepOne": "須_Select a feature on the map_____________________________鷗.",
+  "stepTwo": "須_Click the left and right arrows below the map to browse through all the features__________________________________________鷗.",
+  "stepThree": "須_If a search box is available, search for a specific feature_______________________________鷗.",
+  "noInfo": "須_No information available__________________________鷗.",
+  "pleaseWait": "須_Downloading_______________鷗...",
+  "locations": "須_locations___________________鷗",
+  "noPhotoAttachmentsFound": "須_No photo attachments found____________________________鷗.",
+  "noContentAvailable": "須_No content available______________________鷗.",
+  "zoomTo": "須_Zoom To_______________鷗",
+  "image": "須_images_____________鷗",
+  "notSupported": "須_Selected layer does not support photo attachments__________________________鷗",
+  "doesNotSupportVideo": "須_Your browser does not support the video tag_______________________鷗.",
+  "otherAttachments": "須_Other attachments__________________鷗"
+});

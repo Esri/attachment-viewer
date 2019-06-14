@@ -1,0 +1,23 @@
+define({
+  "loadingImages": "Å_Loading_____________________ö...",
+  "of": "Å_of_____ö",
+  "attachments": "Å_attachments____________ö",
+  "download": "Å_Download_________________ö",
+  "start": "Å_Start___________ö",
+  "welcome": "Å_Welcome_________________ö!",
+  "subtitle": "Å_View a layer's photo attachments_________________ö",
+  "instructionHeading": "Å_Use the following methods to view feature details and photo attachments_____________________________________ö:",
+  "stepOne": "Å_Select a feature on the map_____________________________ö.",
+  "stepTwo": "Å_Click the left and right arrows below the map to browse through all the features__________________________________________ö.",
+  "stepThree": "Å_If a search box is available, search for a specific feature_______________________________ö.",
+  "noInfo": "Å_No information available__________________________ö.",
+  "pleaseWait": "Å_Downloading_______________ö...",
+  "locations": "Å_locations___________________ö",
+  "noPhotoAttachmentsFound": "Å_No photo attachments found____________________________ö.",
+  "noContentAvailable": "Å_No content available______________________ö.",
+  "zoomTo": "Å_Zoom To_______________ö",
+  "image": "Å_images_____________ö",
+  "notSupported": "Å_Selected layer does not support photo attachments__________________________ö",
+  "doesNotSupportVideo": "Å_Your browser does not support the video tag_______________________ö.",
+  "otherAttachments": "Å_Other attachments__________________ö"
+});

@@ -10,7 +10,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.​
 */
-define(["require", "exports", "dojo/text!config/applicationBase.json", "dojo/text!config/application.json", "ApplicationBase/ApplicationBase", "./Main", "dojo/i18n!./nls/resources"], function (require, exports, applicationBaseConfig, applicationConfig, ApplicationBase, Application, i18n) {
+define(["require", "exports", "dojo/text!config/applicationBase.json", "dojo/text!config/application.json", "ApplicationBase/ApplicationBase", "./Main", "dojo/i18n!./userTypesError/nls/resources"], function (require, exports, applicationBaseConfig, applicationConfig, ApplicationBase, Application, i18n) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var Main = new Application();

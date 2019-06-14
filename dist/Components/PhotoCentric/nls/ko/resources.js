@@ -1,0 +1,23 @@
+define({
+  "loadingImages": "한_Loading_____________________빠...",
+  "of": "한_of_____빠",
+  "attachments": "한_attachments____________빠",
+  "download": "한_Download_________________빠",
+  "start": "한_Start___________빠",
+  "welcome": "한_Welcome_________________빠!",
+  "subtitle": "한_View a layer's photo attachments_________________빠",
+  "instructionHeading": "한_Use the following methods to view feature details and photo attachments_____________________________________빠:",
+  "stepOne": "한_Select a feature on the map_____________________________빠.",
+  "stepTwo": "한_Click the left and right arrows below the map to browse through all the features__________________________________________빠.",
+  "stepThree": "한_If a search box is available, search for a specific feature_______________________________빠.",
+  "noInfo": "한_No information available__________________________빠.",
+  "pleaseWait": "한_Downloading_______________빠...",
+  "locations": "한_locations___________________빠",
+  "noPhotoAttachmentsFound": "한_No photo attachments found____________________________빠.",
+  "noContentAvailable": "한_No content available______________________빠.",
+  "zoomTo": "한_Zoom To_______________빠",
+  "image": "한_images_____________빠",
+  "notSupported": "한_Selected layer does not support photo attachments__________________________빠",
+  "doesNotSupportVideo": "한_Your browser does not support the video tag_______________________빠.",
+  "otherAttachments": "한_Other attachments__________________빠"
+});

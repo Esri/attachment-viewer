@@ -17,7 +17,7 @@ import applicationConfig = require("dojo/text!config/application.json");
 import ApplicationBase = require("ApplicationBase/ApplicationBase");
 
 import Application = require("./Main");
-import i18n = require("dojo/i18n!./nls/resources");
+import i18n = require("dojo/i18n!./userTypesError/nls/resources");
 
 const Main = new Application();
 

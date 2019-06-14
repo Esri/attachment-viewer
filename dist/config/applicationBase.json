@@ -7,7 +7,7 @@
     "fetch": true
   },
   "group": {
-    "default": "908dd46e749d4565a17d2b646ace7b1a",
+    "default": "",
     "fetchInfo": false,
     "fetchItems": false,
     "itemParams": {
@@ -36,10 +36,12 @@
     "portalUrl",
     "viewpoint",
     "webmap",
-    "webscene"
+    "webscene",
+    "featureIndex",
+    "attachmentIndex"
   ],
   "webMap": {
-    "default": "1970c1995b8f44749f4b9b6e81b5ba45",
+    "default": "4746b472ab6d435e843c15a9922d3d5d",
     "fetch": true
   },
   "webScene": {

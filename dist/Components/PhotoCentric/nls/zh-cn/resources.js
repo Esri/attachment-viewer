@@ -1,0 +1,23 @@
+define({
+  "loadingImages": "试_Loading_____________________验...",
+  "of": "试_of_____验",
+  "attachments": "试_attachments____________验",
+  "download": "试_Download_________________验",
+  "start": "试_Start___________验",
+  "welcome": "试_Welcome_________________验!",
+  "subtitle": "试_View a layer's photo attachments_________________验",
+  "instructionHeading": "试_Use the following methods to view feature details and photo attachments_____________________________________验:",
+  "stepOne": "试_Select a feature on the map_____________________________验.",
+  "stepTwo": "试_Click the left and right arrows below the map to browse through all the features__________________________________________验.",
+  "stepThree": "试_If a search box is available, search for a specific feature_______________________________验.",
+  "noInfo": "试_No information available__________________________验.",
+  "pleaseWait": "试_Downloading_______________验...",
+  "locations": "试_locations___________________验",
+  "noPhotoAttachmentsFound": "试_No photo attachments found____________________________验.",
+  "noContentAvailable": "试_No content available______________________验.",
+  "zoomTo": "试_Zoom To_______________验",
+  "image": "试_images_____________验",
+  "notSupported": "试_Selected layer does not support photo attachments__________________________验",
+  "doesNotSupportVideo": "试_Your browser does not support the video tag_______________________验.",
+  "otherAttachments": "试_Other attachments__________________验"
+});

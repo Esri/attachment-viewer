@@ -13,8 +13,6 @@
 
 import ApplicationBase = require("ApplicationBase/ApplicationBase");
 
-import i18n = require("dojo/i18n!./nls/resources");
-
 const CSS = {
   loading: "configurable-application--loading"
 };
@@ -34,12 +32,37 @@ import {
   setPageTitle
 } from "ApplicationBase/support/domHelper";
 
+import AttachmentViewer = require("./Components/AttachmentViewer");
+
+import Search = require("esri/widgets/Search");
+
+import Expand = require("esri/widgets/Expand");
+
+import MobileExpand = require("./Components/MobileExpand/MobileExpand");
+
+import Legend = require("esri/widgets/Legend");
+import LayerList = require("esri/widgets/LayerList");
+
+import Home = require("esri/widgets/Home");
+
+import FeatureLayer = require("esri/layers/FeatureLayer");
+
+import OnboardingContent = require("./Components/Onboarding/OnboardingContent");
+
+import * as i18n from "dojo/i18n!./nls/common";
+
+import FullScreen = require("esri/widgets/Fullscreen");
+
+import Collection = require("esri/core/Collection");
+
+import Zoom = require("esri/widgets/Zoom");
+
 import {
   ApplicationConfig,
   ApplicationBaseSettings
 } from "ApplicationBase/interfaces";
 
-class FeatureBrowser {
+class AttachmentViewerApp {
   //--------------------------------------------------------------------------
   //
   //  Properties
@@ -50,6 +73,10 @@ class FeatureBrowser {
   //  ApplicationBase
   //----------------------------------
   base: ApplicationBase = null;
+  searchWidget: Search = null;
+  searchWidgetMobile: Search = null;
+  view: __esri.MapView = null;
+  widgets: Collection<__esri.Widget> = new Collection();
 
   //--------------------------------------------------------------------------
   //
@@ -62,13 +89,36 @@ class FeatureBrowser {
       console.error("ApplicationBase is not defined");
       return;
     }
+    const { config, results, settings } = base;
+
+    this._applySharedTheme(config);
+
     setPageLocale(base.locale);
     setPageDirection(base.direction);
 
     this.base = base;
 
-    const { config, results, settings } = base;
-    const { find, marker } = config;
+    const {
+      find,
+      marker,
+      appMode,
+      title,
+      attachmentLayer,
+      order,
+      downloadEnabled,
+      homeEnabled,
+      zoomEnabled,
+      legendEnabled,
+      layerListEnabled,
+      searchConfig,
+      searchEnabled,
+      zoomLevel,
+      addressEnabled,
+      fullScreenEnabled,
+      socialSharingEnabled,
+      onboardingImage,
+      onboardingButtonText
+    } = config;
     const { webMapItems } = results;
 
     const validWebMapItems = webMapItems.map(response => {
@@ -92,12 +142,10 @@ class FeatureBrowser {
         ? portalItem.applicationProxies
         : null;
 
-    const viewContainerNode = document.getElementById("viewContainer");
     const defaultViewProperties = getConfigViewProperties(config);
 
     validWebMapItems.forEach(item => {
       const viewNode = document.createElement("div");
-      viewContainerNode.appendChild(viewNode);
 
       const container = {
         container: viewNode
@@ -113,13 +161,271 @@ class FeatureBrowser {
           ...viewProperties,
           map
         }).then(view =>
-          findQuery(find, view).then(() => goToMarker(marker, view))
+          findQuery(find, view).then(() => {
+            this.view = view as __esri.MapView;
+
+            if (document.body.clientWidth > 813) {
+              this.view.padding.bottom = 380;
+            }
+
+            const appTitle = title
+              ? title
+              : (view.map.get("portalItem") as __esri.PortalItem).title
+              ? (view.map.get("portalItem") as __esri.PortalItem).title
+              : "Feature Browser";
+
+            this.view.ui.remove("zoom");
+
+            this._handleSearchWidget(searchConfig, searchEnabled);
+
+            this._handleZoomControls(zoomEnabled);
+
+            this._handleHomeWidget(homeEnabled);
+
+            this._handleLegendWidget(legendEnabled);
+
+            this._handleLayerListWidget(layerListEnabled);
+
+            this._handleFullScreenWidget(fullScreenEnabled);
+
+            this._addWidgetsToUI();
+
+            const defaultObjectIdParam = parseInt(
+              this._getURLParameter("defaultObjectId")
+            );
+            const defaultObjectId = isNaN(defaultObjectIdParam)
+              ? null
+              : defaultObjectIdParam;
+            const featureAttachmentIndexParam = parseInt(
+              this._getURLParameter("attachmentIndex")
+            );
+
+            const attachmentIndex = isNaN(featureAttachmentIndexParam)
+              ? null
+              : featureAttachmentIndexParam;
+            const container = document.createElement("div");
+            const onboardingContent = new OnboardingContent({
+              container,
+              config
+            });
+
+            const scale = isNaN(zoomLevel) ? parseInt(zoomLevel) : zoomLevel;
+
+            const docDirection = document
+              .querySelector("html")
+              .getAttribute("dir");
+            new AttachmentViewer({
+              view,
+              container: document.getElementById("app-container"),
+              appMode,
+              title: appTitle,
+              searchWidget: this.searchWidget,
+              defaultObjectId,
+              attachmentIndex,
+              attachmentLayer,
+              order,
+              downloadEnabled,
+              socialSharingEnabled,
+              onboardingContent,
+              zoomLevel: scale,
+              docDirection,
+              addressEnabled,
+              onboardingImage,
+              onboardingButtonText
+            });
+            goToMarker(marker, view);
+
+            if (config.customCSS) {
+              this._handleCustomCSS(config);
+            }
+            document.body.classList.remove(CSS.loading);
+          })
         )
       );
     });
+  }
 
-    document.body.classList.remove(CSS.loading);
+  private _handleZoomControls(zoomEnabled: boolean): void {
+    if (zoomEnabled) {
+      const zoom = new Zoom({
+        view: this.view
+      });
+      this.widgets.add(zoom);
+    }
+  }
+
+  private _handleHomeWidget(homeEnabled: boolean): void {
+    if (homeEnabled) {
+      const home = new Home({
+        view: this.view
+      });
+
+      this.widgets.add(home);
+    }
+  }
+
+  private _handleSearchWidget(searchConfig: any, searchEnabled: boolean): void {
+    if (!searchEnabled) {
+      return;
+    }
+    const searchProperties: any = {
+      view: this.view
+    };
+    if (searchConfig) {
+      if (searchConfig.sources) {
+        const sources = searchConfig.sources;
+
+        searchProperties.sources = sources.filter(source => {
+          if (source.flayerId && source.url) {
+            const layer = this.view.map.findLayerById(source.flayerId);
+            source.layer = layer ? layer : new FeatureLayer(source.url);
+          }
+          if (source.hasOwnProperty("enableSuggestions")) {
+            source.suggestionsEnabled = source.enableSuggestions;
+          }
+          if (source.hasOwnProperty("searchWithinMap")) {
+            source.withinViewEnabled = source.searchWithinMap;
+          }
+
+          return source;
+        });
+      }
+      if (
+        searchProperties.sources &&
+        searchProperties.sources.length &&
+        searchProperties.sources.length > 0
+      ) {
+        searchProperties.includeDefaultSources = false;
+      }
+      searchProperties.searchAllEnabled = searchConfig.enableSearchingAll
+        ? true
+        : false;
+      if (
+        searchConfig.activeSourceIndex &&
+        searchProperties.sources &&
+        searchProperties.sources.length >= searchConfig.activeSourceIndex
+      ) {
+        searchProperties.activeSourceIndex = searchConfig.activeSourceIndex;
+      }
+    }
+
+    this.searchWidget = new Search({
+      container: document.createElement("div"),
+      ...searchProperties
+    });
+
+    const expand = new Expand({
+      view: this.view,
+      content: this.searchWidget,
+      mode: "floating",
+      expanded: true
+    });
+
+    this.view.ui.add(expand, "top-right");
+  }
+
+  private _handleLegendWidget(legendEnabled: boolean): void {
+    if (legendEnabled) {
+      const legend = new Legend({
+        view: this.view
+      });
+
+      this.widgets.add(
+        new Expand({
+          view: this.view,
+          content: legend,
+          mode: "floating",
+          group: "top-left",
+          expandTooltip: legend.label
+        })
+      );
+    }
+  }
+
+  private _handleLayerListWidget(layerListEnabled: boolean): void {
+    if (layerListEnabled) {
+      const layerList = new LayerList({
+        view: this.view
+      });
+
+      this.widgets.add(
+        new Expand({
+          view: this.view,
+          content: layerList,
+          mode: "floating",
+          group: "top-left",
+          expandTooltip: layerList.label
+        })
+      );
+    }
+  }
+
+  private _handleFullScreenWidget(fullScreenEnabled: boolean): void {
+    if (fullScreenEnabled) {
+      const fullscreen = new FullScreen({
+        view: this.view
+      });
+      this.widgets.add(fullscreen);
+    }
+  }
+
+  private _addWidgetsToUI(): void {
+    if (this.widgets.length > 1) {
+      const content = [];
+      this.widgets.forEach(widget => {
+        content.push(widget);
+      });
+      const mobileExpand = new MobileExpand({
+        content,
+        mode: "floating",
+        expandIconClass: "icon-ui-down-arrow icon-ui-flush",
+        collapseIconClass: "icon-ui-up-arrow icon-ui-flush",
+        expandTooltip: i18n.moreTools,
+        expanded: true
+      });
+      this.view.ui.add(mobileExpand, "top-left");
+    } else if (this.widgets.length === 1) {
+      this.view.ui.add(this.widgets.getItemAt(0), "top-left");
+    }
+    // this.view.ui.add(this.searchWidget);
+  }
+
+  private _getURLParameter(name: string): string {
+    return (
+      decodeURIComponent(
+        (new RegExp("[?|&]" + name + "=" + "([^&;]+?)(&|#|;|$)").exec(
+          location.search
+        ) || [null, ""])[1].replace(/\+/g, "%20")
+      ) || null
+    );
+  }
+
+  // _handleCustomCSS
+  private _handleCustomCSS(config: ApplicationConfig): void {
+    const styles = document.createElement("style");
+    styles.type = "text/css";
+    styles.appendChild(document.createTextNode(config.customCSS));
+    document.head.appendChild(styles);
+  }
+
+  // _applySharedTheme
+  private _applySharedTheme(config: ApplicationConfig): void {
+    const styles = [];
+    styles.push(
+      config.headerBackground
+        ? `.esri-photo-centric__header{background:${config.headerBackground};}`
+        : null
+    );
+    styles.push(
+      config.headerColor
+        ? `.esri-photo-centric__header{color:${config.headerColor};}`
+        : null
+    );
+
+    const style = document.createElement("style");
+    style.appendChild(document.createTextNode(styles.join("")));
+    document.getElementsByTagName("head")[0].appendChild(style);
   }
 }
 
-export = FeatureBrowser;
+export = AttachmentViewerApp;

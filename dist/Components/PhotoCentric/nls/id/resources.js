@@ -1,0 +1,23 @@
+define({
+  "loadingImages": "ng_Loading_____________________ny...",
+  "of": "ng_of_____ny",
+  "attachments": "ng_attachments____________ny",
+  "download": "ng_Download_________________ny",
+  "start": "ng_Start___________ny",
+  "welcome": "ng_Welcome_________________ny!",
+  "subtitle": "ng_View a layer's photo attachments_________________ny",
+  "instructionHeading": "ng_Use the following methods to view feature details and photo attachments_____________________________________ny:",
+  "stepOne": "ng_Select a feature on the map_____________________________ny.",
+  "stepTwo": "ng_Click the left and right arrows below the map to browse through all the features__________________________________________ny.",
+  "stepThree": "ng_If a search box is available, search for a specific feature_______________________________ny.",
+  "noInfo": "ng_No information available__________________________ny.",
+  "pleaseWait": "ng_Downloading_______________ny...",
+  "locations": "ng_locations___________________ny",
+  "noPhotoAttachmentsFound": "ng_No photo attachments found____________________________ny.",
+  "noContentAvailable": "ng_No content available______________________ny.",
+  "zoomTo": "ng_Zoom To_______________ny",
+  "image": "ng_images_____________ny",
+  "notSupported": "ng_Selected layer does not support photo attachments__________________________ny",
+  "doesNotSupportVideo": "ng_Your browser does not support the video tag_______________________ny.",
+  "otherAttachments": "ng_Other attachments__________________ny"
+});

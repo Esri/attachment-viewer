@@ -2,18 +2,24 @@
 <html>
 
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   <!-- Responsive -->
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+
   <!-- End Responsive -->
   <link rel=icon href=assets/favicon.ico sizes="32x32" type="image/vnd.microsoft.icon">
-  <link rel="stylesheet" href="styles/main.css">
-  <link rel="stylesheet" href="https://js.arcgis.com/4.11/esri/css/main.css">
+  <link rel="stylesheet" href="https://js.arcgis.com/4.12/esri/themes/light/main.css" />
+  <link rel="stylesheet" href="https://s3-us-west-1.amazonaws.com/patterns.esri.com/files/calcite-web/1.2.5/css/calcite-web.min.css" />
   <script src="./dojo.js"></script>
-  <script src="https://js.arcgis.com/4.11/"></script>
+  <script src="https://js.arcgis.com/4.12/"></script>
+  <link rel="stylesheet" href="./styles/Main.css" />
+  <link rel="stylesheet" href="./Components/PhotoCentric/css/PhotoCentric.css" />
+  <link rel="stylesheet" href="./Components/MobileExpand/css/MobileExpand.css" />
+  <link rel="stylesheet" href="./Components/Share/css/Share.css">
+  <script src="./canvasToBlob.js"></script>
   <script>
     require(["Application/init"]);
 
@@ -21,7 +27,7 @@
 </head>
 
 <body class="configurable-application--loading">
-  <div id="viewContainer" class="configurable-application__view-container"></div>
+  <div id="app-container"></div>
 </body>
 
 </html>
