@@ -43,19 +43,13 @@ body {
   }
 }
 
-.app-error {
-  background-position: top center;
-  padding-top: 60px;
-  width: 80%;
-  position: absolute;
-  z-index: 2;
-  top: 40%;
-  left: 0;
+.app-error #app-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.3em;
   text-align: center;
-}
-
-.app-error .configurable-application__view-container {
-  display: block;
+  flex-direction: column;
 }
 
 

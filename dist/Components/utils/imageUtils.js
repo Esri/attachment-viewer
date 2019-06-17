@@ -64,37 +64,14 @@ define(["require", "exports"], function (require, exports) {
         }
         if (isAndroid) {
             var orientation_1 = ORIENTATION_MAP[orientationInfo.id];
-            var width = containerNode &&
-                containerNode.offsetWidth &&
-                orientationInfo.rotation !== 0
-                ? containerNode.offsetWidth / 2 + "px"
-                : "initial";
-            var height = containerNode &&
-                containerNode.offsetHeight &&
-                orientationInfo.rotation !== 0
-                ? containerNode.offsetHeight + "px"
-                : "initial";
             return orientation_1
                 ? {
-                    transform: "rotate(" + orientationInfo.rotation + "deg) scaleX(" + orientation_1.scaleX + ")",
-                    height: width,
-                    width: height,
-                    objectFit: "cover",
-                    maxHeight: "100%"
+                    transform: "rotate(" + orientationInfo.rotation + "deg) scaleX(" + orientation_1.scaleX + ")"
                 }
                 : {};
         }
         else {
-            var height = containerNode && containerNode.offsetHeight
-                ? containerNode.offsetHeight + "px"
-                : "initial";
-            return orientationInfo
-                ? {
-                    height: height,
-                    objectFit: "cover",
-                    maxHeight: "100%"
-                }
-                : {};
+            return {};
         }
     }
     exports.getOrientationStylesMobile = getOrientationStylesMobile;

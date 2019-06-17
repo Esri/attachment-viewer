@@ -47,8 +47,6 @@ import {
   getOrientationStylesMobile
 } from "../utils/imageUtils";
 
-// import { LEFT_ARROW, RIGHT_ARROW } from "dojo/keys";
-
 //----------------------------------
 //
 //  CSS Classes
@@ -140,10 +138,16 @@ const CSS = {
   mobileFeatureContent: "esri-photo-centric__mobile-feature-content",
   mobileAttachmentCount: "esri-photo-centric__mobile-attachment-count",
   mobileAttachmentContainer: "esri-photo-centric__mobile-image-container",
+  mobileAttachmentsAddPadding:
+    "esri-photo-centric__mobile-attachments-add-padding",
+  transparentBackground: "esri-photo-centric__transparent-background",
+  removeBorderRadius:
+    "esri-photo-centric__mobile-attachments-remove-border-radius",
   // loader
   widgetLoader: "esri-widget__loader esri-photo-centric__loader",
   animationLoader:
     "esri-widget__loader-animation esri-photo-centric__loader-animation",
+  removeOpacity: "esri-photo-centric__remove-opacity",
   svg: {
     media: "esri-photo-centric__media-svg"
   },
@@ -246,7 +250,6 @@ class PhotoCentric extends declared(Widget) {
   // attachmentIndex
   @aliasOf("viewModel.attachmentIndex")
   @property()
-  @renderable()
   @renderable()
   attachmentIndex: number = null;
 
@@ -523,7 +526,7 @@ class PhotoCentric extends declared(Widget) {
             width: "initial"
           };
 
-    const blurImage = {
+    const fadeImage = {
       [CSS.fadeImage]: !this.imageIsLoaded
     };
 
@@ -593,7 +596,7 @@ class PhotoCentric extends declared(Widget) {
                 />
               ) : (
                 <img
-                  class={this.classes(CSS.imageDesktop, blurImage)}
+                  class={this.classes(CSS.imageDesktop, fadeImage)}
                   styles={imageStyles}
                   bind={this}
                   src={this.currentImageUrl}
@@ -1163,7 +1166,8 @@ class PhotoCentric extends declared(Widget) {
             ) : null}
           </div>
         ) : null}
-        {featureContentInfos}
+        {this.imageIsLoaded ? featureContentInfos : null}
+        {/* {featureContentInfos} */}
       </div>
     );
   }
@@ -1172,7 +1176,10 @@ class PhotoCentric extends declared(Widget) {
   private _renderAttachmentMobile(attachment: any): VNode {
     const { url, name } = attachment;
     const imageStyles =
-      attachment && attachment.orientationInfo && this._photoViewerContainer
+      attachment &&
+      attachment.orientationInfo &&
+      this._photoViewerContainer &&
+      this.imageIsLoaded
         ? getOrientationStylesMobile(
             attachment.orientationInfo,
             this._mobileAttachment
@@ -1185,6 +1192,28 @@ class PhotoCentric extends declared(Widget) {
           };
     const imageAttachmentHeight = imageStyles.width;
 
+    const addPadding = {
+      [CSS.mobileAttachmentsAddPadding]:
+        attachment &&
+        attachment.orientationInfo &&
+        attachment.orientationInfo.rotation !== 0
+    };
+
+    const removeBorderRadius = {
+      [CSS.removeBorderRadius]:
+        attachment &&
+        attachment.orientationInfo &&
+        attachment.orientationInfo.rotation !== 0
+    };
+
+    const removeOpacity = {
+      [CSS.removeOpacity]: this.imageIsLoaded
+    };
+
+    const transparentBackground = {
+      [CSS.transparentBackground]: !this.imageIsLoaded
+    };
+
     return (
       <div
         bind={this}
@@ -1192,7 +1221,11 @@ class PhotoCentric extends declared(Widget) {
         afterCreate={storeNode}
         afterUpdate={storeNode}
         data-node-ref="_mobileAttachment"
-        class={CSS.mobileAttachment}
+        class={this.classes(
+          CSS.mobileAttachment,
+          addPadding,
+          transparentBackground
+        )}
       >
         <div class={CSS.mobileAttachmentContainer}>
           {attachment &&
@@ -1206,7 +1239,11 @@ class PhotoCentric extends declared(Widget) {
             </video>
           ) : (
             <img
-              class={CSS.imageMobile}
+              class={this.classes(
+                CSS.imageMobile,
+                removeBorderRadius,
+                removeOpacity
+              )}
               styles={imageStyles}
               src={url}
               alt={name}
@@ -1248,7 +1285,7 @@ class PhotoCentric extends declared(Widget) {
   //----------------------------------
 
   // _removeImageLoader
-  private _removeImageLoader() {
+  private _removeImageLoader(): void {
     if (this.currentImageUrl !== this._previousImageUrl) {
       this.imageIsLoaded = true;
       this.scheduleRender();
@@ -1312,8 +1349,6 @@ class PhotoCentric extends declared(Widget) {
     if (this.featureLayer.get("capabilities.data.supportsAttachment")) {
       this.imageIsLoaded = false;
     }
-
-    this.viewModel.goTo();
     this.scheduleRender();
   }
 
@@ -1327,8 +1362,6 @@ class PhotoCentric extends declared(Widget) {
     if (this.featureLayer.get("capabilities.data.supportsAttachment")) {
       this.imageIsLoaded = false;
     }
-
-    this.viewModel.goTo();
     this.scheduleRender();
   }
 
@@ -1340,7 +1373,7 @@ class PhotoCentric extends declared(Widget) {
 
   // _zoomTo
   @accessibleHandler()
-  private _zoomTo() {
+  private _zoomTo(): void {
     this.viewModel.zoomTo();
   }
 

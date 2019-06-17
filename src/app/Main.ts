@@ -41,6 +41,7 @@ import Expand = require("esri/widgets/Expand");
 import MobileExpand = require("./Components/MobileExpand/MobileExpand");
 
 import Legend = require("esri/widgets/Legend");
+
 import LayerList = require("esri/widgets/LayerList");
 
 import Home = require("esri/widgets/Home");
@@ -245,6 +246,7 @@ class AttachmentViewerApp {
     });
   }
 
+  // _handleZoomControls
   private _handleZoomControls(zoomEnabled: boolean): void {
     if (zoomEnabled) {
       const zoom = new Zoom({
@@ -254,6 +256,7 @@ class AttachmentViewerApp {
     }
   }
 
+  // _handleHomeWidget
   private _handleHomeWidget(homeEnabled: boolean): void {
     if (homeEnabled) {
       const home = new Home({
@@ -264,6 +267,7 @@ class AttachmentViewerApp {
     }
   }
 
+  // _handleSearchWidget
   private _handleSearchWidget(searchConfig: any, searchEnabled: boolean): void {
     if (!searchEnabled) {
       return;
@@ -343,6 +347,7 @@ class AttachmentViewerApp {
     }
   }
 
+  // _handleLayerListWidget
   private _handleLayerListWidget(layerListEnabled: boolean): void {
     if (layerListEnabled) {
       const layerList = new LayerList({
@@ -361,6 +366,7 @@ class AttachmentViewerApp {
     }
   }
 
+  // _handleFullScreenWidget
   private _handleFullScreenWidget(fullScreenEnabled: boolean): void {
     if (fullScreenEnabled) {
       const fullscreen = new FullScreen({
@@ -370,6 +376,7 @@ class AttachmentViewerApp {
     }
   }
 
+  // _addWidgetsToUI
   private _addWidgetsToUI(): void {
     if (this.widgets.length > 1) {
       const content = [];
