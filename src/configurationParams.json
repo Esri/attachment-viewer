@@ -97,6 +97,11 @@
     "category": "Options",
     "fields": [{
         "type": "boolean",
+        "fieldName": "mapToolsExpanded",
+        "label": "Map tools open at start"
+      },
+      {
+        "type": "boolean",
         "fieldName": "homeEnabled",
         "label": "Home"
       }, {
@@ -147,6 +152,10 @@
         "type": "search",
         "fieldName": "searchConfig",
         "label": "Configure search options"
+      }, {
+        "type": "boolean",
+        "fieldName": "searchExpanded",
+        "label": "Search open at start"
       }]
     }]
   }],
@@ -162,6 +171,8 @@
     "searchEnabled": true,
     "zoomLevel": "32000",
     "order": "ASC",
-    "addressEnabled": false
+    "addressEnabled": false,
+    "searchExpanded": true,
+    "mapToolsExpanded": true
   }
 }

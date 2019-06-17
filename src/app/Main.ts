@@ -118,7 +118,9 @@ class AttachmentViewerApp {
       fullScreenEnabled,
       socialSharingEnabled,
       onboardingImage,
-      onboardingButtonText
+      onboardingButtonText,
+      mapToolsExpanded,
+      searchExpanded
     } = config;
     const { webMapItems } = results;
 
@@ -177,7 +179,11 @@ class AttachmentViewerApp {
 
             this.view.ui.remove("zoom");
 
-            this._handleSearchWidget(searchConfig, searchEnabled);
+            this._handleSearchWidget(
+              searchConfig,
+              searchEnabled,
+              searchExpanded
+            );
 
             this._handleZoomControls(zoomEnabled);
 
@@ -189,7 +195,7 @@ class AttachmentViewerApp {
 
             this._handleFullScreenWidget(fullScreenEnabled);
 
-            this._addWidgetsToUI();
+            this._addWidgetsToUI(mapToolsExpanded);
 
             const defaultObjectIdParam = parseInt(
               this._getURLParameter("defaultObjectId")
@@ -268,7 +274,11 @@ class AttachmentViewerApp {
   }
 
   // _handleSearchWidget
-  private _handleSearchWidget(searchConfig: any, searchEnabled: boolean): void {
+  private _handleSearchWidget(
+    searchConfig: any,
+    searchEnabled: boolean,
+    searchExpanded: boolean
+  ): void {
     if (!searchEnabled) {
       return;
     }
@@ -322,7 +332,7 @@ class AttachmentViewerApp {
       view: this.view,
       content: this.searchWidget,
       mode: "floating",
-      expanded: true,
+      expanded: searchExpanded,
       expandTooltip: i18n.search
     });
 
@@ -377,7 +387,7 @@ class AttachmentViewerApp {
   }
 
   // _addWidgetsToUI
-  private _addWidgetsToUI(): void {
+  private _addWidgetsToUI(mapToolsExpanded: boolean): void {
     if (this.widgets.length > 1) {
       const content = [];
       this.widgets.forEach(widget => {
@@ -389,7 +399,7 @@ class AttachmentViewerApp {
         expandIconClass: "icon-ui-down-arrow icon-ui-flush",
         collapseIconClass: "icon-ui-up-arrow icon-ui-flush",
         expandTooltip: i18n.moreTools,
-        expanded: true
+        expanded: mapToolsExpanded
       });
       this.view.ui.add(mobileExpand, "top-left");
     } else if (this.widgets.length === 1) {
