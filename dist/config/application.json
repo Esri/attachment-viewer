@@ -25,6 +25,8 @@
   "customCSS": null,
   "onboardingImage": null,
   "onboardingButtonText": null,
+  "mapToolsExpanded": true,
+  "searchExpanded": true,
   "order": "ASC",
   "oauthappid": "",
   "proxyUrl": "",

@@ -55,7 +55,7 @@ define(["require", "exports", "ApplicationBase/support/itemUtils", "ApplicationB
             domHelper_1.setPageLocale(base.locale);
             domHelper_1.setPageDirection(base.direction);
             this.base = base;
-            var find = config.find, marker = config.marker, appMode = config.appMode, title = config.title, attachmentLayer = config.attachmentLayer, order = config.order, downloadEnabled = config.downloadEnabled, homeEnabled = config.homeEnabled, zoomEnabled = config.zoomEnabled, legendEnabled = config.legendEnabled, layerListEnabled = config.layerListEnabled, searchConfig = config.searchConfig, searchEnabled = config.searchEnabled, zoomLevel = config.zoomLevel, addressEnabled = config.addressEnabled, fullScreenEnabled = config.fullScreenEnabled, socialSharingEnabled = config.socialSharingEnabled, onboardingImage = config.onboardingImage, onboardingButtonText = config.onboardingButtonText;
+            var find = config.find, marker = config.marker, appMode = config.appMode, title = config.title, attachmentLayer = config.attachmentLayer, order = config.order, downloadEnabled = config.downloadEnabled, homeEnabled = config.homeEnabled, zoomEnabled = config.zoomEnabled, legendEnabled = config.legendEnabled, layerListEnabled = config.layerListEnabled, searchConfig = config.searchConfig, searchEnabled = config.searchEnabled, zoomLevel = config.zoomLevel, addressEnabled = config.addressEnabled, fullScreenEnabled = config.fullScreenEnabled, socialSharingEnabled = config.socialSharingEnabled, onboardingImage = config.onboardingImage, onboardingButtonText = config.onboardingButtonText, mapToolsExpanded = config.mapToolsExpanded, searchExpanded = config.searchExpanded;
             var webMapItems = results.webMapItems;
             var validWebMapItems = webMapItems.map(function (response) {
                 return response.value;
@@ -92,13 +92,13 @@ define(["require", "exports", "ApplicationBase/support/itemUtils", "ApplicationB
                                     ? view.map.get("portalItem").title
                                     : "Feature Browser";
                             _this.view.ui.remove("zoom");
-                            _this._handleSearchWidget(searchConfig, searchEnabled);
+                            _this._handleSearchWidget(searchConfig, searchEnabled, searchExpanded);
                             _this._handleZoomControls(zoomEnabled);
                             _this._handleHomeWidget(homeEnabled);
                             _this._handleLegendWidget(legendEnabled);
                             _this._handleLayerListWidget(layerListEnabled);
                             _this._handleFullScreenWidget(fullScreenEnabled);
-                            _this._addWidgetsToUI();
+                            _this._addWidgetsToUI(mapToolsExpanded);
                             var defaultObjectIdParam = parseInt(_this._getURLParameter("defaultObjectId"));
                             var defaultObjectId = isNaN(defaultObjectIdParam)
                                 ? null
@@ -164,7 +164,7 @@ define(["require", "exports", "ApplicationBase/support/itemUtils", "ApplicationB
             }
         };
         // _handleSearchWidget
-        AttachmentViewerApp.prototype._handleSearchWidget = function (searchConfig, searchEnabled) {
+        AttachmentViewerApp.prototype._handleSearchWidget = function (searchConfig, searchEnabled, searchExpanded) {
             var _this = this;
             if (!searchEnabled) {
                 return;
@@ -208,7 +208,7 @@ define(["require", "exports", "ApplicationBase/support/itemUtils", "ApplicationB
                 view: this.view,
                 content: this.searchWidget,
                 mode: "floating",
-                expanded: true,
+                expanded: searchExpanded,
                 expandTooltip: i18n.search
             });
             this.view.ui.add(expand, "top-right");
@@ -252,7 +252,7 @@ define(["require", "exports", "ApplicationBase/support/itemUtils", "ApplicationB
             }
         };
         // _addWidgetsToUI
-        AttachmentViewerApp.prototype._addWidgetsToUI = function () {
+        AttachmentViewerApp.prototype._addWidgetsToUI = function (mapToolsExpanded) {
             if (this.widgets.length > 1) {
                 var content_1 = [];
                 this.widgets.forEach(function (widget) {
@@ -264,7 +264,7 @@ define(["require", "exports", "ApplicationBase/support/itemUtils", "ApplicationB
                     expandIconClass: "icon-ui-down-arrow icon-ui-flush",
                     collapseIconClass: "icon-ui-up-arrow icon-ui-flush",
                     expandTooltip: i18n.moreTools,
-                    expanded: true
+                    expanded: mapToolsExpanded
                 });
                 this.view.ui.add(mobileExpand, "top-left");
             }
