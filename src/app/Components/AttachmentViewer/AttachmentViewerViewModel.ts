@@ -200,15 +200,19 @@ class AttachmentViewerViewModel extends declared(Accessor) {
   @property()
   featureWidget: Feature = null;
 
+  // zoomLevel
   @property()
   zoomLevel: string = null;
 
+  // addressEnabled
   @property()
   addressEnabled: boolean = null;
 
+  // unsupportedAttachmentTypes
   @property()
   unsupportedAttachmentTypes: __esri.AttachmentInfo[] = [];
 
+  // tempLayers
   @property()
   tempLayers: Collection<__esri.Layer> = new Collection();
 
@@ -246,7 +250,7 @@ class AttachmentViewerViewModel extends declared(Accessor) {
   //----------------------------------
 
   // _initializeLayer
-  private _initializeLayer() {
+  private _initializeLayer(): void {
     const setupLayerKey = "setup-layer-key";
     this._handles.add(
       watchUtils.whenOnce(this, "view.ready", () => {
@@ -626,7 +630,10 @@ class AttachmentViewerViewModel extends declared(Accessor) {
   }
 
   // If feature does not exist in current queried layer features, the query range will be updated
-  private _updateQueryRange(updatingType: string, objectIdIndex?: number) {
+  private _updateQueryRange(
+    updatingType: string,
+    objectIdIndex?: number
+  ): void {
     const floor = Math.floor(objectIdIndex / 10) * 10;
     const ceil = Math.ceil(objectIdIndex / 10) * 10;
 
@@ -719,7 +726,7 @@ class AttachmentViewerViewModel extends declared(Accessor) {
   }
 
   // _queryFeatures
-  private _queryFeatures(queryType?: string, objectIdIndex?: number) {
+  private _queryFeatures(queryType?: string, objectIdIndex?: number): void {
     const { featureLayer, layerFeatures } = this;
     this.featureTotal = this.featureObjectIds.length;
     const featureQuery = this._setupFeatureQuery();
@@ -816,19 +823,15 @@ class AttachmentViewerViewModel extends declared(Accessor) {
     if (queryType === "updatingNext") {
       this.layerFeatureIndex = 0;
       this.objectIdIndex += 1;
-      this.goTo();
     } else if (queryType === "updatingPrevious") {
       this.layerFeatureIndex = layerFeatures.length - 1;
       this.objectIdIndex -= 1;
-      this.goTo();
     } else if (queryType === "restartNext") {
       this.layerFeatureIndex = 0;
       this.objectIdIndex = 0;
-      this.goTo();
     } else if (queryType === "restartPrevious") {
       this.layerFeatureIndex = layerFeatures.length - 1;
       this.objectIdIndex = featureTotal - 1;
-      this.goTo();
     } else if (queryType === "updatingClick") {
       this._updateFeatureClick(objectId);
     } else if (queryType === "share") {
@@ -901,6 +904,12 @@ class AttachmentViewerViewModel extends declared(Accessor) {
       spatialReference: this.view.spatialReference
     });
 
+    if (this.selectedFeature) {
+      this.view.goTo({
+        target: this.selectedFeature
+      });
+    }
+
     this.featureWidget.set("visibleElements.title", false);
     const featureWidgetKey = "feature-widget";
     this._handles.add(
@@ -925,15 +934,6 @@ class AttachmentViewerViewModel extends declared(Accessor) {
               if (!layerAttachments) {
                 return;
               }
-
-              // if (
-              //   layerAttachments &&
-              //   (!layerAttachments.attachmentInfos ||
-              //     layerAttachments.attachmentInfos === 0)
-              // ) {
-              //   this.imageIsLoaded = true;
-              //   return;
-              // }
 
               const currentIndex =
                 this.attachmentIndex !== null ? this.attachmentIndex : 0;
@@ -1132,7 +1132,7 @@ class AttachmentViewerViewModel extends declared(Accessor) {
 
   //----------------------------------
   //
-  //  Go To - Zoom to
+  //  Zoom to
   //
   //----------------------------------
 
@@ -1146,17 +1146,6 @@ class AttachmentViewerViewModel extends declared(Accessor) {
     this.view.goTo({
       target: feature,
       scale: zoom
-    });
-  }
-
-  // goTo
-  goTo(): void {
-    const feature = this.layerFeatures.getItemAt(this.layerFeatureIndex);
-    if (!feature) {
-      return;
-    }
-    this.view.goTo({
-      target: feature
     });
   }
 
@@ -1231,6 +1220,7 @@ class AttachmentViewerViewModel extends declared(Accessor) {
     );
   }
 
+  // _setUpdateShareIndexes
   private _setUpdateShareIndexes(): void {
     if (this._updateShareIndexes == null) {
       this._updateShareIndexes = true;

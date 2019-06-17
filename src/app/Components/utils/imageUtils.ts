@@ -86,40 +86,14 @@ export function getOrientationStylesMobile(
   }
   if (isAndroid) {
     const orientation = ORIENTATION_MAP[orientationInfo.id];
-    const width =
-      containerNode &&
-      containerNode.offsetWidth &&
-      orientationInfo.rotation !== 0
-        ? `${containerNode.offsetWidth / 2}px`
-        : "initial";
-    const height =
-      containerNode &&
-      containerNode.offsetHeight &&
-      orientationInfo.rotation !== 0
-        ? `${containerNode.offsetHeight}px`
-        : "initial";
     return orientation
       ? {
           transform: `rotate(${orientationInfo.rotation}deg) scaleX(${
             orientation.scaleX
-          })`,
-          height: width,
-          width: height,
-          objectFit: "cover",
-          maxHeight: "100%"
+          })`
         }
       : {};
   } else {
-    const height =
-      containerNode && containerNode.offsetHeight
-        ? `${containerNode.offsetHeight}px`
-        : "initial";
-    return orientationInfo
-      ? {
-          height,
-          objectFit: "cover",
-          maxHeight: "100%"
-        }
-      : {};
+    return {};
   }
 }

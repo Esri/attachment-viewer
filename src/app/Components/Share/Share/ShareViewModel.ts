@@ -275,6 +275,7 @@ class ShareViewModel extends declared(Accessor) {
       y,
       spatialReference
     });
+
     // Use pointToConvert to project point. Once projected, pass point to generate the share URL parameters
     return this._processPoint(centerPoint).then((point: Point) => {
       this._projectionPromise = null;
@@ -285,6 +286,7 @@ class ShareViewModel extends declared(Accessor) {
 
   private _processPoint(point: Point): IPromise<Point> {
     const { isWGS84, isWebMercator } = point.spatialReference;
+
     // If spatial reference is WGS84 or Web Mercator, use longitude/latitude values to generate the share URL parameters
     if (isWGS84 || isWebMercator) {
       return promiseUtils.resolve(point);

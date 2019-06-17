@@ -145,6 +145,7 @@ define(["require", "exports", "ApplicationBase/support/itemUtils", "ApplicationB
                 });
             });
         };
+        // _handleZoomControls
         AttachmentViewerApp.prototype._handleZoomControls = function (zoomEnabled) {
             if (zoomEnabled) {
                 var zoom = new Zoom({
@@ -153,6 +154,7 @@ define(["require", "exports", "ApplicationBase/support/itemUtils", "ApplicationB
                 this.widgets.add(zoom);
             }
         };
+        // _handleHomeWidget
         AttachmentViewerApp.prototype._handleHomeWidget = function (homeEnabled) {
             if (homeEnabled) {
                 var home = new Home({
@@ -161,6 +163,7 @@ define(["require", "exports", "ApplicationBase/support/itemUtils", "ApplicationB
                 this.widgets.add(home);
             }
         };
+        // _handleSearchWidget
         AttachmentViewerApp.prototype._handleSearchWidget = function (searchConfig, searchEnabled) {
             var _this = this;
             if (!searchEnabled) {
@@ -224,6 +227,7 @@ define(["require", "exports", "ApplicationBase/support/itemUtils", "ApplicationB
                 }));
             }
         };
+        // _handleLayerListWidget
         AttachmentViewerApp.prototype._handleLayerListWidget = function (layerListEnabled) {
             if (layerListEnabled) {
                 var layerList = new LayerList({
@@ -238,6 +242,7 @@ define(["require", "exports", "ApplicationBase/support/itemUtils", "ApplicationB
                 }));
             }
         };
+        // _handleFullScreenWidget
         AttachmentViewerApp.prototype._handleFullScreenWidget = function (fullScreenEnabled) {
             if (fullScreenEnabled) {
                 var fullscreen = new FullScreen({
@@ -246,6 +251,7 @@ define(["require", "exports", "ApplicationBase/support/itemUtils", "ApplicationB
                 this.widgets.add(fullscreen);
             }
         };
+        // _addWidgetsToUI
         AttachmentViewerApp.prototype._addWidgetsToUI = function () {
             if (this.widgets.length > 1) {
                 var content_1 = [];

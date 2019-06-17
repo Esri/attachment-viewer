@@ -18,7 +18,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/core/tsSupport/decorateHelper", "esri/core/accessorSupport/decorators", "esri/widgets/support/widget", "dojo/i18n!./nls/resources", "esri/widgets/Widget", "esri/core/watchUtils", "../AttachmentViewer/AttachmentViewerViewModel", "../utils", "../utils/imageUtils"], function (require, exports, __extends, __decorate, decorators_1, widget_1, i18n, Widget, watchUtils, AttachmentViewerViewModel, utils_1, imageUtils_1) {
     "use strict";
-    // import { LEFT_ARROW, RIGHT_ARROW } from "dojo/keys";
     //----------------------------------
     //
     //  CSS Classes
@@ -108,9 +107,13 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         mobileFeatureContent: "esri-photo-centric__mobile-feature-content",
         mobileAttachmentCount: "esri-photo-centric__mobile-attachment-count",
         mobileAttachmentContainer: "esri-photo-centric__mobile-image-container",
+        mobileAttachmentsAddPadding: "esri-photo-centric__mobile-attachments-add-padding",
+        transparentBackground: "esri-photo-centric__transparent-background",
+        removeBorderRadius: "esri-photo-centric__mobile-attachments-remove-border-radius",
         // loader
         widgetLoader: "esri-widget__loader esri-photo-centric__loader",
         animationLoader: "esri-widget__loader-animation esri-photo-centric__loader-animation",
+        removeOpacity: "esri-photo-centric__remove-opacity",
         svg: {
             media: "esri-photo-centric__media-svg"
         },
@@ -339,7 +342,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                     height: "initial",
                     width: "initial"
                 };
-            var blurImage = (_b = {},
+            var fadeImage = (_b = {},
                 _b[CSS.fadeImage] = !this.imageIsLoaded,
                 _b);
             return (widget_1.tsx("div", { class: this.classes(CSS.rightPanel) }, this._layerDoesNotSupportAttachments ? (widget_1.tsx("div", { class: CSS.layerNotSupported }, i18n.notSupported)) : (widget_1.tsx("div", { bind: this, afterCreate: widget_1.storeNode, "data-node-ref": "_photoViewerContainer", key: buildKey("image-container"), class: this.classes(downloadEnabled, CSS.photoViewer) },
@@ -360,7 +363,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                     widget_1.tsx("source", { src: attachment.url, type: "video/quicktime" }),
                     widget_1.tsx("source", { src: attachment.url, type: "video/ogg" }),
                     widget_1.tsx("source", { src: attachment.url, type: "video/mov" }),
-                    i18n.doesNotSupportVideo)) : this._onboardingPanelIsOpen && this.onboardingImage ? (widget_1.tsx("img", { styles: imageStyles, src: this.onboardingImage, alt: name })) : (widget_1.tsx("img", { class: this.classes(CSS.imageDesktop, blurImage), styles: imageStyles, bind: this, src: this.currentImageUrl, onload: this._removeImageLoader, alt: name }))),
+                    i18n.doesNotSupportVideo)) : this._onboardingPanelIsOpen && this.onboardingImage ? (widget_1.tsx("img", { styles: imageStyles, src: this.onboardingImage, alt: name })) : (widget_1.tsx("img", { class: this.classes(CSS.imageDesktop, fadeImage), styles: imageStyles, bind: this, src: this.currentImageUrl, onload: this._removeImageLoader, alt: name }))),
                 attachmentCount))));
         };
         // _renderImageViewerDesktop
@@ -590,12 +593,16 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                     widget_1.tsx("div", { class: CSS.attachmentCountNumber }, selectedFeatureAttachments.length),
                     !this.imageIsLoaded ? (widget_1.tsx("div", { class: CSS.widgetLoader, key: buildKey("base-loader") },
                         widget_1.tsx("span", { class: CSS.animationLoader }))) : null)) : null,
-                featureContentInfos));
+                this.imageIsLoaded ? featureContentInfos : null));
         };
         // _renderAttachmentMobile
         PhotoCentric.prototype._renderAttachmentMobile = function (attachment) {
+            var _a, _b, _c, _d;
             var url = attachment.url, name = attachment.name;
-            var imageStyles = attachment && attachment.orientationInfo && this._photoViewerContainer
+            var imageStyles = attachment &&
+                attachment.orientationInfo &&
+                this._photoViewerContainer &&
+                this.imageIsLoaded
                 ? imageUtils_1.getOrientationStylesMobile(attachment.orientationInfo, this._mobileAttachment)
                 : {
                     transform: "none",
@@ -604,14 +611,30 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                     width: "initial"
                 };
             var imageAttachmentHeight = imageStyles.width;
-            return (widget_1.tsx("div", { bind: this, styles: { height: imageAttachmentHeight }, afterCreate: widget_1.storeNode, afterUpdate: widget_1.storeNode, "data-node-ref": "_mobileAttachment", class: CSS.mobileAttachment },
+            var addPadding = (_a = {},
+                _a[CSS.mobileAttachmentsAddPadding] = attachment &&
+                    attachment.orientationInfo &&
+                    attachment.orientationInfo.rotation !== 0,
+                _a);
+            var removeBorderRadius = (_b = {},
+                _b[CSS.removeBorderRadius] = attachment &&
+                    attachment.orientationInfo &&
+                    attachment.orientationInfo.rotation !== 0,
+                _b);
+            var removeOpacity = (_c = {},
+                _c[CSS.removeOpacity] = this.imageIsLoaded,
+                _c);
+            var transparentBackground = (_d = {},
+                _d[CSS.transparentBackground] = !this.imageIsLoaded,
+                _d);
+            return (widget_1.tsx("div", { bind: this, styles: { height: imageAttachmentHeight }, afterCreate: widget_1.storeNode, afterUpdate: widget_1.storeNode, "data-node-ref": "_mobileAttachment", class: this.classes(CSS.mobileAttachment, addPadding, transparentBackground) },
                 widget_1.tsx("div", { class: CSS.mobileAttachmentContainer }, attachment &&
                     attachment.contentType &&
                     attachment.contentType.indexOf("video") !== -1 ? (widget_1.tsx("video", { class: CSS.videoContainer, controls: true },
                     widget_1.tsx("source", { src: attachment.url, type: "video/mp4" }),
                     widget_1.tsx("source", { src: attachment.url, type: "video/ogg" }),
                     widget_1.tsx("source", { src: attachment.url, type: "video/mov" }),
-                    i18n.doesNotSupportVideo)) : (widget_1.tsx("img", { class: CSS.imageMobile, styles: imageStyles, src: url, alt: name }))),
+                    i18n.doesNotSupportVideo)) : (widget_1.tsx("img", { class: this.classes(CSS.imageMobile, removeBorderRadius, removeOpacity), styles: imageStyles, src: url, alt: name }))),
                 attachment &&
                     attachment.contentType &&
                     attachment.contentType.indexOf("video") === -1 &&
@@ -677,7 +700,6 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             if (this.featureLayer.get("capabilities.data.supportsAttachment")) {
                 this.imageIsLoaded = false;
             }
-            this.viewModel.goTo();
             this.scheduleRender();
         };
         // _nextFeature
@@ -689,7 +711,6 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             if (this.featureLayer.get("capabilities.data.supportsAttachment")) {
                 this.imageIsLoaded = false;
             }
-            this.viewModel.goTo();
             this.scheduleRender();
         };
         // _downloadImage
@@ -743,7 +764,6 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         __decorate([
             decorators_1.aliasOf("viewModel.attachmentIndex"),
             decorators_1.property(),
-            widget_1.renderable(),
             widget_1.renderable()
         ], PhotoCentric.prototype, "attachmentIndex", void 0);
         __decorate([

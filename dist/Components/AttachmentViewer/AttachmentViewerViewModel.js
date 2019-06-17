@@ -85,9 +85,13 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             _this.downloadEnabled = null;
             // featureWidget
             _this.featureWidget = null;
+            // zoomLevel
             _this.zoomLevel = null;
+            // addressEnabled
             _this.addressEnabled = null;
+            // unsupportedAttachmentTypes
             _this.unsupportedAttachmentTypes = [];
+            // tempLayers
             _this.tempLayers = new Collection();
             return _this;
         }
@@ -633,22 +637,18 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             if (queryType === "updatingNext") {
                 this.layerFeatureIndex = 0;
                 this.objectIdIndex += 1;
-                this.goTo();
             }
             else if (queryType === "updatingPrevious") {
                 this.layerFeatureIndex = layerFeatures.length - 1;
                 this.objectIdIndex -= 1;
-                this.goTo();
             }
             else if (queryType === "restartNext") {
                 this.layerFeatureIndex = 0;
                 this.objectIdIndex = 0;
-                this.goTo();
             }
             else if (queryType === "restartPrevious") {
                 this.layerFeatureIndex = layerFeatures.length - 1;
                 this.objectIdIndex = featureTotal - 1;
-                this.goTo();
             }
             else if (queryType === "updatingClick") {
                 this._updateFeatureClick(objectId);
@@ -708,6 +708,11 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                 map: this.view.map,
                 spatialReference: this.view.spatialReference
             });
+            if (this.selectedFeature) {
+                this.view.goTo({
+                    target: this.selectedFeature
+                });
+            }
             this.featureWidget.set("visibleElements.title", false);
             var featureWidgetKey = "feature-widget";
             this._handles.add(watchUtils.when(this, "featureWidget", function () {
@@ -729,14 +734,6 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                         if (!layerAttachments_1) {
                             return;
                         }
-                        // if (
-                        //   layerAttachments &&
-                        //   (!layerAttachments.attachmentInfos ||
-                        //     layerAttachments.attachmentInfos === 0)
-                        // ) {
-                        //   this.imageIsLoaded = true;
-                        //   return;
-                        // }
                         var currentIndex = _this.attachmentIndex !== null ? _this.attachmentIndex : 0;
                         var featureAttachments_1 = [];
                         _this.unsupportedAttachmentTypes = [];
@@ -894,7 +891,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         };
         //----------------------------------
         //
-        //  Go To - Zoom to
+        //  Zoom to
         //
         //----------------------------------
         // zoomTo
@@ -907,16 +904,6 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             this.view.goTo({
                 target: feature,
                 scale: zoom
-            });
-        };
-        // goTo
-        AttachmentViewerViewModel.prototype.goTo = function () {
-            var feature = this.layerFeatures.getItemAt(this.layerFeatureIndex);
-            if (!feature) {
-                return;
-            }
-            this.view.goTo({
-                target: feature
             });
         };
         //----------------------------------
@@ -978,6 +965,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                 }
             });
         };
+        // _setUpdateShareIndexes
         AttachmentViewerViewModel.prototype._setUpdateShareIndexes = function () {
             if (this._updateShareIndexes == null) {
                 this._updateShareIndexes = true;
