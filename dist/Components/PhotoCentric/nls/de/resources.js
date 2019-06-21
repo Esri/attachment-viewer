@@ -8,7 +8,7 @@ define({
   "subtitle": "Fotoanlagen des Layers anzeigen",
   "instructionHeading": "Sie können Feature-Details und Fotoanlagen folgendermaßen anzeigen:",
   "stepOne": "Wählen Sie ein Feature auf der Karte aus.",
-  "stepTwo": "ä_Click the left and right arrows above the map to browse through all the features__________________________________________Ü.",
+  "stepTwo": "Klicken Sie oberhalb der Karte auf die Pfeile nach rechts und links, um alle Features zu durchsuchen.",
   "stepThree": "Ist ein Suchfeld vorhanden, können Sie nach einem bestimmten Feature suchen.",
   "noInfo": "Keine Informationen verfügbar.",
   "pleaseWait": "Wird heruntergeladen...",
@@ -19,11 +19,11 @@ define({
   "image": "Bilder",
   "notSupported": "Der ausgewählte Layer unterstützt keine Fotoanlagen",
   "doesNotSupportVideo": "Ihr Browser unterstützt das Video-Tag nicht.",
-  "otherAttachments": "ä_Other attachments__________________Ü",
-  "viewDetails": "ä_View details_____________Ü",
-  "previousLocation": "ä_Previous location__________________Ü",
-  "nextLocation": "ä_Next location______________Ü",
-  "previousImage": "ä_Previous image_______________Ü",
-  "nextImage": "ä_Next image_____________________Ü",
-  "upperCaseAttachments": "ä_Attachments____________Ü"
+  "otherAttachments": "Andere Anlagen",
+  "viewDetails": "Details anzeigen",
+  "previousLocation": "Vorherige Position",
+  "nextLocation": "Nächste Position",
+  "previousImage": "Vorheriges Bild",
+  "nextImage": "Nächstes Bild",
+  "upperCaseAttachments": "Anlagen"
 });

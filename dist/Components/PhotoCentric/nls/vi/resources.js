@@ -8,7 +8,7 @@ define({
   "subtitle": "Xem ảnh đính kèm của lớp",
   "instructionHeading": "Sử dụng các phương pháp sau để xem chi tiết và ảnh đính kèm của đối tượng:",
   "stepOne": "Chọn một đối tượng trên bản đồ.",
-  "stepTwo": "Đ_Click the left and right arrows above the map to browse through all the features__________________________________________ớ.",
+  "stepTwo": "Nhấp vào mũi tên trái và phải phía trên bản đồ để duyệt qua tất cả các đối tượng.",
   "stepThree": "Nếu có sẵn ô tìm kiếm, hãy tìm một đối tượng cụ thể.",
   "noInfo": "Không có thông tin.",
   "pleaseWait": "Đang tải xuống...",
@@ -19,11 +19,11 @@ define({
   "image": "hình ảnh",
   "notSupported": "Lớp đã chọn không hỗ trợ ảnh đính kèm",
   "doesNotSupportVideo": "Trình duyệt của bạn không hỗ trợ thẻ video.",
-  "otherAttachments": "Đ_Other attachments__________________ớ",
-  "viewDetails": "Đ_View details_____________ớ",
-  "previousLocation": "Đ_Previous location__________________ớ",
-  "nextLocation": "Đ_Next location______________ớ",
-  "previousImage": "Đ_Previous image_______________ớ",
-  "nextImage": "Đ_Next image_____________________ớ",
-  "upperCaseAttachments": "Đ_Attachments____________ớ"
+  "otherAttachments": "Các tệp đính kèm khác",
+  "viewDetails": "Xem thông tin chi tiết",
+  "previousLocation": "Vị trí trước",
+  "nextLocation": "Vị trí tiếp theo",
+  "previousImage": "Hình ảnh trước",
+  "nextImage": "Hình ảnh tiếp",
+  "upperCaseAttachments": "Tệp đính kèm"
 });

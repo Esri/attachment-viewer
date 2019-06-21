@@ -8,7 +8,7 @@ define({
   "subtitle": "レイヤーの写真添付ファイルを表示",
   "instructionHeading": "次の方法を使用してフィーチャの詳細と写真添付ファイルを表示:",
   "stepOne": "マップ上のフィーチャを選択します。",
-  "stepTwo": "須_Click the left and right arrows above the map to browse through all the features__________________________________________鷗.",
+  "stepTwo": "マップの上にある左右の矢印をクリックすると、すべてのフィーチャを参照できます。",
   "stepThree": "検索ボックスが使用できる場合、特定のフィーチャを検索できます。",
   "noInfo": "利用できる情報がありません。",
   "pleaseWait": "ダウンロードしています...",
@@ -19,11 +19,11 @@ define({
   "image": "画像",
   "notSupported": "選択したレイヤーは写真添付ファイルをサポートしていません",
   "doesNotSupportVideo": "お使いのブラウザーはビデオ タグに対応していません。",
-  "otherAttachments": "須_Other attachments__________________鷗",
-  "viewDetails": "須_View details_____________鷗",
-  "previousLocation": "須_Previous location__________________鷗",
-  "nextLocation": "須_Next location______________鷗",
-  "previousImage": "須_Previous image_______________鷗",
-  "nextImage": "須_Next image_____________________鷗",
-  "upperCaseAttachments": "須_Attachments____________鷗"
+  "otherAttachments": "その他の添付ファイル",
+  "viewDetails": "詳細の表示",
+  "previousLocation": "前の場所",
+  "nextLocation": "次の場所",
+  "previousImage": "前の画像",
+  "nextImage": "次の画像",
+  "upperCaseAttachments": "添付ファイル"
 });

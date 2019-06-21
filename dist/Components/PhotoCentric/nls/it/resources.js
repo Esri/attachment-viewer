@@ -8,7 +8,7 @@ define({
   "subtitle": "Visualizzare le foto allegate di un layer",
   "instructionHeading": "Utilizzare i seguenti metodi per visualizzare i dettagli delle feature e le foto allegate:",
   "stepOne": "Selezionare una feature sulla mappa.",
-  "stepTwo": "é_Click the left and right arrows above the map to browse through all the features__________________________________________È.",
+  "stepTwo": "Fare clic sulle frecce sinistra e destra sopra la mappa per passare tra tutte le feature.",
   "stepThree": "Se è disponibile una casella di ricerca, cerca una feature specifica.",
   "noInfo": "Informazioni non disponibili.",
   "pleaseWait": "Scaricamento...",
@@ -19,11 +19,11 @@ define({
   "image": "immagini",
   "notSupported": "Il layer selezionato non supporta le foto allegate",
   "doesNotSupportVideo": "Il browser non supporta il tag video.",
-  "otherAttachments": "é_Other attachments__________________È",
-  "viewDetails": "é_View details_____________È",
-  "previousLocation": "é_Previous location__________________È",
-  "nextLocation": "é_Next location______________È",
-  "previousImage": "é_Previous image_______________È",
-  "nextImage": "é_Next image_____________________È",
-  "upperCaseAttachments": "é_Attachments____________È"
+  "otherAttachments": "Altri allegati",
+  "viewDetails": "Visualizzare i dettagli",
+  "previousLocation": "Posizione precedente",
+  "nextLocation": "Posizione successiva",
+  "previousImage": "Immagine precedente",
+  "nextImage": "Immagine successiva",
+  "upperCaseAttachments": "Allegati"
 });

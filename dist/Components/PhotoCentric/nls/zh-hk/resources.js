@@ -8,7 +8,7 @@ define({
   "subtitle": "檢視圖層的相片附件",
   "instructionHeading": "使用下列方法來檢視圖徵詳細資訊和相片附件:",
   "stepOne": "在地圖上選擇圖徵。",
-  "stepTwo": "試_Click the left and right arrows above the map to browse through all the features__________________________________________驗.",
+  "stepTwo": "按一下地圖上方的向左鍵和向右鍵以瀏覽所有圖徵。",
   "stepThree": "若有可用的搜尋方塊，則搜尋特定的圖徵。",
   "noInfo": "無可用的資訊。",
   "pleaseWait": "正在下載…",
@@ -19,11 +19,11 @@ define({
   "image": "圖片",
   "notSupported": "選擇的圖層不支援相片附件",
   "doesNotSupportVideo": "您的瀏覽器不支援影片標記。",
-  "otherAttachments": "試_Other attachments__________________驗",
-  "viewDetails": "試_View details_____________驗",
-  "previousLocation": "試_Previous location__________________驗",
-  "nextLocation": "試_Next location______________驗",
-  "previousImage": "試_Previous image_______________驗",
-  "nextImage": "試_Next image_____________________驗",
-  "upperCaseAttachments": "試_Attachments____________驗"
+  "otherAttachments": "其他附件",
+  "viewDetails": "檢視詳細資訊",
+  "previousLocation": "上一個位置",
+  "nextLocation": "下一個位置",
+  "previousImage": "上一張圖片",
+  "nextImage": "下一張圖片",
+  "upperCaseAttachments": "附件"
 });

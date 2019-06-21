@@ -8,7 +8,7 @@ define({
   "subtitle": "عرض مرفقات صورة الطبقة",
   "instructionHeading": "استخدم الطرق التالية لعرض تفاصيل المعلم ومرفقات الصور:",
   "stepOne": "تحديد المعالم على الخريطة.",
-  "stepTwo": "بيت_Click the left and right arrows above the map to browse through all the features__________________________________________لاحقة.",
+  "stepTwo": "انقر على السهمين الأيسر والأيمن أعلى الخريطة لاستعراض كل المعالم",
   "stepThree": "إذا توفر مربع بحث، فابحث عن معلم معين.",
   "noInfo": "لا توجد معلومات.",
   "pleaseWait": "تحميل...",
@@ -19,11 +19,11 @@ define({
   "image": "الصور",
   "notSupported": "لا تدعم الطبقة المحددة مرفقات الصور",
   "doesNotSupportVideo": "لا يدعم المستعرض علامة الفيديو.",
-  "otherAttachments": "بيت_Other attachments__________________لاحقة",
-  "viewDetails": "بيت_View details_____________لاحقة",
-  "previousLocation": "بيت_Previous location__________________لاحقة",
-  "nextLocation": "بيت_Next location______________لاحقة",
-  "previousImage": "بيت_Previous image_______________لاحقة",
-  "nextImage": "بيت_Next image_____________________لاحقة",
-  "upperCaseAttachments": "بيت_Attachments____________لاحقة"
+  "otherAttachments": "المرفقات الأخرى",
+  "viewDetails": "عرض التفاصيل",
+  "previousLocation": "الموقع السابق",
+  "nextLocation": "الموقع التالي",
+  "previousImage": "الصورة السابقة",
+  "nextImage": "الصورة التالية",
+  "upperCaseAttachments": "المرفقات"
 });

@@ -8,7 +8,7 @@ define({
   "subtitle": "Bekijk de fotobijlagen van een laag",
   "instructionHeading": "Gebruik de volgende methoden om objectdetails en fotobijlagen te bekijken:",
   "stepOne": "Selecteer een object op de kaart.",
-  "stepTwo": "Ĳ_Click the left and right arrows above the map to browse through all the features__________________________________________ä.",
+  "stepTwo": "Klik op de linker- en rechterpijltjestoetsen boven de kaart om door alle objecten te bladeren.",
   "stepThree": "Als er een zoekvak beschikbaar is, zoek dan naar een specifiek object.",
   "noInfo": "Geen informatie beschikbaar.",
   "pleaseWait": "Bezig met downloaden...",
@@ -19,11 +19,11 @@ define({
   "image": "afbeeldingen",
   "notSupported": "Deze laag ondersteunt geen fotobijlagen",
   "doesNotSupportVideo": "Uw browser ondersteunt de videotag niet.",
-  "otherAttachments": "Ĳ_Other attachments__________________ä",
-  "viewDetails": "Ĳ_View details_____________ä",
-  "previousLocation": "Ĳ_Previous location__________________ä",
-  "nextLocation": "Ĳ_Next location______________ä",
-  "previousImage": "Ĳ_Previous image_______________ä",
-  "nextImage": "Ĳ_Next image_____________________ä",
-  "upperCaseAttachments": "Ĳ_Attachments____________ä"
+  "otherAttachments": "Andere bijlagen",
+  "viewDetails": "Details weergeven",
+  "previousLocation": "Vorige locatie",
+  "nextLocation": "Volgende locatie",
+  "previousImage": "Vorig beeld",
+  "nextImage": "Volgend beeld",
+  "upperCaseAttachments": "Bijlagen"
 });

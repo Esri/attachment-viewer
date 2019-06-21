@@ -8,7 +8,7 @@ define({
   "subtitle": "Vis bildevedlegg for et lag",
   "instructionHeading": "Bruk følgende fremgangsmåte for å vise geoobjektdetaljer og bildevedlegg:",
   "stepOne": "Velg et geoobjekt på kartet.",
-  "stepTwo": "å_Click the left and right arrows above the map to browse through all the features__________________________________________ø.",
+  "stepTwo": "Klikk på venstre- og høyrepilene over kartet for å bla gjennom alle geoobjektene.",
   "stepThree": "Hvis det finnes en søkeboks, kan du søke etter et bestemt geoobjekt.",
   "noInfo": "Ingen informasjon tilgjengelig.",
   "pleaseWait": "Laster ned...",
@@ -19,11 +19,11 @@ define({
   "image": "bilder",
   "notSupported": "Lagene som er valgt, støtter ikke bildevedlegg",
   "doesNotSupportVideo": "Nettleseren din støtter ikke videotaggen.",
-  "otherAttachments": "å_Other attachments__________________ø",
-  "viewDetails": "å_View details_____________ø",
-  "previousLocation": "å_Previous location__________________ø",
-  "nextLocation": "å_Next location______________ø",
-  "previousImage": "å_Previous image_______________ø",
-  "nextImage": "å_Next image_____________________ø",
-  "upperCaseAttachments": "å_Attachments____________ø"
+  "otherAttachments": "Andre vedlegg",
+  "viewDetails": "Vis detaljer",
+  "previousLocation": "Forrige lokasjon",
+  "nextLocation": "Neste lokasjon",
+  "previousImage": "Forrige bilde",
+  "nextImage": "Neste bilde",
+  "upperCaseAttachments": "Vedlegg"
 });

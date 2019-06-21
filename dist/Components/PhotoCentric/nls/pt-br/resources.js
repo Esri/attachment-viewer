@@ -8,7 +8,7 @@ define({
   "subtitle": "Visualize anexos de foto de uma camada",
   "instructionHeading": "Utilize os seguintes métodos para visualizar detalhes da feição e anexos de fotos:",
   "stepOne": "Selecione uma feição no mapa.",
-  "stepTwo": "ã_Click the left and right arrows above the map to browse through all the features__________________________________________Ç.",
+  "stepTwo": "Clique nas setas para esquerda e para direita acima do mapa para percorrer todas as feições.",
   "stepThree": "Se uma caixa de pesquisa estiver disponível, pesquise uma feição específica.",
   "noInfo": "Nenhuma informação disponível.",
   "pleaseWait": "Baixando...",
@@ -19,11 +19,11 @@ define({
   "image": "imagens",
   "notSupported": "A camada selecionada não suporta anexos de fotos",
   "doesNotSupportVideo": "Seu navegador não suporta a tag de vídeo.",
-  "otherAttachments": "ã_Other attachments__________________Ç",
-  "viewDetails": "ã_View details_____________Ç",
-  "previousLocation": "ã_Previous location__________________Ç",
-  "nextLocation": "ã_Next location______________Ç",
-  "previousImage": "ã_Previous image_______________Ç",
-  "nextImage": "ã_Next image_____________________Ç",
-  "upperCaseAttachments": "ã_Attachments____________Ç"
+  "otherAttachments": "Outros anexos",
+  "viewDetails": "Visualizar detalhes",
+  "previousLocation": "Local anterior",
+  "nextLocation": "Próximo local",
+  "previousImage": "Imagem anterior",
+  "nextImage": "Próxima imagem",
+  "upperCaseAttachments": "Anexos"
 });

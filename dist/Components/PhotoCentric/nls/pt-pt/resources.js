@@ -8,7 +8,7 @@ define({
   "subtitle": "Ver fotos em anexo de uma camada",
   "instructionHeading": "Utilize os métodos seguintes para ver os detalhes e as fotos em anexo de um elemento:",
   "stepOne": "Selecione um elemento no mapa.",
-  "stepTwo": "ã_Click the left and right arrows above the map to browse through all the features__________________________________________Ç.",
+  "stepTwo": "Clique nas setas esquerda e direita sobre o mapa para navegar pelos elementos.",
   "stepThree": "Se uma caixa de pesquisa estiver disponível, pesquise um elemento específico.",
   "noInfo": "Sem informações disponíveis.",
   "pleaseWait": "A transferir...",
@@ -19,11 +19,11 @@ define({
   "image": "imagens",
   "notSupported": "A camada selecionada não suporta fotos em anexo",
   "doesNotSupportVideo": "O seu navegador não suporta etiquetas de vídeo.",
-  "otherAttachments": "ã_Other attachments__________________Ç",
-  "viewDetails": "ã_View details_____________Ç",
-  "previousLocation": "ã_Previous location__________________Ç",
-  "nextLocation": "ã_Next location______________Ç",
-  "previousImage": "ã_Previous image_______________Ç",
-  "nextImage": "ã_Next image_____________________Ç",
-  "upperCaseAttachments": "ã_Attachments____________Ç"
+  "otherAttachments": "Outros anexos",
+  "viewDetails": "Visualizar detalhes",
+  "previousLocation": "Localização Anterior",
+  "nextLocation": "Localização Seguinte",
+  "previousImage": "Imagem anterior",
+  "nextImage": "Imagem seguinte",
+  "upperCaseAttachments": "Anexos"
 });

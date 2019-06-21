@@ -8,7 +8,7 @@ define({
   "subtitle": "查看图层的照片附件",
   "instructionHeading": "可以使用以下方法查看要素详细信息和照片附件：",
   "stepOne": "选择地图上的要素。",
-  "stepTwo": "试_Click the left and right arrows above the map to browse through all the features__________________________________________验.",
+  "stepTwo": "单击地图上方的左右箭头以浏览所有要素。",
   "stepThree": "如果搜索框可用，则可以搜索特定要素。",
   "noInfo": "无可用信息。",
   "pleaseWait": "正在下载...",
@@ -19,11 +19,11 @@ define({
   "image": "图像",
   "notSupported": "所选图层不支持照片附件",
   "doesNotSupportVideo": "您的浏览器不支持视频标签。",
-  "otherAttachments": "试_Other attachments__________________验",
-  "viewDetails": "试_View details_____________验",
-  "previousLocation": "试_Previous location__________________验",
-  "nextLocation": "试_Next location______________验",
-  "previousImage": "试_Previous image_______________验",
-  "nextImage": "试_Next image_____________________验",
-  "upperCaseAttachments": "试_Attachments____________验"
+  "otherAttachments": "其他附件",
+  "viewDetails": "查看详细信息",
+  "previousLocation": "上一位置",
+  "nextLocation": "下一位置",
+  "previousImage": "上一张图片",
+  "nextImage": "下一张图片",
+  "upperCaseAttachments": "附件"
 });

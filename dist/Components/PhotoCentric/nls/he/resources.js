@@ -8,7 +8,7 @@ define({
   "subtitle": "הצג את קובצי התמונה המצורפים לשכבה",
   "instructionHeading": "השתמש בשיטות הבאות להצגת פרטי ישויות וקובצי תמונה מצורפים:",
   "stepOne": "בחר ישות במפה.",
-  "stepTwo": "כן_Click the left and right arrows above the map to browse through all the features__________________________________________ש.",
+  "stepTwo": "לחץ על החצים שמאלה וימינה שמעל למפה כדי לעיין בכל הישויות.",
   "stepThree": "אם יש תיבת חיפוש, חפש ישות ספציפית.",
   "noInfo": "אין מידע.",
   "pleaseWait": "מוריד...",
@@ -19,11 +19,11 @@ define({
   "image": "תמונות",
   "notSupported": "בשכבה שנבחרה אינה תומכת בקובצי תמונה מצורפים",
   "doesNotSupportVideo": "הדפדפן שלך לא תומך בתגית הוודיאו.",
-  "otherAttachments": "כן_Other attachments__________________ש",
-  "viewDetails": "כן_View details_____________ש",
-  "previousLocation": "כן_Previous location__________________ש",
-  "nextLocation": "כן_Next location______________ש",
-  "previousImage": "כן_Previous image_______________ש",
-  "nextImage": "כן_Next image_____________________ש",
-  "upperCaseAttachments": "כן_Attachments____________ש"
+  "otherAttachments": "קבצים מצורפים אחרים",
+  "viewDetails": "הצג פרטים",
+  "previousLocation": "המיקום הקודם",
+  "nextLocation": "המיקום הבא",
+  "previousImage": "התמונה הקודמת",
+  "nextImage": "התמונה הבאה",
+  "upperCaseAttachments": "קבצים מצורפים"
 });

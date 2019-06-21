@@ -8,7 +8,7 @@ define({
   "subtitle": "Wyświetl załączniki ze zdjęciami w warstwie",
   "instructionHeading": "Użyj następującej metody, aby wyświetlić szczegóły obiektu i załączniki zawierające zdjęcia:",
   "stepOne": "Wybierz obiekt na mapie.",
-  "stepTwo": "ł_Click the left and right arrows above the map to browse through all the features__________________________________________ą.",
+  "stepTwo": "Klikaj strzałkę w lewo lub strzałkę w prawo nad mapą, aby przejrzeć wszystkie obiekty.",
   "stepThree": "Jeśli pole wyszukiwania jest dostępne, wyszukaj określony obiekt.",
   "noInfo": "Brak dostępnych informacji.",
   "pleaseWait": "Pobieranie danych...",
@@ -19,11 +19,11 @@ define({
   "image": "obrazy",
   "notSupported": "Wybrana warstwa nie obsługuje załączników ze zdjęciem.",
   "doesNotSupportVideo": "Twoja przeglądarka nie obsługuje znacznika filmu.",
-  "otherAttachments": "ł_Other attachments__________________ą",
-  "viewDetails": "ł_View details_____________ą",
-  "previousLocation": "ł_Previous location__________________ą",
-  "nextLocation": "ł_Next location______________ą",
-  "previousImage": "ł_Previous image_______________ą",
-  "nextImage": "ł_Next image_____________________ą",
-  "upperCaseAttachments": "ł_Attachments____________ą"
+  "otherAttachments": "Inne załączniki",
+  "viewDetails": "Wyświetlanie szczegółów",
+  "previousLocation": "Poprzednia lokalizacja",
+  "nextLocation": "Następna lokalizacja",
+  "previousImage": "Poprzedni obraz",
+  "nextImage": "Następny obraz",
+  "upperCaseAttachments": "Załączniki"
 });

@@ -8,7 +8,7 @@ define({
   "subtitle": "Перегляд фото-прикріплень шару",
   "instructionHeading": "Скористайтеся наступними методами, щоб переглянути детальні відомості об'єкту та фото-прикріплення:",
   "stepOne": "Виберіть об'єкт на карті.",
-  "stepTwo": "ґ_Click the left and right arrows above the map to browse through all the features__________________________________________Ї.",
+  "stepTwo": "Клацайте стрілку вліво та стрілку вправо над картою, щоб переглянути всі об'єкти.",
   "stepThree": "Якщо доступне поле пошуку, виконайте пошук конкретного об'єкта.",
   "noInfo": "Немає доступної інформації.",
   "pleaseWait": "Завантаження...",
@@ -19,11 +19,11 @@ define({
   "image": "зображення",
   "notSupported": "Вибраний шар не підтримує фото-прикріплення",
   "doesNotSupportVideo": "Ваш браузер не підтримує відео-тег.",
-  "otherAttachments": "ґ_Other attachments__________________Ї",
-  "viewDetails": "ґ_View details_____________Ї",
-  "previousLocation": "ґ_Previous location__________________Ї",
-  "nextLocation": "ґ_Next location______________Ї",
-  "previousImage": "ґ_Previous image_______________Ї",
-  "nextImage": "ґ_Next image_____________________Ї",
-  "upperCaseAttachments": "ґ_Attachments____________Ї"
+  "otherAttachments": "Інші вкладення",
+  "viewDetails": "Переглянути детальну інформацію",
+  "previousLocation": "Попереднє місце розташування",
+  "nextLocation": "Наступне місце розташування",
+  "previousImage": "Попереднє зображення",
+  "nextImage": "Наступне зображення",
+  "upperCaseAttachments": "Прикріплення"
 });

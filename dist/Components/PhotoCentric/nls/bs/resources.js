@@ -8,7 +8,7 @@ define({
   "subtitle": "Pogledajte priložene fotografije sloja",
   "instructionHeading": "Upotrebljavajte sljedeće metode za prikaz pojedinosti o geoobjektu i priloženih fotografija:",
   "stepOne": "Odaberite geoobjekt na karti.",
-  "stepTwo": "Č_Click the left and right arrows above the map to browse through all the features__________________________________________ž.",
+  "stepTwo": "Kliknite na lijevu i desnu strelicu iznad karte kako biste pregledali sve značajke.",
   "stepThree": "Ako je okvir za pretraživanje dostupan, možete tražiti određeni geoobjekt.",
   "noInfo": "Nema dostupnih informacija.",
   "pleaseWait": "Preuzimanje...",
@@ -19,11 +19,11 @@ define({
   "image": "slike",
   "notSupported": "Odabrani sloj ne podržava prilaganje fotografija",
   "doesNotSupportVideo": "Vaš preglednik ne podržava oznaku videozapisa.",
-  "otherAttachments": "Č_Other attachments__________________ž",
-  "viewDetails": "Č_View details_____________ž",
-  "previousLocation": "Č_Previous location__________________ž",
-  "nextLocation": "Č_Next location______________ž",
-  "previousImage": "Č_Previous image_______________ž",
-  "nextImage": "Č_Next image_____________________ž",
-  "upperCaseAttachments": "Č_Attachments____________ž"
+  "otherAttachments": "Drugi privici",
+  "viewDetails": "Prikažite pojedinosti",
+  "previousLocation": "Prethodna lokacija",
+  "nextLocation": "Sljedeća lokacija",
+  "previousImage": "Prethodna slika",
+  "nextImage": "Sljedeća slika",
+  "upperCaseAttachments": "Privici"
 });

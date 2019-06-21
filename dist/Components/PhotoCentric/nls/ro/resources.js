@@ -8,7 +8,7 @@ define({
   "subtitle": "Vizualizați fotografiile atașate ale unui strat tematic",
   "instructionHeading": "Utilizați următoarele metode pentru a vizualiza detaliile unui obiect spațial și fotografiile atașate:",
   "stepOne": "Selectați un obiect spațial de pe hartă.",
-  "stepTwo": "Ă_Click the left and right arrows above the map to browse through all the features__________________________________________ș.",
+  "stepTwo": "Faceți clic pe săgețile la stânga și la dreapta de deasupra hărții pentru a naviga prin toate obiectele spațiale.",
   "stepThree": "Dacă există o casetă de căutare, căutați un anumit obiect spațial.",
   "noInfo": "Nicio informație disponibilă.",
   "pleaseWait": "Se descarcă...",
@@ -19,11 +19,11 @@ define({
   "image": "imagini",
   "notSupported": "Stratul tematic selectat nu acceptă atașarea fotografiilor",
   "doesNotSupportVideo": "Browserul dvs. nu acceptă etichete de videoclipuri.",
-  "otherAttachments": "Ă_Other attachments__________________ș",
-  "viewDetails": "Ă_View details_____________ș",
-  "previousLocation": "Ă_Previous location__________________ș",
-  "nextLocation": "Ă_Next location______________ș",
-  "previousImage": "Ă_Previous image_______________ș",
-  "nextImage": "Ă_Next image_____________________ș",
-  "upperCaseAttachments": "Ă_Attachments____________ș"
+  "otherAttachments": "Alte atașări",
+  "viewDetails": "Vizualizarea detaliilor",
+  "previousLocation": "Locația precedentă",
+  "nextLocation": "Locația următoare",
+  "previousImage": "Imaginea precedentă",
+  "nextImage": "Imaginea următoare",
+  "upperCaseAttachments": "Ataşări"
 });

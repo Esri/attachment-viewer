@@ -514,6 +514,7 @@ class AttachmentViewerViewModel extends declared(Accessor) {
       if (this.state !== "ready") {
         return;
       }
+      this.imageIsLoaded = false;
       const { featureLayer, view } = this;
       if (featureLayer) {
         this._performingHitTest = view.hitTest(event);
@@ -563,6 +564,8 @@ class AttachmentViewerViewModel extends declared(Accessor) {
       this.selectedFeature.attributes[objectIdField] ===
       feature.attributes[objectIdField]
     ) {
+      this._highlightFeature();
+      this.imageIsLoaded = true;
       return;
     }
     const layerFeature = this.layerFeatures.find(layerFeature => {
@@ -667,7 +670,12 @@ class AttachmentViewerViewModel extends declared(Accessor) {
     }
     // Update query range based on defaultObjectId from share widget
     else if (updatingType === "share" && this.defaultObjectId) {
-      const objectIdIndex = this.featureObjectIds.indexOf(this.defaultObjectId);
+      const defaultObjectIdIndex = this.featureObjectIds.indexOf(
+        this.defaultObjectId
+      );
+      const objectIdIndex =
+        defaultObjectIdIndex !== -1 ? defaultObjectIdIndex : 0;
+
       const shareFloor = Math.floor(objectIdIndex / 10) * 10;
       const shareCeil = Math.ceil(objectIdIndex / 10) * 10;
 
@@ -861,13 +869,15 @@ class AttachmentViewerViewModel extends declared(Accessor) {
   private _updateFeatureFromShare(): void {
     const { featureLayer, defaultObjectId } = this;
     const { objectIdField } = featureLayer;
-    this.layerFeatureIndex = this.layerFeatures.indexOf(
+    const layerFeatureIndex = this.layerFeatures.indexOf(
       this.layerFeatures.find(
         layerFeature =>
           layerFeature.attributes[objectIdField] === defaultObjectId
       )
     );
-    this.objectIdIndex = this.featureObjectIds.indexOf(defaultObjectId);
+    const objectIdIndex = this.featureObjectIds.indexOf(defaultObjectId);
+    this.layerFeatureIndex = layerFeatureIndex !== -1 ? layerFeatureIndex : 0;
+    this.objectIdIndex = objectIdIndex !== -1 ? objectIdIndex : 0;
   }
 
   //----------------------------------

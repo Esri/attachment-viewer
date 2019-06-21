@@ -8,7 +8,7 @@ define({
   "subtitle": "Tampilkan lampiran foto layer",
   "instructionHeading": "Gunakan metode berikut untuk menampilkan detail fitur dan lampiran foto:",
   "stepOne": "Pilih fitur pada peta.",
-  "stepTwo": "ng_Click the left and right arrows above the map to browse through all the features__________________________________________ny.",
+  "stepTwo": "Klik tanda panah kiri dan kanan di atas peta untuk menelusuri semua fitur.",
   "stepThree": "Jika kotak pencarian tersedia, cari fitur spesifik.",
   "noInfo": "Tidak ada informasi tersedia.",
   "pleaseWait": "Mengunduh...",
@@ -19,11 +19,11 @@ define({
   "image": "gambar",
   "notSupported": "Layer yang dipilih tidak mendukung lampiran foto",
   "doesNotSupportVideo": "Browser Anda tidak mendukung tag video.",
-  "otherAttachments": "ng_Other attachments__________________ny",
-  "viewDetails": "ng_View details_____________ny",
-  "previousLocation": "ng_Previous location__________________ny",
-  "nextLocation": "ng_Next location______________ny",
-  "previousImage": "ng_Previous image_______________ny",
-  "nextImage": "ng_Next image_____________________ny",
-  "upperCaseAttachments": "ng_Attachments____________ny"
+  "otherAttachments": "Lampiran lain",
+  "viewDetails": "Lihat detail",
+  "previousLocation": "Lokasi sebelumnya",
+  "nextLocation": "Lokasi berikutnya",
+  "previousImage": "Gambar sebelumnya",
+  "nextImage": "Gambar berikutnya",
+  "upperCaseAttachments": "Lampiran"
 });

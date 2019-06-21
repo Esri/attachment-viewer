@@ -8,7 +8,7 @@ define({
   "subtitle": "Vaata kihi pildimanuseid.",
   "instructionHeading": "Objekti detailide ja pildimanuste vaatamiseks kasutage järgmisi meetodeid:",
   "stepOne": "Vali objekt kaardil.",
-  "stepTwo": "Š_Click the left and right arrows above the map to browse through all the features__________________________________________ä.",
+  "stepTwo": "Kõikide objektide sirvimiseks klõpsake vasakule ja paremale noolele kaardi kohal.",
   "stepThree": "Kui otsinguruut on saadaval, otsige konkreetset objekti.",
   "noInfo": "Teave pole saadaval",
   "pleaseWait": "Allalaadimine...",
@@ -19,11 +19,11 @@ define({
   "image": "pildid",
   "notSupported": "Valitud kiht ei toeta pildimanuseid",
   "doesNotSupportVideo": "Teie veebibrauser ei toeta video märgendit.",
-  "otherAttachments": "Š_Other attachments__________________ä",
-  "viewDetails": "Š_View details_____________ä",
-  "previousLocation": "Š_Previous location__________________ä",
-  "nextLocation": "Š_Next location______________ä",
-  "previousImage": "Š_Previous image_______________ä",
-  "nextImage": "Š_Next image_____________________ä",
-  "upperCaseAttachments": "Š_Attachments____________ä"
+  "otherAttachments": "Muud manused",
+  "viewDetails": "Kuva üksikasjad",
+  "previousLocation": "Eelnev asukoht",
+  "nextLocation": "Järgmine asukoht",
+  "previousImage": "Eelmine pilt",
+  "nextImage": "Järgmine pilt",
+  "upperCaseAttachments": "Manused"
 });

@@ -8,7 +8,7 @@ define({
   "subtitle": "Ver los archivos adjuntos de fotos de una capa",
   "instructionHeading": "Use estos métodos para visualizar los detalles de las entidades y los archivos adjuntos de fotos:",
   "stepOne": "Seleccione una entidad en el mapa.",
-  "stepTwo": "á_Click the left and right arrows above the map to browse through all the features__________________________________________Ó.",
+  "stepTwo": "Haga clic en las flechas izquierda y derecha que aparecen encima del mapa para examinar todas las entidades.",
   "stepThree": "Si se dispone de un cuadro de búsqueda, busque una entidad específica.",
   "noInfo": "No hay información disponible.",
   "pleaseWait": "Descargando...",
@@ -19,11 +19,11 @@ define({
   "image": "imágenes",
   "notSupported": "La capa seleccionada no admite archivos adjuntos de fotos",
   "doesNotSupportVideo": "Su navegador no admite la etiqueta de vídeo.",
-  "otherAttachments": "á_Other attachments__________________Ó",
-  "viewDetails": "á_View details_____________Ó",
-  "previousLocation": "á_Previous location__________________Ó",
-  "nextLocation": "á_Next location______________Ó",
-  "previousImage": "á_Previous image_______________Ó",
-  "nextImage": "á_Next image_____________________Ó",
-  "upperCaseAttachments": "á_Attachments____________Ó"
+  "otherAttachments": "Otros adjuntos",
+  "viewDetails": "Ver detalles",
+  "previousLocation": "Ubicación anterior",
+  "nextLocation": "Ubicación siguiente",
+  "previousImage": "Imagen anterior",
+  "nextImage": "Imagen siguiente",
+  "upperCaseAttachments": "Adjuntos"
 });

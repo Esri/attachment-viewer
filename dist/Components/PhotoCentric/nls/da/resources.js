@@ -8,7 +8,7 @@ define({
   "subtitle": "Vis et lags fotovedhæftninger",
   "instructionHeading": "Brug følgende metoder til at få vist objektdetaljer og fotovedhæftninger:",
   "stepOne": "Vælg et objekt på kortet.",
-  "stepTwo": "ø_Click the left and right arrows above the map to browse through all the features__________________________________________å.",
+  "stepTwo": "Klik på venstre- og højre-pilene over kortet for at gennemse alle objekterne.",
   "stepThree": "Hvis en søgeboks er tilgængelig, kan du søge efter et specifikt objekt.",
   "noInfo": "Ingen tilgængelige oplysninger.",
   "pleaseWait": "Downloader...",
@@ -19,11 +19,11 @@ define({
   "image": "billeder",
   "notSupported": "Det valgte lag understøtter ikke fotovedhæftninger",
   "doesNotSupportVideo": "Din browser understøtter ikke video-tag'en.",
-  "otherAttachments": "ø_Other attachments__________________å",
-  "viewDetails": "ø_View details_____________å",
-  "previousLocation": "ø_Previous location__________________å",
-  "nextLocation": "ø_Next location______________å",
-  "previousImage": "ø_Previous image_______________å",
-  "nextImage": "ø_Next image_____________________å",
-  "upperCaseAttachments": "ø_Attachments____________å"
+  "otherAttachments": "Andre vedhæftninger",
+  "viewDetails": "Vis oplysninger",
+  "previousLocation": "Forrige position",
+  "nextLocation": "Næste position",
+  "previousImage": "Forrige billede",
+  "nextImage": "Næste billede",
+  "upperCaseAttachments": "Vedhæftninger"
 });

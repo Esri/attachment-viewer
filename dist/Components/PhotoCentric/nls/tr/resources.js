@@ -8,7 +8,7 @@ define({
   "subtitle": "Katmanın fotoğraf eklerini görüntüleyin",
   "instructionHeading": "Detay ayrıntılarını ve fotoğraf eklerini görüntülemek için aşağıdaki yöntemleri kullanın:",
   "stepOne": "Haritadan bir detay seçin.",
-  "stepTwo": "ı_Click the left and right arrows above the map to browse through all the features__________________________________________İ.",
+  "stepTwo": "Tüm detaylara göz atmak için haritanın üzerindeki sol ve sağ okları tıklayın.",
   "stepThree": "Bir arama kutusu mevcutsa, belirli bir detayı arayın.",
   "noInfo": "Bilgi bulunmuyor.",
   "pleaseWait": "İndiriliyor...",
@@ -19,11 +19,11 @@ define({
   "image": "görüntüler",
   "notSupported": "Seçilen katman fotoğraf eklerini desteklemiyor",
   "doesNotSupportVideo": "Tarayıcınız video etiketini desteklemiyor.",
-  "otherAttachments": "ı_Other attachments__________________İ",
-  "viewDetails": "ı_View details_____________İ",
-  "previousLocation": "ı_Previous location__________________İ",
-  "nextLocation": "ı_Next location______________İ",
-  "previousImage": "ı_Previous image_______________İ",
-  "nextImage": "ı_Next image_____________________İ",
-  "upperCaseAttachments": "ı_Attachments____________İ"
+  "otherAttachments": "Diğer ekler",
+  "viewDetails": "Ayrıntıları görüntüle",
+  "previousLocation": "Önceki konum",
+  "nextLocation": "Sonraki konum",
+  "previousImage": "Önceki görüntü",
+  "nextImage": "Sonraki görüntü",
+  "upperCaseAttachments": "Ekler"
 });
