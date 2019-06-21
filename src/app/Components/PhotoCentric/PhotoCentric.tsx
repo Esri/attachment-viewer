@@ -362,14 +362,24 @@ class PhotoCentric extends declared(Widget) {
         ["selectedFeatureAttachments", "attachmentIndex"],
         () => {
           this._previousImageUrl = this.currentImageUrl;
-
           const { selectedFeatureAttachments, attachmentIndex } = this;
           const attachments =
             selectedFeatureAttachments &&
             selectedFeatureAttachments.attachments &&
             selectedFeatureAttachments.attachments[attachmentIndex];
 
-          this.currentImageUrl = attachments ? attachments.url : null;
+          const ssl =
+            this.featureLayer &&
+            this.featureLayer.get("portalItem.portal.allSSL");
+
+          if (ssl) {
+            this.currentImageUrl =
+              attachments && attachments.url
+                ? attachments.url.replace(/^http:\/\//i, "https://")
+                : null;
+          } else {
+            this.currentImageUrl = attachments ? attachments.url : null;
+          }
 
           this.scheduleRender();
         }
@@ -480,7 +490,11 @@ class PhotoCentric extends declared(Widget) {
     const content = this._renderContent();
     const imageViewerDesktop = this._renderImageViewerDesktop();
     return (
-      <div key={buildKey("main-page")} class={CSS.mainPageContainer}>
+      <div
+        key={buildKey("main-page")}
+        class={CSS.mainPageContainer}
+        role="main"
+      >
         <div class={CSS.mainPage}>
           {this._onboardingPanelIsOpen && document.body.clientWidth > 813 ? (
             <div class={CSS.onboardingOverlay}>{onboarding}</div>
@@ -494,6 +508,8 @@ class PhotoCentric extends declared(Widget) {
 
   // _renderImageContainer
   private _renderImageContainer(): VNode {
+    const { currentImageUrl } = this;
+
     const attachmentCount = this._onboardingPanelIsOpen
       ? this.onboardingImage
         ? null
@@ -533,7 +549,21 @@ class PhotoCentric extends declared(Widget) {
     return (
       <div class={this.classes(CSS.rightPanel)}>
         {this._layerDoesNotSupportAttachments ? (
-          <div class={CSS.layerNotSupported}>{i18n.notSupported}</div>
+          this._onboardingPanelIsOpen && this.onboardingImage ? (
+            <div
+              bind={this}
+              afterCreate={storeNode}
+              data-node-ref="_photoViewerContainer"
+              key={buildKey("image-container-not-supported")}
+              class={this.classes(downloadEnabled, CSS.photoViewer)}
+            >
+              <div class={CSS.imageContainer}>
+                <img src={this.onboardingImage} />
+              </div>
+            </div>
+          ) : (
+            <div class={CSS.layerNotSupported}>{i18n.notSupported}</div>
+          )
         ) : (
           <div
             bind={this}
@@ -547,9 +577,15 @@ class PhotoCentric extends declared(Widget) {
             attachment.contentType &&
             attachment.contentType.indexOf("video") === -1 &&
             attachments ? (
-              <div class={CSS.widgetLoader} key={buildKey("base-loader")}>
-                <span class={CSS.animationLoader} />
-              </div>
+              this._onboardingPanelIsOpen && this.onboardingImage ? null : (
+                <div class={CSS.widgetLoader} key={buildKey("base-loader")}>
+                  <span
+                    class={CSS.animationLoader}
+                    role="presentation"
+                    aria-label={i18n.loadingImages}
+                  />
+                </div>
+              )
             ) : null}
             {attachments && attachments.length === 0 ? (
               this.onboardingImage && this._onboardingPanelIsOpen ? null : (
@@ -582,24 +618,20 @@ class PhotoCentric extends declared(Widget) {
                   class={CSS.videoContainer}
                   controls
                 >
-                  <source src={attachment.url} type="video/mp4" />
-                  <source src={attachment.url} type="video/quicktime" />
-                  <source src={attachment.url} type="video/ogg" />
-                  <source src={attachment.url} type="video/mov" />
+                  <source src={currentImageUrl} type="video/mp4" />
+                  <source src={currentImageUrl} type="video/quicktime" />
+                  <source src={currentImageUrl} type="video/ogg" />
+                  <source src={currentImageUrl} type="video/mov" />
                   {i18n.doesNotSupportVideo}
                 </video>
               ) : this._onboardingPanelIsOpen && this.onboardingImage ? (
-                <img
-                  styles={imageStyles}
-                  src={this.onboardingImage}
-                  alt={name}
-                />
+                <img src={this.onboardingImage} />
               ) : (
                 <img
                   class={this.classes(CSS.imageDesktop, fadeImage)}
                   styles={imageStyles}
                   bind={this}
-                  src={this.currentImageUrl}
+                  src={currentImageUrl}
                   onload={this._removeImageLoader}
                   alt={name}
                 />
@@ -719,6 +751,7 @@ class PhotoCentric extends declared(Widget) {
                   CSS.calcite.rotating,
                   CSS.spinner
                 )}
+                role="presentation"
               />
             </div>
           ) : (
@@ -767,7 +800,7 @@ class PhotoCentric extends declared(Widget) {
         ? this._renderShareLocationWidget()
         : null;
     return (
-      <div class={CSS.header}>
+      <header class={CSS.header}>
         <div class={CSS.headerContainer}>
           <div class={CSS.titleInfoContainer}>
             <h1 class={CSS.headerText}>{title}</h1>
@@ -786,7 +819,7 @@ class PhotoCentric extends declared(Widget) {
           </div>
         </div>
         <div class={CSS.shareWidgetContainer}>{shareWidget}</div>
-      </div>
+      </header>
     );
   }
 
@@ -856,7 +889,6 @@ class PhotoCentric extends declared(Widget) {
   private _renderPagination(): VNode {
     const featureTotal = this.viewModel.featureTotal;
     const currentlayerFeatureIndex = this.viewModel.objectIdIndex + 1;
-
     return (
       <div key={buildKey("feature-pagination")} class={CSS.paginationContainer}>
         <button
@@ -873,7 +905,9 @@ class PhotoCentric extends declared(Widget) {
           }
           tabIndex={0}
           class={CSS.leftArrowContainer}
-          disabled={this._onboardingPanelIsOpen ? true : false}
+          disabled={
+            this._onboardingPanelIsOpen || featureTotal === 1 ? true : false
+          }
           title={
             this.docDirection === "rtl"
               ? i18n.nextLocation
@@ -905,7 +939,9 @@ class PhotoCentric extends declared(Widget) {
           }
           tabIndex={0}
           class={CSS.rightArrowContainer}
-          disabled={this._onboardingPanelIsOpen ? true : false}
+          disabled={
+            this._onboardingPanelIsOpen || featureTotal === 1 ? true : false
+          }
           title={
             this.docDirection === "rtl"
               ? i18n.previousLocation
@@ -1013,7 +1049,7 @@ class PhotoCentric extends declared(Widget) {
           {zoomTo}
         </div>
 
-        <h6 class={CSS.addressText}>{this.selectedFeatureAddress}</h6>
+        <h3 class={CSS.addressText}>{this.selectedFeatureAddress}</h3>
 
         <div class={CSS.attachmentsImageContainer}>{attachmentsMobile}</div>
 
@@ -1161,13 +1197,16 @@ class PhotoCentric extends declared(Widget) {
             </div>
             {!this.imageIsLoaded ? (
               <div class={CSS.widgetLoader} key={buildKey("base-loader")}>
-                <span class={CSS.animationLoader} />
+                <span
+                  class={CSS.animationLoader}
+                  role="presentation"
+                  aria-label={i18n.loadingImages}
+                />
               </div>
             ) : null}
           </div>
         ) : null}
         {this.imageIsLoaded ? featureContentInfos : null}
-        {/* {featureContentInfos} */}
       </div>
     );
   }
@@ -1213,6 +1252,15 @@ class PhotoCentric extends declared(Widget) {
     const transparentBackground = {
       [CSS.transparentBackground]: !this.imageIsLoaded
     };
+    let attachmentUrl: string;
+    const ssl =
+      this.featureLayer && this.featureLayer.get("portalItem.portal.allSSL");
+
+    if (ssl) {
+      attachmentUrl = url ? url.replace(/^http:\/\//i, "https://") : null;
+    } else {
+      attachmentUrl = url ? url : null;
+    }
 
     return (
       <div
@@ -1232,9 +1280,9 @@ class PhotoCentric extends declared(Widget) {
           attachment.contentType &&
           attachment.contentType.indexOf("video") !== -1 ? (
             <video class={CSS.videoContainer} controls>
-              <source src={attachment.url} type="video/mp4" />
-              <source src={attachment.url} type="video/ogg" />
-              <source src={attachment.url} type="video/mov" />
+              <source src={attachmentUrl} type="video/mp4" />
+              <source src={attachmentUrl} type="video/ogg" />
+              <source src={attachmentUrl} type="video/mov" />
               {i18n.doesNotSupportVideo}
             </video>
           ) : (
@@ -1245,7 +1293,7 @@ class PhotoCentric extends declared(Widget) {
                 removeOpacity
               )}
               styles={imageStyles}
-              src={url}
+              src={attachmentUrl}
               alt={name}
             />
           )}
@@ -1383,8 +1431,10 @@ class PhotoCentric extends declared(Widget) {
     const regex = new RegExp(expression);
 
     const content = contentInfo && contentInfo.content;
-
-    return content && content.match(regex) && content.match(regex).length > 0
+    return content &&
+      content.match &&
+      content.match(regex) &&
+      content.match(regex).length > 0
       ? content.match(regex)[0]
       : null;
   }

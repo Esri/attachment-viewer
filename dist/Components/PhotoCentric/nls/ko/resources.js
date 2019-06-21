@@ -8,7 +8,7 @@ define({
   "subtitle": "레이어의 사진 첨부 파일 보기",
   "instructionHeading": "다음 방법을 사용하여 피처 세부정보와 사진 첨부 파일을 볼 수 있습니다.",
   "stepOne": "맵에서 피처를 선택합니다.",
-  "stepTwo": "한_Click the left and right arrows above the map to browse through all the features__________________________________________빠.",
+  "stepTwo": "맵 위에 있는 좌우 화살표를 클릭하여 모든 피처를 살펴볼 수 있습니다.",
   "stepThree": "검색 상자를 사용할 수 있으면 원하는 피처를 검색합니다.",
   "noInfo": "사용 가능한 정보가 없습니다.",
   "pleaseWait": "다운로드 중...",
@@ -19,11 +19,11 @@ define({
   "image": "이미지",
   "notSupported": "선택한 레이어는 사진 첨부 파일을 지원하지 않음",
   "doesNotSupportVideo": "브라우저에서 비디오 태그를 지원하지 않습니다.",
-  "otherAttachments": "한_Other attachments__________________빠",
-  "viewDetails": "한_View details_____________빠",
-  "previousLocation": "한_Previous location__________________빠",
-  "nextLocation": "한_Next location______________빠",
-  "previousImage": "한_Previous image_______________빠",
-  "nextImage": "한_Next image_____________________빠",
-  "upperCaseAttachments": "한_Attachments____________빠"
+  "otherAttachments": "기타 첨부 파일",
+  "viewDetails": "세부정보 보기",
+  "previousLocation": "이전 위치",
+  "nextLocation": "다음 위치",
+  "previousImage": "이전 이미지",
+  "nextImage": "다음 이미지",
+  "upperCaseAttachments": "첨부 파일"
 });

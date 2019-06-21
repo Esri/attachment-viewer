@@ -8,7 +8,7 @@ define({
   "subtitle": "Zobrazte fotografické přílohy vrstvy",
   "instructionHeading": "Použijte následující způsoby pro zobrazení podrobností prvku a fotografických příloh:",
   "stepOne": "Vyberte prvek v mapě.",
-  "stepTwo": "Ř_Click the left and right arrows above the map to browse through all the features__________________________________________ů.",
+  "stepTwo": "Klikněte na šipky vlevo a vpravo nad mapou pro procházení všech prvků.",
   "stepThree": "Pokud je vyhledávací okénko k dispozici, vyhledávejte konkrétní prvek.",
   "noInfo": "Nejsou k dispozici žádné informace.",
   "pleaseWait": "Stahování...",
@@ -19,11 +19,11 @@ define({
   "image": "snímky",
   "notSupported": "Vybraná vrstva nepodporuje fotografické přílohy",
   "doesNotSupportVideo": "Váš vyhledávač nepodporuje tag videa.",
-  "otherAttachments": "Ř_Other attachments__________________ů",
-  "viewDetails": "Ř_View details_____________ů",
-  "previousLocation": "Ř_Previous location__________________ů",
-  "nextLocation": "Ř_Next location______________ů",
-  "previousImage": "Ř_Previous image_______________ů",
-  "nextImage": "Ř_Next image_____________________ů",
-  "upperCaseAttachments": "Ř_Attachments____________ů"
+  "otherAttachments": "Jiné přílohy",
+  "viewDetails": "Zobrazit podrobnosti",
+  "previousLocation": "Předchozí umístění",
+  "nextLocation": "Další umístění",
+  "previousImage": "Předchozí snímek",
+  "nextImage": "Další snímek",
+  "upperCaseAttachments": "Přílohy"
 });

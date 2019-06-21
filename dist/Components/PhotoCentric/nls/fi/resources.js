@@ -8,7 +8,7 @@ define({
   "subtitle": "Tarkastele karttatason valokuvaliitteitä",
   "instructionHeading": "Käytä seuraavia menetelmiä kohteen tietojen ja valokuvaliitteiden tarkasteluun:",
   "stepOne": "Valitse kohde kartalta.",
-  "stepTwo": "Å_Click the left and right arrows above the map to browse through all the features__________________________________________ö.",
+  "stepTwo": "Voit selata kaikkia kohteita napsauttamalla kartan yläreunan vasenta ja oikeaa nuolipainiketta.",
   "stepThree": "Jos hakuruutu on käytettävissä, voit etsiä tiettyä kohdetta.",
   "noInfo": "Tietoja ei ole saatavilla.",
   "pleaseWait": "Ladataan...",
@@ -19,11 +19,11 @@ define({
   "image": "kuvat",
   "notSupported": "Valittu karttataso ei tue valokuvaliitteitä",
   "doesNotSupportVideo": "Selaimesi ei tue videotunnistetta.",
-  "otherAttachments": "Å_Other attachments__________________ö",
-  "viewDetails": "Å_View details_____________ö",
-  "previousLocation": "Å_Previous location__________________ö",
-  "nextLocation": "Å_Next location______________ö",
-  "previousImage": "Å_Previous image_______________ö",
-  "nextImage": "Å_Next image_____________________ö",
-  "upperCaseAttachments": "Å_Attachments____________ö"
+  "otherAttachments": "Muut liitteet",
+  "viewDetails": "Näytä tiedot",
+  "previousLocation": "Edellinen sijainti",
+  "nextLocation": "Seuraava sijainti",
+  "previousImage": "Edellinen kuva",
+  "nextImage": "Seuraava kuva",
+  "upperCaseAttachments": "Liitteet"
 });

@@ -247,7 +247,17 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                     var attachments = selectedFeatureAttachments &&
                         selectedFeatureAttachments.attachments &&
                         selectedFeatureAttachments.attachments[attachmentIndex];
-                    _this.currentImageUrl = attachments ? attachments.url : null;
+                    var ssl = _this.featureLayer &&
+                        _this.featureLayer.get("portalItem.portal.allSSL");
+                    if (ssl) {
+                        _this.currentImageUrl =
+                            attachments && attachments.url
+                                ? attachments.url.replace(/^http:\/\//i, "https://")
+                                : null;
+                    }
+                    else {
+                        _this.currentImageUrl = attachments ? attachments.url : null;
+                    }
                     _this.scheduleRender();
                 }),
                 watchUtils.when(this, "selectedFeatureAttachments", function () {
@@ -311,7 +321,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             var onboarding = this._renderOnboarding();
             var content = this._renderContent();
             var imageViewerDesktop = this._renderImageViewerDesktop();
-            return (widget_1.tsx("div", { key: buildKey("main-page"), class: CSS.mainPageContainer },
+            return (widget_1.tsx("div", { key: buildKey("main-page"), class: CSS.mainPageContainer, role: "main" },
                 widget_1.tsx("div", { class: CSS.mainPage },
                     this._onboardingPanelIsOpen && document.body.clientWidth > 813 ? (widget_1.tsx("div", { class: CSS.onboardingOverlay }, onboarding)) : null,
                     content),
@@ -320,6 +330,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         // _renderImageContainer
         PhotoCentric.prototype._renderImageContainer = function () {
             var _a, _b;
+            var currentImageUrl = this.currentImageUrl;
             var attachmentCount = this._onboardingPanelIsOpen
                 ? this.onboardingImage
                     ? null
@@ -345,13 +356,15 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             var fadeImage = (_b = {},
                 _b[CSS.fadeImage] = !this.imageIsLoaded,
                 _b);
-            return (widget_1.tsx("div", { class: this.classes(CSS.rightPanel) }, this._layerDoesNotSupportAttachments ? (widget_1.tsx("div", { class: CSS.layerNotSupported }, i18n.notSupported)) : (widget_1.tsx("div", { bind: this, afterCreate: widget_1.storeNode, "data-node-ref": "_photoViewerContainer", key: buildKey("image-container"), class: this.classes(downloadEnabled, CSS.photoViewer) },
+            return (widget_1.tsx("div", { class: this.classes(CSS.rightPanel) }, this._layerDoesNotSupportAttachments ? (this._onboardingPanelIsOpen && this.onboardingImage ? (widget_1.tsx("div", { bind: this, afterCreate: widget_1.storeNode, "data-node-ref": "_photoViewerContainer", key: buildKey("image-container-not-supported"), class: this.classes(downloadEnabled, CSS.photoViewer) },
+                widget_1.tsx("div", { class: CSS.imageContainer },
+                    widget_1.tsx("img", { src: this.onboardingImage })))) : (widget_1.tsx("div", { class: CSS.layerNotSupported }, i18n.notSupported))) : (widget_1.tsx("div", { bind: this, afterCreate: widget_1.storeNode, "data-node-ref": "_photoViewerContainer", key: buildKey("image-container"), class: this.classes(downloadEnabled, CSS.photoViewer) },
                 !this.imageIsLoaded &&
                     attachment &&
                     attachment.contentType &&
                     attachment.contentType.indexOf("video") === -1 &&
-                    attachments ? (widget_1.tsx("div", { class: CSS.widgetLoader, key: buildKey("base-loader") },
-                    widget_1.tsx("span", { class: CSS.animationLoader }))) : null,
+                    attachments ? (this._onboardingPanelIsOpen && this.onboardingImage ? null : (widget_1.tsx("div", { class: CSS.widgetLoader, key: buildKey("base-loader") },
+                    widget_1.tsx("span", { class: CSS.animationLoader, role: "presentation", "aria-label": i18n.loadingImages })))) : null,
                 attachments && attachments.length === 0 ? (this.onboardingImage && this._onboardingPanelIsOpen ? null : (widget_1.tsx("div", { key: buildKey("no-attachments-container"), class: CSS.noAttachmentsContainer },
                     widget_1.tsx("svg", { class: CSS.svg.media, xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 16 16" },
                         widget_1.tsx("path", { d: "M1 2v12h14V2zm13 11H2V3h12zm-1-1H3v-1h10zM3 8.678l.333-.356a.3.3 0 0 1 .445 0 .3.3 0 0 0 .444 0l2.242-2.39a.3.3 0 0 1 .423-.021l2.255 2.005a.299.299 0 0 0 .39.01l1.361-.915a.3.3 0 0 1 .41.032L13 8.678V10H3zM11.894 9l-.89-.859-.846.565a1.299 1.299 0 0 1-1.68-.043L6.732 7.11 4.958 9zm-.644-4.5a.75.75 0 1 1-.75-.75.75.75 0 0 1 .75.75z" })),
@@ -359,11 +372,11 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                 widget_1.tsx("div", { class: CSS.imageContainer }, attachment &&
                     attachment.contentType &&
                     attachment.contentType.indexOf("video") !== -1 ? (widget_1.tsx("video", { bind: this, afterCreate: this._removeImageLoader, class: CSS.videoContainer, controls: true },
-                    widget_1.tsx("source", { src: attachment.url, type: "video/mp4" }),
-                    widget_1.tsx("source", { src: attachment.url, type: "video/quicktime" }),
-                    widget_1.tsx("source", { src: attachment.url, type: "video/ogg" }),
-                    widget_1.tsx("source", { src: attachment.url, type: "video/mov" }),
-                    i18n.doesNotSupportVideo)) : this._onboardingPanelIsOpen && this.onboardingImage ? (widget_1.tsx("img", { styles: imageStyles, src: this.onboardingImage, alt: name })) : (widget_1.tsx("img", { class: this.classes(CSS.imageDesktop, fadeImage), styles: imageStyles, bind: this, src: this.currentImageUrl, onload: this._removeImageLoader, alt: name }))),
+                    widget_1.tsx("source", { src: currentImageUrl, type: "video/mp4" }),
+                    widget_1.tsx("source", { src: currentImageUrl, type: "video/quicktime" }),
+                    widget_1.tsx("source", { src: currentImageUrl, type: "video/ogg" }),
+                    widget_1.tsx("source", { src: currentImageUrl, type: "video/mov" }),
+                    i18n.doesNotSupportVideo)) : this._onboardingPanelIsOpen && this.onboardingImage ? (widget_1.tsx("img", { src: this.onboardingImage })) : (widget_1.tsx("img", { class: this.classes(CSS.imageDesktop, fadeImage), styles: imageStyles, bind: this, src: currentImageUrl, onload: this._removeImageLoader, alt: name }))),
                 attachmentCount))));
         };
         // _renderImageViewerDesktop
@@ -402,7 +415,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                     attachment.contentType &&
                     attachment.contentType.indexOf("video") === -1 &&
                     this.viewModel.downloadEnabled ? (this.viewModel.state === "downloading" ? (widget_1.tsx("div", { class: CSS.downloadIconContainer },
-                    widget_1.tsx("span", { class: this.classes(CSS.calcite.loadingIcon, CSS.calcite.rotating, CSS.spinner) }))) : (widget_1.tsx("button", { class: this.classes(CSS.downloadIconContainer, CSS.downloadButtonDesktop), bind: this, onclick: this._downloadImage, onkeydown: this._downloadImage, "data-image-url": attachment.url, "data-image-name": attachment.name, title: i18n.download, disabled: this.imageIsLoaded ? false : true },
+                    widget_1.tsx("span", { class: this.classes(CSS.calcite.loadingIcon, CSS.calcite.rotating, CSS.spinner), role: "presentation" }))) : (widget_1.tsx("button", { class: this.classes(CSS.downloadIconContainer, CSS.downloadButtonDesktop), bind: this, onclick: this._downloadImage, onkeydown: this._downloadImage, "data-image-url": attachment.url, "data-image-name": attachment.name, title: i18n.download, disabled: this.imageIsLoaded ? false : true },
                     widget_1.tsx("span", { class: this.classes(CSS.calcite.downloadIcon, CSS.calcite.flush, CSS.downloadIcon) })))) : null));
         };
         // _renderHeader
@@ -419,7 +432,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                 document.body.clientWidth > 813
                 ? this._renderShareLocationWidget()
                 : null;
-            return (widget_1.tsx("div", { class: CSS.header },
+            return (widget_1.tsx("header", { class: CSS.header },
                 widget_1.tsx("div", { class: CSS.headerContainer },
                     widget_1.tsx("div", { class: CSS.titleInfoContainer },
                         widget_1.tsx("h1", { class: CSS.headerText }, title),
@@ -464,7 +477,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                         ? this._nextFeature
                         : this._previousFeature, onkeydown: this.docDirection === "rtl"
                         ? this._nextFeature
-                        : this._previousFeature, tabIndex: 0, class: CSS.leftArrowContainer, disabled: this._onboardingPanelIsOpen ? true : false, title: this.docDirection === "rtl"
+                        : this._previousFeature, tabIndex: 0, class: CSS.leftArrowContainer, disabled: this._onboardingPanelIsOpen || featureTotal === 1 ? true : false, title: this.docDirection === "rtl"
                         ? i18n.nextLocation
                         : i18n.previousLocation },
                     widget_1.tsx("span", { class: this.classes(CSS.calcite.leftArrow, CSS.calcite.flush) })),
@@ -473,7 +486,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                         ? this._previousFeature
                         : this._nextFeature, onkeydown: this.docDirection === "rtl"
                         ? this._previousFeature
-                        : this._nextFeature, tabIndex: 0, class: CSS.rightArrowContainer, disabled: this._onboardingPanelIsOpen ? true : false, title: this.docDirection === "rtl"
+                        : this._nextFeature, tabIndex: 0, class: CSS.rightArrowContainer, disabled: this._onboardingPanelIsOpen || featureTotal === 1 ? true : false, title: this.docDirection === "rtl"
                         ? i18n.previousLocation
                         : i18n.nextLocation },
                     widget_1.tsx("span", { class: this.classes(CSS.calcite.rightArrow, CSS.calcite.flush) }))));
@@ -529,7 +542,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                 widget_1.tsx("div", { class: CSS.featureContentTitle },
                     widget_1.tsx("h2", { class: CSS.featureLayerTitle }, this.featureLayerTitle),
                     zoomTo),
-                widget_1.tsx("h6", { class: CSS.addressText }, this.selectedFeatureAddress),
+                widget_1.tsx("h3", { class: CSS.addressText }, this.selectedFeatureAddress),
                 widget_1.tsx("div", { class: CSS.attachmentsImageContainer }, attachmentsMobile),
                 fieldsInfoText && fieldsInfoText.length > 0 ? (widget_1.tsx("div", { key: buildKey("feture-widget-content"), class: CSS.featureInfoContent }, featureWidget && featureWidget.render())) : fieldsInfoContent && fieldsInfoContent.length > 0 ? (widget_1.tsx("div", { key: buildKey("feature-info-content"), class: CSS.featureInfoContent }, featureContentInfo)) : this._featureContentAvailable ? (widget_1.tsx("div", { key: buildKey("feature-content-loader"), class: CSS.widgetLoader }, i18n.loadingImages)) : (widget_1.tsx("div", { key: buildKey("no-content"), class: CSS.noInfo }, i18n.noInfo)),
                 this.viewModel.unsupportedAttachmentTypes &&
@@ -592,7 +605,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                     widget_1.tsx("span", { class: CSS.mobileAttachmentText }, i18n.upperCaseAttachments),
                     widget_1.tsx("div", { class: CSS.attachmentCountNumber }, selectedFeatureAttachments.length),
                     !this.imageIsLoaded ? (widget_1.tsx("div", { class: CSS.widgetLoader, key: buildKey("base-loader") },
-                        widget_1.tsx("span", { class: CSS.animationLoader }))) : null)) : null,
+                        widget_1.tsx("span", { class: CSS.animationLoader, role: "presentation", "aria-label": i18n.loadingImages }))) : null)) : null,
                 this.imageIsLoaded ? featureContentInfos : null));
         };
         // _renderAttachmentMobile
@@ -627,14 +640,22 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             var transparentBackground = (_d = {},
                 _d[CSS.transparentBackground] = !this.imageIsLoaded,
                 _d);
+            var attachmentUrl;
+            var ssl = this.featureLayer && this.featureLayer.get("portalItem.portal.allSSL");
+            if (ssl) {
+                attachmentUrl = url ? url.replace(/^http:\/\//i, "https://") : null;
+            }
+            else {
+                attachmentUrl = url ? url : null;
+            }
             return (widget_1.tsx("div", { bind: this, styles: { height: imageAttachmentHeight }, afterCreate: widget_1.storeNode, afterUpdate: widget_1.storeNode, "data-node-ref": "_mobileAttachment", class: this.classes(CSS.mobileAttachment, addPadding, transparentBackground) },
                 widget_1.tsx("div", { class: CSS.mobileAttachmentContainer }, attachment &&
                     attachment.contentType &&
                     attachment.contentType.indexOf("video") !== -1 ? (widget_1.tsx("video", { class: CSS.videoContainer, controls: true },
-                    widget_1.tsx("source", { src: attachment.url, type: "video/mp4" }),
-                    widget_1.tsx("source", { src: attachment.url, type: "video/ogg" }),
-                    widget_1.tsx("source", { src: attachment.url, type: "video/mov" }),
-                    i18n.doesNotSupportVideo)) : (widget_1.tsx("img", { class: this.classes(CSS.imageMobile, removeBorderRadius, removeOpacity), styles: imageStyles, src: url, alt: name }))),
+                    widget_1.tsx("source", { src: attachmentUrl, type: "video/mp4" }),
+                    widget_1.tsx("source", { src: attachmentUrl, type: "video/ogg" }),
+                    widget_1.tsx("source", { src: attachmentUrl, type: "video/mov" }),
+                    i18n.doesNotSupportVideo)) : (widget_1.tsx("img", { class: this.classes(CSS.imageMobile, removeBorderRadius, removeOpacity), styles: imageStyles, src: attachmentUrl, alt: name }))),
                 attachment &&
                     attachment.contentType &&
                     attachment.contentType.indexOf("video") === -1 &&
@@ -726,7 +747,10 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             var expression = /(http|ftp|https)(:\/\/)([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?/;
             var regex = new RegExp(expression);
             var content = contentInfo && contentInfo.content;
-            return content && content.match(regex) && content.match(regex).length > 0
+            return content &&
+                content.match &&
+                content.match(regex) &&
+                content.match(regex).length > 0
                 ? content.match(regex)[0]
                 : null;
         };

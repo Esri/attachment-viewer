@@ -8,7 +8,7 @@ define({
   "subtitle": "Προβολή συνημμένων φωτογραφιών ενός θεματικού επιπέδου",
   "instructionHeading": "Χρήση των εξής μεθόδων για την προβολή λεπτομερειών στοιχείων και συνημμένων φωτογραφιών:",
   "stepOne": "Επιλέξτε ένα στοιχείο στον χάρτη.",
-  "stepTwo": "π_Click the left and right arrows above the map to browse through all the features__________________________________________Ω.",
+  "stepTwo": "Κάντε κλικ στο αριστερό και στο δεξί βέλος επάνω από τον χάρτη για περιήγηση σε όλα τα στοιχεία.",
   "stepThree": "Αν υπάρχει διαθέσιμο πλαίσιο αναζήτησης, εκτελέστε αναζήτηση για ένα συγκεκριμένο στοιχείο.",
   "noInfo": "Δεν υπάρχουν διαθέσιμες πληροφορίες.",
   "pleaseWait": "Γίνεται λήψη...",
@@ -19,11 +19,11 @@ define({
   "image": "εικόνες",
   "notSupported": "Το επιλεγμένο θεματικό επίπεδο δεν υποστηρίζει τη δυνατότητα επισύναψης φωτογραφιών.",
   "doesNotSupportVideo": "Το πρόγραμμα περιήγησής σας δεν υποστηρίζει την ετικέτα βίντεο.",
-  "otherAttachments": "π_Other attachments__________________Ω",
-  "viewDetails": "π_View details_____________Ω",
-  "previousLocation": "π_Previous location__________________Ω",
-  "nextLocation": "π_Next location______________Ω",
-  "previousImage": "π_Previous image_______________Ω",
-  "nextImage": "π_Next image_____________________Ω",
-  "upperCaseAttachments": "π_Attachments____________Ω"
+  "otherAttachments": "Άλλα συνημμένα",
+  "viewDetails": "Προβολή αναλυτικών στοιχείων",
+  "previousLocation": "Προηγούμενη τοποθεσία",
+  "nextLocation": "Επόμενη τοποθεσία",
+  "previousImage": "Προηγούμενη εικόνα",
+  "nextImage": "Επόμενη εικόνα",
+  "upperCaseAttachments": "Συνημμένα"
 });

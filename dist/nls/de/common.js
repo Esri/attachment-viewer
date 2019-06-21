@@ -51,7 +51,7 @@ define({
   "menu": "Menü",
   "more": "Mehr",
   "none": "Keines",
-  "open": "Offen",
+  "open": "Öffnen",
   "pagination": {
     "first": "Erste(r) von",
     "last": "Letzter",

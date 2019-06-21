@@ -8,7 +8,7 @@ define({
   "subtitle": "Посмотреть вложенные фото в слое",
   "instructionHeading": "Используйте следующие методы для просмотра информации об объекте и вложенных фото:",
   "stepOne": "Выберите объект на карте.",
-  "stepTwo": "Ж_Click the left and right arrows above the map to browse through all the features__________________________________________Я.",
+  "stepTwo": "Щелкните стрелки вправо и влево над картой, чтобы пролистать по всем объектам.",
   "stepThree": "Если доступна строка поиска, можно найти конкретный объект.",
   "noInfo": "Нет доступной информации.",
   "pleaseWait": "Загрузка...",
@@ -19,11 +19,11 @@ define({
   "image": "изображения",
   "notSupported": "Выбранный слой не поддерживает вложения с фото",
   "doesNotSupportVideo": "Ваш браузер не поддерживает тег видео.",
-  "otherAttachments": "Ж_Other attachments__________________Я",
-  "viewDetails": "Ж_View details_____________Я",
-  "previousLocation": "Ж_Previous location__________________Я",
-  "nextLocation": "Ж_Next location______________Я",
-  "previousImage": "Ж_Previous image_______________Я",
-  "nextImage": "Ж_Next image_____________________Я",
-  "upperCaseAttachments": "Ж_Attachments____________Я"
+  "otherAttachments": "Другие вложения",
+  "viewDetails": "Просмотр подробной информации",
+  "previousLocation": "Предыдущее местоположение",
+  "nextLocation": "Следующее местоположение",
+  "previousImage": "Предыдущие изображение",
+  "nextImage": "Следующее изображение",
+  "upperCaseAttachments": "Вложения"
 });

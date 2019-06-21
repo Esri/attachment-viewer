@@ -8,7 +8,7 @@ define({
   "subtitle": "ดูไฟล์แนบภาพถ่ายของชั้นข้อมูล",
   "instructionHeading": "ใช้วิธีการต่อไปนี้ในการดูรายละเอียดฟีเจอร์ และไฟล์แนบภาพถ่าย:",
   "stepOne": "เลือกฟีเจอร์บนแผนที่",
-  "stepTwo": "ก้_Click the left and right arrows above the map to browse through all the features__________________________________________ษฺ.",
+  "stepTwo": "คลิกลูกศรศ้ายและขวาที่อยู่เหนือแผนที่ เพื่อเลื่อนดูฟีเจอร์ทั้งหมด",
   "stepThree": "หากสามารถใช้ช่องค้นหาได้ ให้ค้นหาฟีเจอร์ที่กำหนด",
   "noInfo": "ไม่มีข้อมูล",
   "pleaseWait": "กำลังดาวน์โหลด...",
@@ -19,11 +19,11 @@ define({
   "image": "รูปภาพ",
   "notSupported": "ชั้นข้อมูลที่เลือกไม่รองรับไฟล์แนบภาพถ่าย",
   "doesNotSupportVideo": "เบราว์เซอร์ของคุณไม่รองรับแท็กวิดีโอ",
-  "otherAttachments": "ก้_Other attachments__________________ษฺ",
-  "viewDetails": "ก้_View details_____________ษฺ",
-  "previousLocation": "ก้_Previous location__________________ษฺ",
-  "nextLocation": "ก้_Next location______________ษฺ",
-  "previousImage": "ก้_Previous image_______________ษฺ",
-  "nextImage": "ก้_Next image_____________________ษฺ",
-  "upperCaseAttachments": "ก้_Attachments____________ษฺ"
+  "otherAttachments": "ไฟล์แนบอื่นๆ",
+  "viewDetails": "ดูรายละเอียด",
+  "previousLocation": "ตำแหน่งก่อนหน้า",
+  "nextLocation": "ตำแหน่งถัดไป",
+  "previousImage": "รูปภาพก่อนหน้า",
+  "nextImage": "รูปภาพถัดไป",
+  "upperCaseAttachments": "แนบ"
 });

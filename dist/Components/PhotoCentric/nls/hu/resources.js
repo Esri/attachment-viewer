@@ -8,7 +8,7 @@ define({
   "subtitle": "Réteg fotócsatolmányainak megtekintése",
   "instructionHeading": "A következő metódusokat használva tekintheti meg a vektoros elem részleteit és a fotócsatolmányokat:",
   "stepOne": "Válassza ki a térkép egyik vektoros elemét",
-  "stepTwo": "í_Click the left and right arrows above the map to browse through all the features__________________________________________ő.",
+  "stepTwo": "Az összes vektoros elem tallózásához kattintson a térkép feletti bal és jobb nyilakra.",
   "stepThree": "Ha van keresőmező, kereshet konkrét vektoros elemre.",
   "noInfo": "Nem áll rendelkezésre információ.",
   "pleaseWait": "Letöltés…",
@@ -19,11 +19,11 @@ define({
   "image": "képek",
   "notSupported": "A kiválasztott réteg nem támogatja a fotócsatolmányokat.",
   "doesNotSupportVideo": "A böngészője nem támogatja a videócímkét.",
-  "otherAttachments": "í_Other attachments__________________ő",
-  "viewDetails": "í_View details_____________ő",
-  "previousLocation": "í_Previous location__________________ő",
-  "nextLocation": "í_Next location______________ő",
-  "previousImage": "í_Previous image_______________ő",
-  "nextImage": "í_Next image_____________________ő",
-  "upperCaseAttachments": "í_Attachments____________ő"
+  "otherAttachments": "További csatolmányok",
+  "viewDetails": "Részletek megtekintése",
+  "previousLocation": "Előző hely",
+  "nextLocation": "Következő hely",
+  "previousImage": "Előző kép",
+  "nextImage": "Következő kép",
+  "upperCaseAttachments": "Csatolmányok"
 });

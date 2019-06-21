@@ -8,7 +8,7 @@ define({
   "subtitle": "Visa ett lagers bildbilagor",
   "instructionHeading": "Använd följande metoder för att visa information om geoobjekt och bildbilagor:",
   "stepOne": "Välj ett geoobjekt på kartan.",
-  "stepTwo": "Å_Click the left and right arrows above the map to browse through all the features__________________________________________ö.",
+  "stepTwo": "Klicka på vänster- och högerpilarna över kartan för att bläddra igenom alla funktioner.",
   "stepThree": "Om en sökruta finns tillgänglig kan du söka efter en specifik funktion.",
   "noInfo": "Det finns ingen information tillgänglig.",
   "pleaseWait": "Hämtar...",
@@ -19,11 +19,11 @@ define({
   "image": "bilder",
   "notSupported": "Det valda lagret stöder inte bildbilagor",
   "doesNotSupportVideo": "Din webbläsare har inte stöd för videotaggen.",
-  "otherAttachments": "Å_Other attachments__________________ö",
-  "viewDetails": "Å_View details_____________ö",
-  "previousLocation": "Å_Previous location__________________ö",
-  "nextLocation": "Å_Next location______________ö",
-  "previousImage": "Å_Previous image_______________ö",
-  "nextImage": "Å_Next image_____________________ö",
-  "upperCaseAttachments": "Å_Attachments____________ö"
+  "otherAttachments": "Andra bilagor",
+  "viewDetails": "Visa information",
+  "previousLocation": "Föregående plats",
+  "nextLocation": "Nästa plats",
+  "previousImage": "Föregående bild",
+  "nextImage": "Nästa bild",
+  "upperCaseAttachments": "Bilagor"
 });

@@ -8,7 +8,7 @@ define({
   "subtitle": "Visualitza els fitxers adjunts de fotografia d'una capa",
   "instructionHeading": "Utilitzeu els mètodes següents per veure els fitxers adjunts de fotografia i els detalls de l'entitat:",
   "stepOne": "Seleccioneu una entitat al mapa.",
-  "stepTwo": "ó_Click the left and right arrows above the map to browse through all the features__________________________________________à.",
+  "stepTwo": "Feu clic a les fletxes esquerra i dreta a sobre del mapa per explorar totes les entitats.",
   "stepThree": "Si hi ha un quadre de cerca disponible, cerqueu una entitat específica.",
   "noInfo": "No hi ha informació disponible.",
   "pleaseWait": "S'està baixant...",
@@ -19,11 +19,11 @@ define({
   "image": "imatges",
   "notSupported": "La capa seleccionada no admet fitxers adjunts de fotografia",
   "doesNotSupportVideo": "El vostre navegador no admet l'etiqueta de vídeo.",
-  "otherAttachments": "ó_Other attachments__________________à",
-  "viewDetails": "ó_View details_____________à",
-  "previousLocation": "ó_Previous location__________________à",
-  "nextLocation": "ó_Next location______________à",
-  "previousImage": "ó_Previous image_______________à",
-  "nextImage": "ó_Next image_____________________à",
-  "upperCaseAttachments": "ó_Attachments____________à"
+  "otherAttachments": "Altres fitxers adjunts",
+  "viewDetails": "Visualitza els detalls",
+  "previousLocation": "Ubicació anterior",
+  "nextLocation": "Ubicació següent",
+  "previousImage": "Imatge anterior",
+  "nextImage": "Imatge següent",
+  "upperCaseAttachments": "Fitxers adjunts"
 });

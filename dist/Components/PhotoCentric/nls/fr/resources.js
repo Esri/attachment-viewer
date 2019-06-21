@@ -8,7 +8,7 @@ define({
   "subtitle": "Afficher les photos jointes d’une couche",
   "instructionHeading": "Utilisez les méthodes suivantes pour afficher les détails des entités et les photos jointes :",
   "stepOne": "Sélectionnez une entité sur la carte.",
-  "stepTwo": "æ_Click the left and right arrows above the map to browse through all the features__________________________________________Â.",
+  "stepTwo": "Cliquez sur les flèches droite et gauche au dessus de la carte, pour accéder à toutes les entités.",
   "stepThree": "Si une zone de recherche est disponible, recherchez une entité en particulier.",
   "noInfo": "Aucune information disponible.",
   "pleaseWait": "Téléchargement...",
@@ -19,11 +19,11 @@ define({
   "image": "images",
   "notSupported": "La couche sélectionnée ne prend pas en charge les photos jointes",
   "doesNotSupportVideo": "Votre navigateur ne prend pas en charge la balise vidéo.",
-  "otherAttachments": "æ_Other attachments__________________Â",
-  "viewDetails": "æ_View details_____________Â",
-  "previousLocation": "æ_Previous location__________________Â",
-  "nextLocation": "æ_Next location______________Â",
-  "previousImage": "æ_Previous image_______________Â",
-  "nextImage": "æ_Next image_____________________Â",
-  "upperCaseAttachments": "æ_Attachments____________Â"
+  "otherAttachments": "Autres pièces jointes",
+  "viewDetails": "Afficher les détails",
+  "previousLocation": "Localisation précédente",
+  "nextLocation": "Localisation suivante",
+  "previousImage": "Image précédente",
+  "nextImage": "Image suivante",
+  "upperCaseAttachments": "Pièces jointes"
 });

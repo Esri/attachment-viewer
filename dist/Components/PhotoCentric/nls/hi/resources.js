@@ -8,7 +8,7 @@ define({
   "subtitle": "किसी लेयर के फ़ोटो अटैचमेंट देखें",
   "instructionHeading": "फ़ीचर विवरण और फ़ोटो अटैचमेंट देखने के लिए नीचे दी गई विधियों का उपयोग करें:",
   "stepOne": "मानचित्र पर कोई फ़ीचर चुनें।",
-  "stepTwo": "आ_Click the left and right arrows above the map to browse through all the features__________________________________________ज.",
+  "stepTwo": "सभी फ़ीचर के माध्यम से ब्राउज़ करने के लिए मानचित्र के ऊपर दिए गए बाएं और दाएं तीर पर क्लिक करें।",
   "stepThree": "यदि कोई खोज बॉक्स उपलब्ध है, तो एक खास फ़ीचर खोजें।",
   "noInfo": "कोई जानकारी उपलब्ध नहीं है।",
   "pleaseWait": "डाउनलोड हो रहा है...",
@@ -19,11 +19,11 @@ define({
   "image": "छवियां",
   "notSupported": "चुनी गई लेयर फ़ोटो अटैचमेंट का समर्थन नहीं करती है।",
   "doesNotSupportVideo": "आपका ब्राउजर वीडियो टैग का समर्थन नहीं करता है।",
-  "otherAttachments": "आ_Other attachments__________________ज",
-  "viewDetails": "आ_View details_____________ज",
-  "previousLocation": "आ_Previous location__________________ज",
-  "nextLocation": "आ_Next location______________ज",
-  "previousImage": "आ_Previous image_______________ज",
-  "nextImage": "आ_Next image_____________________ज",
-  "upperCaseAttachments": "आ_Attachments____________ज"
+  "otherAttachments": "अन्य अनुलग्नक",
+  "viewDetails": "विवरण देखें",
+  "previousLocation": "पिछला स्थान",
+  "nextLocation": "अगला स्थान",
+  "previousImage": "पिछली छवि",
+  "nextImage": "अगली छवि",
+  "upperCaseAttachments": "अनुलग्नक"
 });

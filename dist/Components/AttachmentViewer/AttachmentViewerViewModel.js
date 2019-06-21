@@ -381,6 +381,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                 if (_this.state !== "ready") {
                     return;
                 }
+                _this.imageIsLoaded = false;
                 var _a = _this, featureLayer = _a.featureLayer, view = _a.view;
                 if (featureLayer) {
                     _this._performingHitTest = view.hitTest(event);
@@ -422,6 +423,8 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             // Prevent same feature to be re-set
             if (this.selectedFeature.attributes[objectIdField] ===
                 feature.attributes[objectIdField]) {
+                this._highlightFeature();
+                this.imageIsLoaded = true;
                 return;
             }
             var layerFeature = this.layerFeatures.find(function (layerFeature) {
@@ -506,7 +509,8 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             }
             // Update query range based on defaultObjectId from share widget
             else if (updatingType === "share" && this.defaultObjectId) {
-                var objectIdIndex_1 = this.featureObjectIds.indexOf(this.defaultObjectId);
+                var defaultObjectIdIndex = this.featureObjectIds.indexOf(this.defaultObjectId);
+                var objectIdIndex_1 = defaultObjectIdIndex !== -1 ? defaultObjectIdIndex : 0;
                 var shareFloor = Math.floor(objectIdIndex_1 / 10) * 10;
                 var shareCeil = Math.ceil(objectIdIndex_1 / 10) * 10;
                 var updatedLow = shareFloor;
@@ -675,10 +679,12 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         AttachmentViewerViewModel.prototype._updateFeatureFromShare = function () {
             var _a = this, featureLayer = _a.featureLayer, defaultObjectId = _a.defaultObjectId;
             var objectIdField = featureLayer.objectIdField;
-            this.layerFeatureIndex = this.layerFeatures.indexOf(this.layerFeatures.find(function (layerFeature) {
+            var layerFeatureIndex = this.layerFeatures.indexOf(this.layerFeatures.find(function (layerFeature) {
                 return layerFeature.attributes[objectIdField] === defaultObjectId;
             }));
-            this.objectIdIndex = this.featureObjectIds.indexOf(defaultObjectId);
+            var objectIdIndex = this.featureObjectIds.indexOf(defaultObjectId);
+            this.layerFeatureIndex = layerFeatureIndex !== -1 ? layerFeatureIndex : 0;
+            this.objectIdIndex = objectIdIndex !== -1 ? objectIdIndex : 0;
         };
         //----------------------------------
         //
