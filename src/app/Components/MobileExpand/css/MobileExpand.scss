@@ -11,11 +11,13 @@
   limitations under the License.​
 */
 
+
 .esri-expand__content.esri-mobile-expand__content.esri-expand__content--expanded {
   top: 100%;
   left: 0;
   margin: 0;
   transition: none;
+  // box-shadow: none;
 
   .esri-mobile-expand__component {
     border-bottom: 0.5px solid #ccc;
