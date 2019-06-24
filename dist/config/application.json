@@ -41,10 +41,8 @@
     "elevationSync": {
       "url": null
     },
-    "geocode": [
-      {
-        "url": null
-      }
-    ]
+    "geocode": [{
+      "url": null
+    }]
   }
 }

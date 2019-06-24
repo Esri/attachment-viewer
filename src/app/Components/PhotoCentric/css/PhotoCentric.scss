@@ -776,6 +776,15 @@ $text-color: #c3c3c3;
         width: auto;
       }
     }
+
+    .esri-photo-centric__title-header-container {
+      width: 80%;
+    }
+
+    .esri-photo-centric__share-widget-container {
+      width: 20%;
+      justify-content: flex-end;
+    }
   }
 
   .esri-photo-centric__image-viewer--desktop {
