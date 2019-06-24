@@ -1,29 +1,15 @@
-/**
- * The Expand widget acts as a clickable button for opening a widget.
- *
- * @module esri/widgets/Expand
- * @since 4.3
- *
- * @see [Expand.tsx (widget view)]({{ JSAPI_ARCGIS_JS_API_URL }}/widgets/Expand.tsx)
- * @see [Expand.scss]({{ JSAPI_ARCGIS_JS_API_URL }}/themes/base/widgets/_Expand.scss)
- * @see [Sample - Expand widget](../sample-code/widgets-expand/index.html)
- * @see module:esri/widgets/Expand/ExpandViewModel
- * @see module:esri/views/ui/DefaultUI
- *
- * @example
- * // LayerList
- * layerList = new LayerList({
- *   container: document.createElement("div"),
- *   view: view
- * });
- * layerListExpand = new Expand({
- *   expandIconClass: "esri-icon-layer-list",  // see https://developers.arcgis.com/javascript/latest/guide/esri-icon-font/
- *   // expandTooltip: "Expand LayerList", // optional, defaults to "Expand" for English locale
- *   view: view,
- *   content: layerList.domNode
- * });
- * view.ui.add(layerListExpand, "top-right");
- */
+/*
+  Copyright 2019 Esri
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+    http://www.apache.org/licenses/LICENSE-2.0
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.​
+*/
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
