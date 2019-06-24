@@ -990,18 +990,6 @@ class AttachmentViewerViewModel extends declared(Accessor) {
                 currentIndex
               };
 
-              if (
-                selectedFeatureAttachments &&
-                selectedFeatureAttachments.attachments &&
-                selectedFeatureAttachments.attachments.indexOf(
-                  this.attachmentIndex
-                ) === -1
-              ) {
-                this.attachmentIndex = 0;
-                selectedFeatureAttachments.currentIndex = 0;
-                this.imageIsLoaded = true;
-              }
-
               if (!attachments || attachments.length === 0) {
                 this.imageIsLoaded = true;
               }

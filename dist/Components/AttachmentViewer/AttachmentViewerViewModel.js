@@ -766,13 +766,6 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                             attachments: attachments,
                             currentIndex: currentIndex
                         };
-                        if (selectedFeatureAttachments &&
-                            selectedFeatureAttachments.attachments &&
-                            selectedFeatureAttachments.attachments.indexOf(_this.attachmentIndex) === -1) {
-                            _this.attachmentIndex = 0;
-                            selectedFeatureAttachments.currentIndex = 0;
-                            _this.imageIsLoaded = true;
-                        }
                         if (!attachments || attachments.length === 0) {
                             _this.imageIsLoaded = true;
                         }
