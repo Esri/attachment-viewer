@@ -1,13 +1,22 @@
 /*
-  Copyright 2019 Esri
+  Copyright 2017 Esri
+
   Licensed under the Apache License, Version 2.0 (the "License");
+
   you may not use this file except in compliance with the License.
+
   You may obtain a copy of the License at
+
     http://www.apache.org/licenses/LICENSE-2.0
+
   Unless required by applicable law or agreed to in writing, software
+
   distributed under the License is distributed on an "AS IS" BASIS,
+
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+
   See the License for the specific language governing permissions and
+
   limitations under the License.​
 */
 
@@ -54,10 +63,7 @@ export function parseViewpoint(viewpoint: string): Camera {
   const tiltAndHeadingIndex = cameraIndex === 0 ? 1 : 0;
   const cameraString = viewpointArray[cameraIndex];
   const tiltAndHeadingString = viewpointArray[tiltAndHeadingIndex];
-  const cameraProperties = _getCameraProperties(
-    cameraString,
-    tiltAndHeadingString
-  );
+  const cameraProperties = _getCameraProperties(cameraString, tiltAndHeadingString);
 
   if (cameraProperties.position) {
     return new Camera(cameraProperties);
@@ -161,65 +167,55 @@ export function parseMarker(marker: string): IPromise<Graphic> {
     return promiseUtils.reject();
   }
 
-  return requireUtils
-    .when(require, [
-      "esri/Graphic",
-      "esri/PopupTemplate",
-      "esri/symbols/PictureMarkerSymbol",
-      "esri/symbols/SimpleMarkerSymbol"
-    ])
-    .then(modules => {
-      const [
-        Graphic,
-        PopupTemplate,
-        PictureMarkerSymbol,
-        SimpleMarkerSymbol
-      ] = modules;
+  return requireUtils.when(require, [
+    "esri/Graphic",
+    "esri/PopupTemplate",
+    "esri/symbols/PictureMarkerSymbol",
+    "esri/symbols/SimpleMarkerSymbol"
+  ]).then(modules => {
+    const [Graphic, PopupTemplate, PictureMarkerSymbol, SimpleMarkerSymbol] = modules;
 
-      const x = parseFloat(markerArray[0]);
-      const y = parseFloat(markerArray[1]);
-      const content = markerArray[3];
-      const icon_url = markerArray[4];
-      const label = markerArray[5];
-      const wkid = markerArray[2] ? parseInt(markerArray[2], 10) : 4326;
+    const x = parseFloat(markerArray[0]);
+    const y = parseFloat(markerArray[1]);
+    const content = markerArray[3];
+    const icon_url = markerArray[4];
+    const label = markerArray[5];
+    const wkid = markerArray[2] ? parseInt(markerArray[2], 10) : 4326;
 
-      const markerSymbol = icon_url
-        ? new PictureMarkerSymbol({
-            url: icon_url,
-            height: "32px",
-            width: "32px"
-          })
-        : new SimpleMarkerSymbol({
-            outline: {
-              width: 1
-            },
-            size: 14,
-            color: [255, 255, 255, 0]
-          });
-
-      const point = new Point({
-        x: x,
-        y: y,
-        spatialReference: {
-          wkid: wkid
-        }
-      });
-
-      const hasPopupDetails = content || label;
-      const popupTemplate = hasPopupDetails
-        ? new PopupTemplate({
-            title: content || null,
-            content: label || null
-          })
-        : null;
-
-      const graphic = new Graphic({
-        geometry: point,
-        symbol: markerSymbol,
-        popupTemplate: popupTemplate
-      });
-      return graphic;
+    const markerSymbol = icon_url ? new PictureMarkerSymbol({
+      url: icon_url,
+      height: "32px",
+      width: "32px"
+    }) : new SimpleMarkerSymbol({
+      outline: {
+        width: 1
+      },
+      size: 14,
+      color: [255, 255, 255, 0]
     });
+
+    const point = new Point({
+      "x": x,
+      "y": y,
+      "spatialReference": {
+        "wkid": wkid
+      }
+    });
+
+    const hasPopupDetails = content || label;
+    const popupTemplate = hasPopupDetails ?
+      new PopupTemplate({
+        "title": content || null,
+        "content": label || null
+      }) : null;
+
+    const graphic = new Graphic({
+      geometry: point,
+      symbol: markerSymbol,
+      popupTemplate: popupTemplate
+    });
+    return graphic;
+  });
 }
 
 //--------------------------------------------------------------------------
@@ -253,8 +249,7 @@ function _getCameraPosition(camera: string): Point {
   const x = parseFloat(positionArray[0]),
     y = parseFloat(positionArray[1]),
     z = parseFloat(positionArray[2]);
-  const wkid =
-    positionArray.length === 4 ? parseInt(positionArray[3], 10) : 4326;
+  const wkid = positionArray.length === 4 ? parseInt(positionArray[3], 10) : 4326;
   return new Point({
     x: x,
     y: y,
@@ -272,18 +267,13 @@ function _getHeadingAndTilt(headingAndTilt: string): CameraProperties {
 
   const tiltHeadingArray = headingAndTilt.split(",");
 
-  return tiltHeadingArray.length >= 0
-    ? {
-        heading: parseFloat(tiltHeadingArray[0]),
-        tilt: parseFloat(tiltHeadingArray[1])
-      }
-    : null;
+  return tiltHeadingArray.length >= 0 ? {
+    heading: parseFloat(tiltHeadingArray[0]),
+    tilt: parseFloat(tiltHeadingArray[1])
+  } : null;
 }
 
-function _getCameraProperties(
-  camera: string,
-  headingAndTilt: string
-): CameraProperties {
+function _getCameraProperties(camera: string, headingAndTilt: string): CameraProperties {
   const cameraPosition = _getCameraPosition(camera);
   const headingAndTiltProperties = _getHeadingAndTilt(headingAndTilt);
 

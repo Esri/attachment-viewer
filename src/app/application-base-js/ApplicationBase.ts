@@ -1,13 +1,22 @@
 /*
-  Copyright 2019 Esri
+  Copyright 2017 Esri
+
   Licensed under the Apache License, Version 2.0 (the "License");
+
   you may not use this file except in compliance with the License.
+
   You may obtain a copy of the License at
+
     http://www.apache.org/licenses/LICENSE-2.0
+
   Unless required by applicable law or agreed to in writing, software
+
   distributed under the License is distributed on an "AS IS" BASIS,
+
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+
   See the License for the specific language governing permissions and
+
   limitations under the License.​
 */
 
@@ -23,6 +32,7 @@ import OAuthInfo = require("esri/identity/OAuthInfo");
 import Portal = require("esri/portal/Portal");
 import PortalItem = require("esri/portal/PortalItem");
 import PortalQueryParams = require("esri/portal/PortalQueryParams");
+
 
 import declare from "./declareDecorator";
 import {
@@ -206,19 +216,14 @@ class ApplicationBase {
     const loadApplicationItem = appid
       ? this._loadItem(appid)
       : promiseUtils.resolve();
-    const checkAppAccess = IdentityManager.checkAppAccess(
-      sharingUrl,
-      oauthappid
-    ).always(response => {
-      return response;
-    });
+    const checkAppAccess = IdentityManager.checkAppAccess(sharingUrl, oauthappid).always((response) => { return response; });
 
     const fetchApplicationData = appid
       ? loadApplicationItem.then(itemInfo => {
-          return itemInfo instanceof PortalItem
-            ? itemInfo.fetchData()
-            : undefined;
-        })
+        return itemInfo instanceof PortalItem
+          ? itemInfo.fetchData()
+          : undefined;
+      })
       : promiseUtils.resolve();
 
     const loadPortal = portalSettings.fetch
@@ -226,12 +231,7 @@ class ApplicationBase {
       : promiseUtils.resolve();
 
     return promiseUtils
-      .eachAlways([
-        loadApplicationItem,
-        fetchApplicationData,
-        loadPortal,
-        checkAppAccess
-      ])
+      .eachAlways([loadApplicationItem, fetchApplicationData, loadPortal, checkAppAccess])
       .always(applicationArgs => {
         const [
           applicationItemResponse,
@@ -252,20 +252,10 @@ class ApplicationBase {
           ? this._getLocalConfig(appid)
           : null;
 
-        const appAccess = checkAppAccessResponse
-          ? checkAppAccessResponse.value
-          : null;
-        if (
-          applicationItem &&
-          applicationItem.access &&
-          applicationItem.access !== "public"
-        ) {
+        const appAccess = checkAppAccessResponse ? checkAppAccessResponse.value : null;
+        if (applicationItem && applicationItem.access && applicationItem.access !== "public") {
           // do we have permission to access app
-          if (
-            appAccess &&
-            appAccess.name &&
-            appAccess.name === "identity-manager:not-authorized"
-          ) {
+          if (appAccess && appAccess.name && appAccess.name === "identity-manager:not-authorized") {
             //identity-manager:not-authorized, identity-manager:not-authenticated, identity-manager:invalid-request
             return promiseUtils.reject(appAccess.name);
           }
@@ -274,6 +264,7 @@ class ApplicationBase {
         this.results.localStorage = localStorage;
         this.results.applicationItem = applicationItemResponse;
         this.results.applicationData = applicationDataResponse;
+
 
         const applicationConfig = applicationData
           ? applicationData.values
@@ -481,8 +472,8 @@ class ApplicationBase {
     const appLocationIndex = isEsriAppsPath
       ? esriAppsPathIndex
       : isEsriHomePath
-      ? esriHomePathIndex
-      : undefined;
+        ? esriHomePathIndex
+        : undefined;
 
     if (appLocationIndex === undefined) {
       return;
@@ -519,10 +510,10 @@ class ApplicationBase {
     const units = userUnits
       ? userUnits
       : responseUnits
-      ? responseUnits
-      : isEnglishUnits
-      ? "english"
-      : "metric";
+        ? responseUnits
+        : isEnglishUnits
+          ? "english"
+          : "metric";
     return units;
   }
 
@@ -722,6 +713,7 @@ class ApplicationBase {
     // can we just use portal.staticImagesUrl
     return portal.staticImagesUrl.replace("images", "fonts");
   }*/
+
 }
 
 export = ApplicationBase;
