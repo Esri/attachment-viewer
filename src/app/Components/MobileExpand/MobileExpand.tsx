@@ -71,7 +71,8 @@ const CSS = {
   // CUSTOM
   mobileExpandContent: "esri-mobile-expand__content",
   collapseButton: "esri-mobile-expand__collapse-button",
-  expandCollapseIcon: "esri-mobile-expand__expand-collapse-icon icon-ui-flush"
+  expandCollapseIcon: "esri-mobile-expand__expand-collapse-icon icon-ui-flush",
+  mobileExpandComponent: "esri-mobile-expand__component"
 };
 
 @subclass("esri.widgets.Expand")
@@ -552,25 +553,11 @@ class Expand extends declared(Widget) {
 
   private _renderContent() {
     const components = this.content.map((component: Expand) => {
-      // if (typeof component === "string") {
-      //   return <div innerHTML={component} />;
-      // }
       if (isWidget(component)) {
         return (
-          <div class="esri-mobile-expand__component">{component.render()}</div>
+          <div class={CSS.mobileExpandComponent}>{component.render()}</div>
         );
       }
-
-      // if (component instanceof HTMLElement) {
-      //   return <div bind={component} afterCreate={this._attachToNode} />;
-      // }
-
-      // if (isWidgetBase(component)) {
-      //   return (
-      //     <div bind={component.domNode} afterCreate={this._attachToNode} />
-      //   );
-      // }
-      // console.log(components);
 
       return null;
     });
