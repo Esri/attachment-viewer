@@ -44,7 +44,7 @@ import AttachmentViewerViewModel = require("../AttachmentViewer/AttachmentViewer
 import { VNode } from "../../interfaces/interfaces";
 
 // utils
-import { attachToNode } from "../utils";
+import { attachToNode } from "../utils/utils";
 
 // Custom Share
 import Share = require("../Share/Share");
@@ -419,6 +419,7 @@ class PhotoCentric extends declared(Widget) {
     const header = this._renderHeader();
     const homePage = this._renderHomePage();
     const onboarding = this._renderOnboarding();
+
     return (
       <div class={CSS.base}>
         {!this._imageCarouselIsOpen ? header : null}
@@ -539,23 +540,14 @@ class PhotoCentric extends declared(Widget) {
         ? attachments[this.attachmentIndex]
         : null;
 
-    const name = attachment ? attachment.name : null;
-    const imageStyles =
-      attachment && attachment.orientationInfo && this._photoViewerContainer
-        ? getOrientationStyles(
-            attachment.orientationInfo,
-            this._photoViewerContainer
-          )
-        : {
-            transform: "none",
-            maxHeight: "100%",
-            height: "initial",
-            width: "initial"
-          };
+    const video =
+      attachment &&
+      attachment.contentType &&
+      attachment.contentType.indexOf("video") !== -1
+        ? this._renderVideo(currentImageUrl)
+        : null;
 
-    const fadeImage = {
-      [CSS.fadeImage]: !this.imageIsLoaded
-    };
+    const currentImage = this._renderCurrentImage(currentImageUrl);
 
     return (
       <div class={this.classes(CSS.rightPanel)}>
@@ -623,35 +615,74 @@ class PhotoCentric extends declared(Widget) {
               {attachment &&
               attachment.contentType &&
               attachment.contentType.indexOf("video") !== -1 ? (
-                <video
-                  bind={this}
-                  afterCreate={this._removeImageLoader}
-                  class={CSS.videoContainer}
-                  controls
-                >
-                  <source src={currentImageUrl} type="video/mp4" />
-                  <source src={currentImageUrl} type="video/quicktime" />
-                  <source src={currentImageUrl} type="video/ogg" />
-                  <source src={currentImageUrl} type="video/mov" />
-                  {i18n.doesNotSupportVideo}
-                </video>
+                video
               ) : this._onboardingPanelIsOpen && this.onboardingImage ? (
                 <img src={this.onboardingImage} />
               ) : (
-                <img
-                  class={this.classes(CSS.imageDesktop, fadeImage)}
-                  styles={imageStyles}
-                  bind={this}
-                  src={currentImageUrl}
-                  onload={this._removeImageLoader}
-                  alt={name}
-                />
+                currentImage
               )}
             </div>
             {attachmentCount}
           </div>
         )}
       </div>
+    );
+  }
+
+  private _renderCurrentImage(currentImageUrl: string): VNode {
+    const { selectedFeatureAttachments } = this;
+    const attachments =
+      selectedFeatureAttachments && selectedFeatureAttachments.attachments;
+    const attachment =
+      attachments && attachments.length > 0
+        ? attachments[this.attachmentIndex]
+        : null;
+
+    const name = attachment ? attachment.name : null;
+
+    const imageStyles =
+      attachment && attachment.orientationInfo === null && this.imageIsLoaded
+        ? {
+            transform: "none",
+            maxHeight: "100%",
+            height: "initial",
+            width: "initial"
+          }
+        : attachment &&
+          attachment.orientationInfo &&
+          this._photoViewerContainer &&
+          this.imageIsLoaded
+        ? getOrientationStyles(
+            attachment.orientationInfo,
+            this._photoViewerContainer
+          )
+        : {};
+    const fadeImage = {
+      [CSS.fadeImage]: !this.imageIsLoaded
+    };
+    return (
+      <img
+        class={this.classes(CSS.imageDesktop, fadeImage)}
+        styles={imageStyles}
+        bind={this}
+        src={currentImageUrl}
+        onload={this._removeImageLoader}
+        alt={name}
+      />
+    );
+  }
+
+  // _renderVideo
+  private _renderVideo(currentImageUrl: string): VNode {
+    this.imageIsLoaded = true;
+    return (
+      <video bind={this} class={CSS.videoContainer} controls>
+        <source src={currentImageUrl} type="video/mp4" />
+        <source src={currentImageUrl} type="video/quicktime" />
+        <source src={currentImageUrl} type="video/ogg" />
+        <source src={currentImageUrl} type="video/mov" />
+        {i18n.doesNotSupportVideo}
+      </video>
     );
   }
 
@@ -753,6 +784,7 @@ class PhotoCentric extends declared(Widget) {
         {attachment &&
         attachment.contentType &&
         attachment.contentType.indexOf("video") === -1 &&
+        attachment.contentType.indexOf("gif") === -1 &&
         this.viewModel.downloadEnabled ? (
           this.viewModel.state === "downloading" ? (
             <div class={CSS.downloadIconContainer}>
@@ -995,6 +1027,7 @@ class PhotoCentric extends declared(Widget) {
       ? this._renderFeatureContentInfos()
       : null;
     const { selectedFeatureAttachments } = this;
+
     const attachmentsMobile =
       selectedFeatureAttachments &&
       selectedFeatureAttachments.attachments &&
@@ -1242,18 +1275,28 @@ class PhotoCentric extends declared(Widget) {
           };
     const imageAttachmentHeight = imageStyles.width;
 
+    const userAgent = navigator.userAgent || navigator.vendor;
+
+    let isAndroid = false;
+
+    if (userAgent.match(/Android/i)) {
+      isAndroid = true;
+    }
+
     const addPadding = {
       [CSS.mobileAttachmentsAddPadding]:
         attachment &&
         attachment.orientationInfo &&
-        attachment.orientationInfo.rotation !== 0
+        attachment.orientationInfo.rotation !== 0 &&
+        isAndroid
     };
 
     const removeBorderRadius = {
       [CSS.removeBorderRadius]:
         attachment &&
         attachment.orientationInfo &&
-        attachment.orientationInfo.rotation !== 0
+        attachment.orientationInfo.rotation !== 0 &&
+        isAndroid
     };
 
     const removeOpacity = {
@@ -1280,13 +1323,9 @@ class PhotoCentric extends declared(Widget) {
         afterCreate={storeNode}
         afterUpdate={storeNode}
         data-node-ref="_mobileAttachment"
-        class={this.classes(
-          CSS.mobileAttachment,
-          addPadding,
-          transparentBackground
-        )}
+        class={this.classes(CSS.mobileAttachment, transparentBackground)}
       >
-        <div class={CSS.mobileAttachmentContainer}>
+        <div class={this.classes(CSS.mobileAttachmentContainer, addPadding)}>
           {attachment &&
           attachment.contentType &&
           attachment.contentType.indexOf("video") !== -1 ? (
@@ -1313,6 +1352,7 @@ class PhotoCentric extends declared(Widget) {
         {attachment &&
         attachment.contentType &&
         attachment.contentType.indexOf("video") === -1 &&
+        attachment.contentType.indexOf("gif") === -1 &&
         this.viewModel.downloadEnabled &&
         this.imageIsLoaded ? (
           <button
@@ -1345,10 +1385,8 @@ class PhotoCentric extends declared(Widget) {
 
   // _removeImageLoader
   private _removeImageLoader(): void {
-    if (this.currentImageUrl !== this._previousImageUrl) {
-      this.imageIsLoaded = true;
-      this.scheduleRender();
-    }
+    this.imageIsLoaded = true;
+    this.scheduleRender();
   }
 
   //----------------------------------
@@ -1405,7 +1443,10 @@ class PhotoCentric extends declared(Widget) {
       return;
     }
     this.viewModel.previousFeature();
-    if (this.featureLayer.get("capabilities.data.supportsAttachment")) {
+    if (
+      this.featureLayer &&
+      this.featureLayer.get("capabilities.data.supportsAttachment")
+    ) {
       this.imageIsLoaded = false;
     }
     this.scheduleRender();
@@ -1418,7 +1459,10 @@ class PhotoCentric extends declared(Widget) {
       return;
     }
     this.viewModel.nextFeature();
-    if (this.featureLayer.get("capabilities.data.supportsAttachment")) {
+    if (
+      this.featureLayer &&
+      this.featureLayer.get("capabilities.data.supportsAttachment")
+    ) {
       this.imageIsLoaded = false;
     }
     this.scheduleRender();

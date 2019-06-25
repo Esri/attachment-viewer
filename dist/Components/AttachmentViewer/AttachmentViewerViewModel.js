@@ -823,7 +823,8 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             var feature = layerFeatureIndex || layerFeatureIndex === 0
                 ? this.layerFeatures.getItemAt(layerFeatureIndex)
                 : this.selectedFeature;
-            this._highlightedFeature = this.layerView.highlight(feature);
+            this._highlightedFeature =
+                this.layerView && this.layerView.highlight(feature);
         };
         //----------------------------------
         //

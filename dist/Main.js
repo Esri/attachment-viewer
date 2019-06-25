@@ -60,7 +60,11 @@ define(["require", "exports", "ApplicationBase/support/itemUtils", "ApplicationB
             });
             var firstItem = validWebMapItems[0];
             if (!firstItem) {
-                console.error("Could not load an item to display");
+                var error = "Could not load an item to display";
+                document.body.classList.remove("configurable-application--loading");
+                document.body.classList.add("app-error");
+                document.getElementById("app-container").innerHTML = "<h1>" + error + "</h1>";
+                console.error(error);
                 return;
             }
             config.title = !config.title ? itemUtils_1.getItemTitle(firstItem) : "";

@@ -42,7 +42,8 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         // CUSTOM
         mobileExpandContent: "esri-mobile-expand__content",
         collapseButton: "esri-mobile-expand__collapse-button",
-        expandCollapseIcon: "esri-mobile-expand__expand-collapse-icon icon-ui-flush"
+        expandCollapseIcon: "esri-mobile-expand__expand-collapse-icon icon-ui-flush",
+        mobileExpandComponent: "esri-mobile-expand__component"
     };
     var Expand = /** @class */ (function (_super) {
         __extends(Expand, _super);
@@ -405,21 +406,9 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         Expand.prototype._renderContent = function () {
             var _a, _b;
             var components = this.content.map(function (component) {
-                // if (typeof component === "string") {
-                //   return <div innerHTML={component} />;
-                // }
                 if (widgetSupport_1.isWidget(component)) {
-                    return (widget_1.tsx("div", { class: "esri-mobile-expand__component" }, component.render()));
+                    return (widget_1.tsx("div", { class: CSS.mobileExpandComponent }, component.render()));
                 }
-                // if (component instanceof HTMLElement) {
-                //   return <div bind={component} afterCreate={this._attachToNode} />;
-                // }
-                // if (isWidgetBase(component)) {
-                //   return (
-                //     <div bind={component.domNode} afterCreate={this._attachToNode} />
-                //   );
-                // }
-                // console.log(components);
                 return null;
             });
             var expanded = this.viewModel.expanded;

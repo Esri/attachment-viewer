@@ -1074,7 +1074,8 @@ class AttachmentViewerViewModel extends declared(Accessor) {
       layerFeatureIndex || layerFeatureIndex === 0
         ? this.layerFeatures.getItemAt(layerFeatureIndex)
         : this.selectedFeature;
-    this._highlightedFeature = this.layerView.highlight(feature);
+    this._highlightedFeature =
+      this.layerView && this.layerView.highlight(feature);
   }
 
   //----------------------------------

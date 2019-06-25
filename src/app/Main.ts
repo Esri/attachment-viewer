@@ -129,7 +129,11 @@ class AttachmentViewerApp {
     const firstItem = validWebMapItems[0];
 
     if (!firstItem) {
-      console.error("Could not load an item to display");
+      const error = "Could not load an item to display";
+      document.body.classList.remove("configurable-application--loading");
+      document.body.classList.add("app-error");
+      document.getElementById("app-container").innerHTML = `<h1>${error}</h1>`;
+      console.error(error);
       return;
     }
 

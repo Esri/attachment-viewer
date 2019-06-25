@@ -16,7 +16,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/core/tsSupport/decorateHelper", "esri/core/accessorSupport/decorators", "esri/widgets/support/widget", "dojo/i18n!./nls/resources", "esri/widgets/Widget", "esri/core/watchUtils", "../AttachmentViewer/AttachmentViewerViewModel", "../utils", "../utils/imageUtils"], function (require, exports, __extends, __decorate, decorators_1, widget_1, i18n, Widget, watchUtils, AttachmentViewerViewModel, utils_1, imageUtils_1) {
+define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/core/tsSupport/decorateHelper", "esri/core/accessorSupport/decorators", "esri/widgets/support/widget", "dojo/i18n!./nls/resources", "esri/widgets/Widget", "esri/core/watchUtils", "../AttachmentViewer/AttachmentViewerViewModel", "../utils/utils", "../utils/imageUtils"], function (require, exports, __extends, __decorate, decorators_1, widget_1, i18n, Widget, watchUtils, AttachmentViewerViewModel, utils_1, imageUtils_1) {
     "use strict";
     //----------------------------------
     //
@@ -329,7 +329,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         };
         // _renderImageContainer
         PhotoCentric.prototype._renderImageContainer = function () {
-            var _a, _b;
+            var _a;
             var currentImageUrl = this.currentImageUrl;
             var attachmentCount = this._onboardingPanelIsOpen
                 ? this.onboardingImage
@@ -344,18 +344,12 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             var attachment = attachments && attachments.length > 0
                 ? attachments[this.attachmentIndex]
                 : null;
-            var name = attachment ? attachment.name : null;
-            var imageStyles = attachment && attachment.orientationInfo && this._photoViewerContainer
-                ? imageUtils_1.getOrientationStyles(attachment.orientationInfo, this._photoViewerContainer)
-                : {
-                    transform: "none",
-                    maxHeight: "100%",
-                    height: "initial",
-                    width: "initial"
-                };
-            var fadeImage = (_b = {},
-                _b[CSS.fadeImage] = !this.imageIsLoaded,
-                _b);
+            var video = attachment &&
+                attachment.contentType &&
+                attachment.contentType.indexOf("video") !== -1
+                ? this._renderVideo(currentImageUrl)
+                : null;
+            var currentImage = this._renderCurrentImage(currentImageUrl);
             return (widget_1.tsx("div", { class: this.classes(CSS.rightPanel) }, this._layerDoesNotSupportAttachments ? (this._onboardingPanelIsOpen && this.onboardingImage ? (widget_1.tsx("div", { bind: this, afterCreate: widget_1.storeNode, "data-node-ref": "_photoViewerContainer", key: buildKey("image-container-not-supported"), class: this.classes(downloadEnabled, CSS.photoViewer) },
                 widget_1.tsx("div", { class: CSS.imageContainer },
                     widget_1.tsx("img", { src: this.onboardingImage })))) : (widget_1.tsx("div", { class: CSS.layerNotSupported }, i18n.notSupported))) : (widget_1.tsx("div", { bind: this, afterCreate: widget_1.storeNode, "data-node-ref": "_photoViewerContainer", key: buildKey("image-container"), class: this.classes(downloadEnabled, CSS.photoViewer) },
@@ -371,13 +365,44 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                     widget_1.tsx("span", { class: CSS.noAttachmentsText }, i18n.noPhotoAttachmentsFound)))) : null,
                 widget_1.tsx("div", { class: CSS.imageContainer }, attachment &&
                     attachment.contentType &&
-                    attachment.contentType.indexOf("video") !== -1 ? (widget_1.tsx("video", { bind: this, afterCreate: this._removeImageLoader, class: CSS.videoContainer, controls: true },
-                    widget_1.tsx("source", { src: currentImageUrl, type: "video/mp4" }),
-                    widget_1.tsx("source", { src: currentImageUrl, type: "video/quicktime" }),
-                    widget_1.tsx("source", { src: currentImageUrl, type: "video/ogg" }),
-                    widget_1.tsx("source", { src: currentImageUrl, type: "video/mov" }),
-                    i18n.doesNotSupportVideo)) : this._onboardingPanelIsOpen && this.onboardingImage ? (widget_1.tsx("img", { src: this.onboardingImage })) : (widget_1.tsx("img", { class: this.classes(CSS.imageDesktop, fadeImage), styles: imageStyles, bind: this, src: currentImageUrl, onload: this._removeImageLoader, alt: name }))),
+                    attachment.contentType.indexOf("video") !== -1 ? (video) : this._onboardingPanelIsOpen && this.onboardingImage ? (widget_1.tsx("img", { src: this.onboardingImage })) : (currentImage)),
                 attachmentCount))));
+        };
+        PhotoCentric.prototype._renderCurrentImage = function (currentImageUrl) {
+            var _a;
+            var selectedFeatureAttachments = this.selectedFeatureAttachments;
+            var attachments = selectedFeatureAttachments && selectedFeatureAttachments.attachments;
+            var attachment = attachments && attachments.length > 0
+                ? attachments[this.attachmentIndex]
+                : null;
+            var name = attachment ? attachment.name : null;
+            var imageStyles = attachment && attachment.orientationInfo === null && this.imageIsLoaded
+                ? {
+                    transform: "none",
+                    maxHeight: "100%",
+                    height: "initial",
+                    width: "initial"
+                }
+                : attachment &&
+                    attachment.orientationInfo &&
+                    this._photoViewerContainer &&
+                    this.imageIsLoaded
+                    ? imageUtils_1.getOrientationStyles(attachment.orientationInfo, this._photoViewerContainer)
+                    : {};
+            var fadeImage = (_a = {},
+                _a[CSS.fadeImage] = !this.imageIsLoaded,
+                _a);
+            return (widget_1.tsx("img", { class: this.classes(CSS.imageDesktop, fadeImage), styles: imageStyles, bind: this, src: currentImageUrl, onload: this._removeImageLoader, alt: name }));
+        };
+        // _renderVideo
+        PhotoCentric.prototype._renderVideo = function (currentImageUrl) {
+            this.imageIsLoaded = true;
+            return (widget_1.tsx("video", { bind: this, class: CSS.videoContainer, controls: true },
+                widget_1.tsx("source", { src: currentImageUrl, type: "video/mp4" }),
+                widget_1.tsx("source", { src: currentImageUrl, type: "video/quicktime" }),
+                widget_1.tsx("source", { src: currentImageUrl, type: "video/ogg" }),
+                widget_1.tsx("source", { src: currentImageUrl, type: "video/mov" }),
+                i18n.doesNotSupportVideo));
         };
         // _renderImageViewerDesktop
         PhotoCentric.prototype._renderImageViewerDesktop = function () {
@@ -414,6 +439,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                 attachment &&
                     attachment.contentType &&
                     attachment.contentType.indexOf("video") === -1 &&
+                    attachment.contentType.indexOf("gif") === -1 &&
                     this.viewModel.downloadEnabled ? (this.viewModel.state === "downloading" ? (widget_1.tsx("div", { class: CSS.downloadIconContainer },
                     widget_1.tsx("span", { class: this.classes(CSS.calcite.loadingIcon, CSS.calcite.rotating, CSS.spinner), role: "presentation" }))) : (widget_1.tsx("button", { class: this.classes(CSS.downloadIconContainer, CSS.downloadButtonDesktop), bind: this, onclick: this._downloadImage, onkeydown: this._downloadImage, "data-image-url": attachment.url, "data-image-name": attachment.name, title: i18n.download, disabled: this.imageIsLoaded ? false : true },
                     widget_1.tsx("span", { class: this.classes(CSS.calcite.downloadIcon, CSS.calcite.flush, CSS.downloadIcon) })))) : null));
@@ -624,15 +650,22 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                     width: "initial"
                 };
             var imageAttachmentHeight = imageStyles.width;
+            var userAgent = navigator.userAgent || navigator.vendor;
+            var isAndroid = false;
+            if (userAgent.match(/Android/i)) {
+                isAndroid = true;
+            }
             var addPadding = (_a = {},
                 _a[CSS.mobileAttachmentsAddPadding] = attachment &&
                     attachment.orientationInfo &&
-                    attachment.orientationInfo.rotation !== 0,
+                    attachment.orientationInfo.rotation !== 0 &&
+                    isAndroid,
                 _a);
             var removeBorderRadius = (_b = {},
                 _b[CSS.removeBorderRadius] = attachment &&
                     attachment.orientationInfo &&
-                    attachment.orientationInfo.rotation !== 0,
+                    attachment.orientationInfo.rotation !== 0 &&
+                    isAndroid,
                 _b);
             var removeOpacity = (_c = {},
                 _c[CSS.removeOpacity] = this.imageIsLoaded,
@@ -648,8 +681,8 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             else {
                 attachmentUrl = url ? url : null;
             }
-            return (widget_1.tsx("div", { bind: this, styles: { height: imageAttachmentHeight }, afterCreate: widget_1.storeNode, afterUpdate: widget_1.storeNode, "data-node-ref": "_mobileAttachment", class: this.classes(CSS.mobileAttachment, addPadding, transparentBackground) },
-                widget_1.tsx("div", { class: CSS.mobileAttachmentContainer }, attachment &&
+            return (widget_1.tsx("div", { bind: this, styles: { height: imageAttachmentHeight }, afterCreate: widget_1.storeNode, afterUpdate: widget_1.storeNode, "data-node-ref": "_mobileAttachment", class: this.classes(CSS.mobileAttachment, transparentBackground) },
+                widget_1.tsx("div", { class: this.classes(CSS.mobileAttachmentContainer, addPadding) }, attachment &&
                     attachment.contentType &&
                     attachment.contentType.indexOf("video") !== -1 ? (widget_1.tsx("video", { class: CSS.videoContainer, controls: true },
                     widget_1.tsx("source", { src: attachmentUrl, type: "video/mp4" }),
@@ -659,6 +692,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                 attachment &&
                     attachment.contentType &&
                     attachment.contentType.indexOf("video") === -1 &&
+                    attachment.contentType.indexOf("gif") === -1 &&
                     this.viewModel.downloadEnabled &&
                     this.imageIsLoaded ? (widget_1.tsx("button", { bind: this, "data-image-url": url, "data-image-name": name, disabled: this.imageIsLoaded ? false : true, onclick: this._downloadImage, onkeydown: this._downloadImage, class: CSS.downloadIconContainer },
                     widget_1.tsx("span", { class: this.classes(CSS.calcite.downloadIcon, CSS.calcite.flush, CSS.downloadIcon) }))) : null));
@@ -670,10 +704,8 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         //----------------------------------
         // _removeImageLoader
         PhotoCentric.prototype._removeImageLoader = function () {
-            if (this.currentImageUrl !== this._previousImageUrl) {
-                this.imageIsLoaded = true;
-                this.scheduleRender();
-            }
+            this.imageIsLoaded = true;
+            this.scheduleRender();
         };
         //----------------------------------
         //
@@ -718,7 +750,8 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                 return;
             }
             this.viewModel.previousFeature();
-            if (this.featureLayer.get("capabilities.data.supportsAttachment")) {
+            if (this.featureLayer &&
+                this.featureLayer.get("capabilities.data.supportsAttachment")) {
                 this.imageIsLoaded = false;
             }
             this.scheduleRender();
@@ -729,7 +762,8 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                 return;
             }
             this.viewModel.nextFeature();
-            if (this.featureLayer.get("capabilities.data.supportsAttachment")) {
+            if (this.featureLayer &&
+                this.featureLayer.get("capabilities.data.supportsAttachment")) {
                 this.imageIsLoaded = false;
             }
             this.scheduleRender();
