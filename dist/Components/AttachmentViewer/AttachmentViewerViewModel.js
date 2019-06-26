@@ -381,7 +381,6 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                 if (_this.state !== "ready") {
                     return;
                 }
-                _this.imageIsLoaded = false;
                 var _a = _this, featureLayer = _a.featureLayer, view = _a.view;
                 if (featureLayer) {
                     _this._performingHitTest = view.hitTest(event);
@@ -396,6 +395,9 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                         if (hitTestRes.results.length) {
                             _this._setClickedFeature(hitTestRes);
                         }
+                        else {
+                            _this.imageIsLoaded = true;
+                        }
                     });
                 }
             });
@@ -408,6 +410,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             });
             // If the feature does not exist in the photo presentation layer, do not set.
             if (isNotFromLayer) {
+                this.imageIsLoaded = true;
                 return;
             }
             var detectedFeature = hitTestRes.results.filter(function (result) {

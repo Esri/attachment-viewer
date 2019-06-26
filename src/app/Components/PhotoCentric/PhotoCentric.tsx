@@ -378,23 +378,12 @@ class PhotoCentric extends declared(Widget) {
             selectedFeatureAttachments &&
             selectedFeatureAttachments.attachments &&
             selectedFeatureAttachments.attachments[attachmentIndex];
-
-          const ssl =
-            this.featureLayer &&
-            this.featureLayer.get("portalItem.portal.allSSL");
-
-          if (ssl) {
-            this.currentImageUrl =
-              attachments && attachments.url
-                ? attachments.url.replace(/^http:\/\//i, "https://")
-                : null;
-          } else {
-            this.currentImageUrl = attachments ? attachments.url : null;
-          }
-
+          const attachmentUrl = attachments ? attachments.url : null;
+          this.currentImageUrl = this._convertAttachmentUrl(attachmentUrl);
           this.scheduleRender();
         }
       ),
+
       watchUtils.when(this, "selectedFeatureAttachments", () => {
         if (
           this._previousImageUrl !== this.currentImageUrl &&
@@ -590,7 +579,9 @@ class PhotoCentric extends declared(Widget) {
                 </div>
               )
             ) : null}
-            {attachments && attachments.length === 0 ? (
+            {(attachments && attachments.length === 0) ||
+            (!selectedFeatureAttachments &&
+              !this._layerDoesNotSupportAttachments) ? (
               this.onboardingImage && this._onboardingPanelIsOpen ? null : (
                 <div
                   key={buildKey("no-attachments-container")}
@@ -639,7 +630,6 @@ class PhotoCentric extends declared(Widget) {
         : null;
 
     const name = attachment ? attachment.name : null;
-
     const imageStyles =
       attachment && attachment.orientationInfo === null && this.imageIsLoaded
         ? {
@@ -660,12 +650,13 @@ class PhotoCentric extends declared(Widget) {
     const fadeImage = {
       [CSS.fadeImage]: !this.imageIsLoaded
     };
+
     return (
       <img
         class={this.classes(CSS.imageDesktop, fadeImage)}
         styles={imageStyles}
         bind={this}
-        src={currentImageUrl}
+        src={this.currentImageUrl}
         onload={this._removeImageLoader}
         alt={name}
       />
@@ -707,6 +698,7 @@ class PhotoCentric extends declared(Widget) {
       selectedFeatureAttachments &&
       selectedFeatureAttachments.attachments &&
       selectedFeatureAttachments.attachments.length > 1;
+
     return (
       <div key={buildKey("attachment-count")} class={CSS.attachmentNumber}>
         {this.selectedFeatureAttachments &&
@@ -806,7 +798,7 @@ class PhotoCentric extends declared(Widget) {
               bind={this}
               onclick={this._downloadImage}
               onkeydown={this._downloadImage}
-              data-image-url={attachment.url}
+              data-image-url={this.currentImageUrl}
               data-image-name={attachment.name}
               title={i18n.download}
               disabled={this.imageIsLoaded ? false : true}
@@ -1152,6 +1144,7 @@ class PhotoCentric extends declared(Widget) {
       ((typeof contentInfo.content === "string" &&
         contentInfo.content.trim() !== "") ||
         contentInfo.content !== null);
+
     return (
       <div class={CSS.featureContentInfo}>
         <h4 class={CSS.attributeHeading}>{contentInfo.attribute}</h4>
@@ -1258,6 +1251,7 @@ class PhotoCentric extends declared(Widget) {
   // _renderAttachmentMobile
   private _renderAttachmentMobile(attachment: any): VNode {
     const { url, name } = attachment;
+
     const imageStyles =
       attachment &&
       attachment.orientationInfo &&
@@ -1306,15 +1300,8 @@ class PhotoCentric extends declared(Widget) {
     const transparentBackground = {
       [CSS.transparentBackground]: !this.imageIsLoaded
     };
-    let attachmentUrl: string;
-    const ssl =
-      this.featureLayer && this.featureLayer.get("portalItem.portal.allSSL");
 
-    if (ssl) {
-      attachmentUrl = url ? url.replace(/^http:\/\//i, "https://") : null;
-    } else {
-      attachmentUrl = url ? url : null;
-    }
+    const attachmentUrl = this._convertAttachmentUrl(url);
 
     return (
       <div
@@ -1357,7 +1344,7 @@ class PhotoCentric extends declared(Widget) {
         this.imageIsLoaded ? (
           <button
             bind={this}
-            data-image-url={url}
+            data-image-url={attachmentUrl}
             data-image-name={name}
             disabled={this.imageIsLoaded ? false : true}
             onclick={this._downloadImage}
@@ -1492,6 +1479,22 @@ class PhotoCentric extends declared(Widget) {
       content.match(regex).length > 0
       ? content.match(regex)[0]
       : null;
+  }
+
+  // _convertAttachmentUrl
+  private _convertAttachmentUrl(attachmentUrl: string): string {
+    const portalUrl =
+      this.featureLayer &&
+      (this.featureLayer.get("portalItem.portal.url") as string);
+    const portalIsHTTPS = portalUrl && portalUrl.indexOf("https") !== -1;
+    if (
+      portalIsHTTPS &&
+      attachmentUrl &&
+      attachmentUrl.indexOf("https") === -1
+    ) {
+      return attachmentUrl.replace(/^http:\/\//i, "https://");
+    }
+    return attachmentUrl;
   }
 }
 
