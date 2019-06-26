@@ -525,7 +525,6 @@ class AttachmentViewerViewModel extends declared(Accessor) {
       if (this.state !== "ready") {
         return;
       }
-      this.imageIsLoaded = false;
       const { featureLayer, view } = this;
       if (featureLayer) {
         this._performingHitTest = view.hitTest(event);
@@ -540,6 +539,8 @@ class AttachmentViewerViewModel extends declared(Accessor) {
 
           if (hitTestRes.results.length) {
             this._setClickedFeature(hitTestRes);
+          } else {
+            this.imageIsLoaded = true;
           }
         });
       }
@@ -555,6 +556,7 @@ class AttachmentViewerViewModel extends declared(Accessor) {
 
     // If the feature does not exist in the photo presentation layer, do not set.
     if (isNotFromLayer) {
+      this.imageIsLoaded = true;
       return;
     }
 

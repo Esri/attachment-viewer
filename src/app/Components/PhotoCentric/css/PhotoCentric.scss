@@ -716,6 +716,8 @@ $text-color: #c3c3c3;
     background: #fff;
     border-radius: 5px;
     width: 93%;
+    max-height: 50%;
+    overflow-y: scroll;
   }
 
   .esri-photo-centric__onboarding-overlay {
@@ -1075,7 +1077,8 @@ html[dir="rtl"] {
 @supports (-webkit-overflow-scrolling: touch) {
 
   .esri-photo-centric--bottom-container-expanded,
-  .esri-photo-centric__main-page-bottom-container {
+  .esri-photo-centric__main-page-bottom-container,
+  .esri-photo-centric__onboarding-content-container {
     -webkit-overflow-scrolling: touch;
   }
 }

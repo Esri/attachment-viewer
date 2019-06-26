@@ -247,17 +247,8 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                     var attachments = selectedFeatureAttachments &&
                         selectedFeatureAttachments.attachments &&
                         selectedFeatureAttachments.attachments[attachmentIndex];
-                    var ssl = _this.featureLayer &&
-                        _this.featureLayer.get("portalItem.portal.allSSL");
-                    if (ssl) {
-                        _this.currentImageUrl =
-                            attachments && attachments.url
-                                ? attachments.url.replace(/^http:\/\//i, "https://")
-                                : null;
-                    }
-                    else {
-                        _this.currentImageUrl = attachments ? attachments.url : null;
-                    }
+                    var attachmentUrl = attachments ? attachments.url : null;
+                    _this.currentImageUrl = _this._convertAttachmentUrl(attachmentUrl);
                     _this.scheduleRender();
                 }),
                 watchUtils.when(this, "selectedFeatureAttachments", function () {
@@ -359,7 +350,9 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                     attachment.contentType.indexOf("video") === -1 &&
                     attachments ? (this._onboardingPanelIsOpen && this.onboardingImage ? null : (widget_1.tsx("div", { class: CSS.widgetLoader, key: buildKey("base-loader") },
                     widget_1.tsx("span", { class: CSS.animationLoader, role: "presentation", "aria-label": i18n.loadingImages })))) : null,
-                attachments && attachments.length === 0 ? (this.onboardingImage && this._onboardingPanelIsOpen ? null : (widget_1.tsx("div", { key: buildKey("no-attachments-container"), class: CSS.noAttachmentsContainer },
+                (attachments && attachments.length === 0) ||
+                    (!selectedFeatureAttachments &&
+                        !this._layerDoesNotSupportAttachments) ? (this.onboardingImage && this._onboardingPanelIsOpen ? null : (widget_1.tsx("div", { key: buildKey("no-attachments-container"), class: CSS.noAttachmentsContainer },
                     widget_1.tsx("svg", { class: CSS.svg.media, xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 16 16" },
                         widget_1.tsx("path", { d: "M1 2v12h14V2zm13 11H2V3h12zm-1-1H3v-1h10zM3 8.678l.333-.356a.3.3 0 0 1 .445 0 .3.3 0 0 0 .444 0l2.242-2.39a.3.3 0 0 1 .423-.021l2.255 2.005a.299.299 0 0 0 .39.01l1.361-.915a.3.3 0 0 1 .41.032L13 8.678V10H3zM11.894 9l-.89-.859-.846.565a1.299 1.299 0 0 1-1.68-.043L6.732 7.11 4.958 9zm-.644-4.5a.75.75 0 1 1-.75-.75.75.75 0 0 1 .75.75z" })),
                     widget_1.tsx("span", { class: CSS.noAttachmentsText }, i18n.noPhotoAttachmentsFound)))) : null,
@@ -392,7 +385,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             var fadeImage = (_a = {},
                 _a[CSS.fadeImage] = !this.imageIsLoaded,
                 _a);
-            return (widget_1.tsx("img", { class: this.classes(CSS.imageDesktop, fadeImage), styles: imageStyles, bind: this, src: currentImageUrl, onload: this._removeImageLoader, alt: name }));
+            return (widget_1.tsx("img", { class: this.classes(CSS.imageDesktop, fadeImage), styles: imageStyles, bind: this, src: this.currentImageUrl, onload: this._removeImageLoader, alt: name }));
         };
         // _renderVideo
         PhotoCentric.prototype._renderVideo = function (currentImageUrl) {
@@ -441,7 +434,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                     attachment.contentType.indexOf("video") === -1 &&
                     attachment.contentType.indexOf("gif") === -1 &&
                     this.viewModel.downloadEnabled ? (this.viewModel.state === "downloading" ? (widget_1.tsx("div", { class: CSS.downloadIconContainer },
-                    widget_1.tsx("span", { class: this.classes(CSS.calcite.loadingIcon, CSS.calcite.rotating, CSS.spinner), role: "presentation" }))) : (widget_1.tsx("button", { class: this.classes(CSS.downloadIconContainer, CSS.downloadButtonDesktop), bind: this, onclick: this._downloadImage, onkeydown: this._downloadImage, "data-image-url": attachment.url, "data-image-name": attachment.name, title: i18n.download, disabled: this.imageIsLoaded ? false : true },
+                    widget_1.tsx("span", { class: this.classes(CSS.calcite.loadingIcon, CSS.calcite.rotating, CSS.spinner), role: "presentation" }))) : (widget_1.tsx("button", { class: this.classes(CSS.downloadIconContainer, CSS.downloadButtonDesktop), bind: this, onclick: this._downloadImage, onkeydown: this._downloadImage, "data-image-url": this.currentImageUrl, "data-image-name": attachment.name, title: i18n.download, disabled: this.imageIsLoaded ? false : true },
                     widget_1.tsx("span", { class: this.classes(CSS.calcite.downloadIcon, CSS.calcite.flush, CSS.downloadIcon) })))) : null));
         };
         // _renderHeader
@@ -673,14 +666,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             var transparentBackground = (_d = {},
                 _d[CSS.transparentBackground] = !this.imageIsLoaded,
                 _d);
-            var attachmentUrl;
-            var ssl = this.featureLayer && this.featureLayer.get("portalItem.portal.allSSL");
-            if (ssl) {
-                attachmentUrl = url ? url.replace(/^http:\/\//i, "https://") : null;
-            }
-            else {
-                attachmentUrl = url ? url : null;
-            }
+            var attachmentUrl = this._convertAttachmentUrl(url);
             return (widget_1.tsx("div", { bind: this, styles: { height: imageAttachmentHeight }, afterCreate: widget_1.storeNode, afterUpdate: widget_1.storeNode, "data-node-ref": "_mobileAttachment", class: this.classes(CSS.mobileAttachment, transparentBackground) },
                 widget_1.tsx("div", { class: this.classes(CSS.mobileAttachmentContainer, addPadding) }, attachment &&
                     attachment.contentType &&
@@ -694,7 +680,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                     attachment.contentType.indexOf("video") === -1 &&
                     attachment.contentType.indexOf("gif") === -1 &&
                     this.viewModel.downloadEnabled &&
-                    this.imageIsLoaded ? (widget_1.tsx("button", { bind: this, "data-image-url": url, "data-image-name": name, disabled: this.imageIsLoaded ? false : true, onclick: this._downloadImage, onkeydown: this._downloadImage, class: CSS.downloadIconContainer },
+                    this.imageIsLoaded ? (widget_1.tsx("button", { bind: this, "data-image-url": attachmentUrl, "data-image-name": name, disabled: this.imageIsLoaded ? false : true, onclick: this._downloadImage, onkeydown: this._downloadImage, class: CSS.downloadIconContainer },
                     widget_1.tsx("span", { class: this.classes(CSS.calcite.downloadIcon, CSS.calcite.flush, CSS.downloadIcon) }))) : null));
         };
         //----------------------------------
@@ -787,6 +773,18 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                 content.match(regex).length > 0
                 ? content.match(regex)[0]
                 : null;
+        };
+        // _convertAttachmentUrl
+        PhotoCentric.prototype._convertAttachmentUrl = function (attachmentUrl) {
+            var portalUrl = this.featureLayer &&
+                this.featureLayer.get("portalItem.portal.url");
+            var portalIsHTTPS = portalUrl && portalUrl.indexOf("https") !== -1;
+            if (portalIsHTTPS &&
+                attachmentUrl &&
+                attachmentUrl.indexOf("https") === -1) {
+                return attachmentUrl.replace(/^http:\/\//i, "https://");
+            }
+            return attachmentUrl;
         };
         __decorate([
             decorators_1.aliasOf("viewModel.view"),
