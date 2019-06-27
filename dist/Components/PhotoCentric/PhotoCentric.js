@@ -16,7 +16,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/core/tsSupport/decorateHelper", "esri/core/accessorSupport/decorators", "esri/widgets/support/widget", "dojo/i18n!./nls/resources", "esri/widgets/Widget", "esri/core/watchUtils", "../AttachmentViewer/AttachmentViewerViewModel", "../utils/utils", "../utils/imageUtils"], function (require, exports, __extends, __decorate, decorators_1, widget_1, i18n, Widget, watchUtils, AttachmentViewerViewModel, utils_1, imageUtils_1) {
+define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/core/tsSupport/decorateHelper", "esri/core/accessorSupport/decorators", "esri/widgets/support/widget", "dojo/i18n!./nls/resources", "esri/widgets/Widget", "esri/core/watchUtils", "../AttachmentViewer/AttachmentViewerViewModel", "../utils/utils", "../utils/imageUtils", "../../urlUtils"], function (require, exports, __extends, __decorate, decorators_1, widget_1, i18n, Widget, watchUtils, AttachmentViewerViewModel, utils_1, imageUtils_1, urlUtils_1) {
     "use strict";
     //----------------------------------
     //
@@ -587,10 +587,10 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                     contentInfo.content.trim() !== "") ||
                     contentInfo.content !== null);
             return (widget_1.tsx("div", { class: CSS.featureContentInfo },
-                widget_1.tsx("h4", { class: CSS.attributeHeading }, contentInfo.attribute),
-                contentInfo && contentInfo.content && contentCheck ? (hyperlink ? (widget_1.tsx("p", null,
-                    contentInfo.content.replace(hyperlink, ""),
-                    widget_1.tsx("a", { class: CSS.contentLink, href: hyperlink, target: "_blank" }, hyperlink))) : (widget_1.tsx("p", { class: CSS.attributeContent }, contentInfo.content))) : (widget_1.tsx("p", null, i18n.noContentAvailable))));
+                widget_1.tsx("h4", { class: CSS.attributeHeading, innerHTML: contentInfo.attribute }),
+                contentInfo && contentInfo.content && contentCheck ? (hyperlink ? (widget_1.tsx("p", { class: CSS.attributeContent },
+                    widget_1.tsx("div", { innerHTML: contentInfo.content.replace(hyperlink, "") }),
+                    widget_1.tsx("span", { innerHTML: urlUtils_1.autoLink(hyperlink) }))) : (widget_1.tsx("p", { class: CSS.attributeContent, innerHTML: contentInfo.content }))) : (widget_1.tsx("p", null, i18n.noContentAvailable))));
         };
         // _renderOtherAttachmentTypes
         PhotoCentric.prototype._renderOtherAttachmentTypes = function () {
@@ -776,9 +776,12 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         };
         // _convertAttachmentUrl
         PhotoCentric.prototype._convertAttachmentUrl = function (attachmentUrl) {
+            var parentPortalUrl = this.featureLayer &&
+                this.featureLayer.get("parent.portalItem.portal.url");
             var portalUrl = this.featureLayer &&
                 this.featureLayer.get("portalItem.portal.url");
-            var portalIsHTTPS = portalUrl && portalUrl.indexOf("https") !== -1;
+            var portalIsHTTPS = (portalUrl && portalUrl.indexOf("https") !== -1) ||
+                (parentPortalUrl && parentPortalUrl.indexOf("https") !== -1);
             if (portalIsHTTPS &&
                 attachmentUrl &&
                 attachmentUrl.indexOf("https") === -1) {

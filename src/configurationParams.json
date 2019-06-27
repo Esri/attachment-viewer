@@ -173,6 +173,8 @@
     "order": "ASC",
     "addressEnabled": false,
     "searchExpanded": true,
-    "mapToolsExpanded": true
+    "mapToolsExpanded": true,
+    "headerBackground": "#0079c1",
+    "headerColor": "#ffffff"
   }
 }
