@@ -58,6 +58,8 @@ import {
   getOrientationStylesMobile
 } from "../utils/imageUtils";
 
+import { autoLink } from "../../urlUtils";
+
 //----------------------------------
 //
 //  CSS Classes
@@ -438,7 +440,6 @@ class PhotoCentric extends declared(Widget) {
   private _renderOnboarding(): VNode {
     const onboardingWelcomeContent = this._renderOnboardingWelcomeContent();
     const onboardingStartButton = this._renderOnboardingStartButton();
-
     return (
       <div
         key={buildKey("onboarding-container")}
@@ -1147,17 +1148,15 @@ class PhotoCentric extends declared(Widget) {
 
     return (
       <div class={CSS.featureContentInfo}>
-        <h4 class={CSS.attributeHeading}>{contentInfo.attribute}</h4>
+        <h4 class={CSS.attributeHeading} innerHTML={contentInfo.attribute} />
         {contentInfo && contentInfo.content && contentCheck ? (
           hyperlink ? (
-            <p>
-              {contentInfo.content.replace(hyperlink, "")}
-              <a class={CSS.contentLink} href={hyperlink} target="_blank">
-                {hyperlink}
-              </a>
+            <p class={CSS.attributeContent}>
+              <div innerHTML={contentInfo.content.replace(hyperlink, "")} />
+              <span innerHTML={autoLink(hyperlink)} />
             </p>
           ) : (
-            <p class={CSS.attributeContent}>{contentInfo.content}</p>
+            <p class={CSS.attributeContent} innerHTML={contentInfo.content} />
           )
         ) : (
           <p>{i18n.noContentAvailable}</p>
@@ -1483,10 +1482,16 @@ class PhotoCentric extends declared(Widget) {
 
   // _convertAttachmentUrl
   private _convertAttachmentUrl(attachmentUrl: string): string {
+    const parentPortalUrl =
+      this.featureLayer &&
+      (this.featureLayer.get("parent.portalItem.portal.url") as string);
     const portalUrl =
       this.featureLayer &&
       (this.featureLayer.get("portalItem.portal.url") as string);
-    const portalIsHTTPS = portalUrl && portalUrl.indexOf("https") !== -1;
+    const portalIsHTTPS =
+      (portalUrl && portalUrl.indexOf("https") !== -1) ||
+      (parentPortalUrl && parentPortalUrl.indexOf("https") !== -1);
+
     if (
       portalIsHTTPS &&
       attachmentUrl &&
