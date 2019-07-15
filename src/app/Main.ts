@@ -56,8 +56,6 @@ import Collection = require("esri/core/Collection");
 
 import Zoom = require("esri/widgets/Zoom");
 
-import watchUtils = require("esri/core/watchUtils");
-
 import {
   ApplicationConfig,
   ApplicationBaseSettings
