@@ -40,5 +40,7 @@
     "watch:ts": "tsc --watch",
     "lint": "grunt lint"
   },
-  "dependencies": {}
+  "dependencies": {
+    "typescript": "^3.5.3"
+  }
 }
