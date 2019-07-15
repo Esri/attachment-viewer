@@ -32,7 +32,8 @@
     "node-sass": "^4.9.3",
     "npm-run-all": "^4.1.5",
     "postcss-normalize-charset": "^1.1.0",
-    "tslint": "^5.11.0"
+    "tslint": "^5.11.0",
+    "typescript": "^3.5.3"
   },
   "scripts": {
     "start": "npm-run-all --parallel watch:grunt watch:ts",
@@ -40,7 +41,5 @@
     "watch:ts": "tsc --watch",
     "lint": "grunt lint"
   },
-  "dependencies": {
-    "typescript": "^3.5.3"
-  }
+  "dependencies": {}
 }
