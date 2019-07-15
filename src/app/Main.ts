@@ -176,8 +176,8 @@ class AttachmentViewerApp {
             const appTitle = title
               ? title
               : (view.map.get("portalItem") as __esri.PortalItem).title
-              ? (view.map.get("portalItem") as __esri.PortalItem).title
-              : "Feature Browser";
+                ? (view.map.get("portalItem") as __esri.PortalItem).title
+                : "Feature Browser";
 
             this.view.ui.remove("zoom");
 

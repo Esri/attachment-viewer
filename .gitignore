@@ -5,3 +5,6 @@ node_modules
 Gruntfile.js
 tslint.json
 web.config
+yarn.lock
+.vscode
+.DS_Store
