@@ -1,5 +1,5 @@
 {
-  "name": "feature-browser",
+  "name": "attachment-viewer",
   "version": "0.0.1",
   "description": "Provide an immersive experience to review locations, feature information and photos with geographic locations (as attachments or files) in an easy to understand way for the viewer.",
   "author": "Ryan Libed",
@@ -19,7 +19,7 @@
   ],
   "devDependencies": {
     "@esri/application-base-js": "0.0.5",
-    "@types/arcgis-js-api": "^4.9.0",
+    "@types/arcgis-js-api": "^4.12.0",
     "autoprefixer": "^6.3.6",
     "calcite-web": "github:Esri/calcite-web#v1.0.1",
     "cpx": "^1.5.0",

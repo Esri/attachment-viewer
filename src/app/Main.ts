@@ -56,6 +56,8 @@ import Collection = require("esri/core/Collection");
 
 import Zoom = require("esri/widgets/Zoom");
 
+import watchUtils = require("esri/core/watchUtils");
+
 import {
   ApplicationConfig,
   ApplicationBaseSettings
@@ -176,8 +178,8 @@ class AttachmentViewerApp {
             const appTitle = title
               ? title
               : (view.map.get("portalItem") as __esri.PortalItem).title
-              ? (view.map.get("portalItem") as __esri.PortalItem).title
-              : "Feature Browser";
+                ? (view.map.get("portalItem") as __esri.PortalItem).title
+                : "Feature Browser";
 
             this.view.ui.remove("zoom");
 
