@@ -25,7 +25,12 @@ export interface SelectedLayer {
   fields: Fields[];
 }
 
-export interface SelectedFeatureAttachments {
+export interface AttachmentData {
   attachments: __esri.AttachmentInfo[];
-  currentIndex: number;
+  objectId: number;
+}
+
+export interface NavItem {
+  type: string;
+  iconClass: string;
 }

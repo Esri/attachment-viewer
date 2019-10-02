@@ -51,7 +51,7 @@ define({
   "menu": "תפריט",
   "more": "עוד",
   "none": "ללא",
-  "open": "פתוח",
+  "open": "פתח",
   "pagination": {
     "first": "ראשון",
     "last": "אחרון",

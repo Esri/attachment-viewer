@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "lib": ["es5", "es6", "dom"],
+    "lib": ["es5", "es6", "dom", "scripthost"],
     "declaration": false,
     "noImplicitAny": false,
     "module": "amd",
@@ -17,6 +17,7 @@
   "include": ["./src/app/*"],
   "exclude": ["./node_modules", "./tsrules"],
   "files": [
+    "./src/app/interfaces/declarations.d.ts",
     "./node_modules/@esri/application-base-js/index.d.ts",
     "./node_modules/@types/arcgis-js-api/index.d.ts",
     "./node_modules/dojo-typings/dojo/1.11/loader.d.ts",

@@ -45,22 +45,34 @@ define(["require", "exports"], function (require, exports) {
             scaleX: 1
         }
     };
-    function getOrientationStyles(orientationInfo, containerNode) {
+    function getOrientationStylesImageThumbnail(orientationInfo) {
         var orientation = ORIENTATION_MAP[orientationInfo.id];
-        var width = containerNode && containerNode.offsetWidth && orientationInfo.rotation !== 0
+        return orientation
+            ? {
+                transform: "rotate(" + orientationInfo.rotation + "deg) scale(1.5)"
+            }
+            : {};
+    }
+    exports.getOrientationStylesImageThumbnail = getOrientationStylesImageThumbnail;
+    function getOrientationStyles(orientationInfo, containerNode, appMode) {
+        var orientation = ORIENTATION_MAP[orientationInfo.id];
+        var width = containerNode &&
+            containerNode.offsetWidth &&
+            orientationInfo.rotation !== 0 &&
+            appMode !== "map-centric"
             ? containerNode.offsetWidth / 2 + "px"
-            : "initial";
+            : "";
         var height = containerNode &&
             containerNode.offsetHeight &&
-            orientationInfo.rotation !== 0
+            orientationInfo.rotation !== 0 &&
+            appMode !== "map-centric"
             ? containerNode.offsetHeight + "px"
-            : "initial";
+            : "";
         return orientation
             ? {
                 transform: "rotate(" + orientationInfo.rotation + "deg) scaleX(" + orientation.scaleX + ")",
                 height: width,
                 width: height,
-                objectFit: "cover",
                 maxHeight: "100%"
             }
             : {};

@@ -44,9 +44,27 @@ const ORIENTATION_MAP = {
   }
 };
 
+export function getOrientationStylesImageThumbnail(
+  orientationInfo: any
+): {
+  transform?: string;
+  height?: string;
+  width?: string;
+  objectFit?: string;
+  maxHeight?: string;
+} {
+  const orientation = ORIENTATION_MAP[orientationInfo.id];
+  return orientation
+    ? {
+        transform: `rotate(${orientationInfo.rotation}deg) scale(1.5)`
+      }
+    : {};
+}
+
 export function getOrientationStyles(
   orientationInfo: any,
-  containerNode?: HTMLElement
+  containerNode?: HTMLElement,
+  appMode?: string
 ): {
   transform?: string;
   height?: string;
@@ -56,23 +74,25 @@ export function getOrientationStyles(
 } {
   const orientation = ORIENTATION_MAP[orientationInfo.id];
   const width =
-    containerNode && containerNode.offsetWidth && orientationInfo.rotation !== 0
+    containerNode &&
+    containerNode.offsetWidth &&
+    orientationInfo.rotation !== 0 &&
+    appMode !== "map-centric"
       ? `${containerNode.offsetWidth / 2}px`
-      : "initial";
+      : "";
   const height =
     containerNode &&
     containerNode.offsetHeight &&
-    orientationInfo.rotation !== 0
+    orientationInfo.rotation !== 0 &&
+    appMode !== "map-centric"
       ? `${containerNode.offsetHeight}px`
-      : "initial";
+      : "";
+
   return orientation
     ? {
-        transform: `rotate(${orientationInfo.rotation}deg) scaleX(${
-          orientation.scaleX
-        })`,
+        transform: `rotate(${orientationInfo.rotation}deg) scaleX(${orientation.scaleX})`,
         height: width,
         width: height,
-        objectFit: "cover",
         maxHeight: "100%"
       }
     : {};
@@ -99,9 +119,7 @@ export function getOrientationStylesMobile(
     const orientation = ORIENTATION_MAP[orientationInfo.id];
     return orientation
       ? {
-          transform: `rotate(${orientationInfo.rotation}deg) scaleX(${
-            orientation.scaleX
-          })`
+          transform: `rotate(${orientationInfo.rotation}deg) scaleX(${orientation.scaleX})`
         }
       : {};
   } else {

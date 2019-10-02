@@ -21,7 +21,7 @@ define({
     "stop": "Zastavit"
   },
   "copy": "Kopírovat",
-  "create": "Vytvořit",
+  "create": "Projekt",
   "cut": "Vyjmout",
   "delete": "Smazat",
   "details": "Podrobnosti",
@@ -49,7 +49,7 @@ define({
   "loading": "Načítání",
   "maximize": "Maximalizovat",
   "menu": "Nabídka",
-  "more": "více",
+  "more": "Více",
   "none": "Žádné",
   "open": "Otevřít",
   "pagination": {
@@ -74,7 +74,7 @@ define({
   "save": "Uložit",
   "search": "Vyhledávání",
   "searching": "Vyhledávání",
-  "select": "Vybrat",
+  "select": "Výběr",
   "settings": "Nastavení",
   "sort": "Seřadit",
   "share": "Sdílet",

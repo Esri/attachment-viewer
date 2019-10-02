@@ -1,164 +1,219 @@
 {
-  "configurationSettings": [{
-    "category": "General",
-    "fields": [{
-        "type": "itembrowser",
-        "fieldName": "webmap",
-        "label": "Select",
-        "itemTypes": ["Web Map"],
-        "conditions": ["4x", "attachments"],
-        "defaultContent": true,
-        "showOnLoad": true
-      }, {
-        "type": "appproxies"
-      }, {
-        "type": "layerAndFieldSelector",
-        "fieldName": "attachmentLayer",
-        "label": "Specify which layer to use for displaying content and attachments",
-        "tooltip": "Specify which layer to use for displaying content and attachments",
-        "fields": [{
-          "multipleSelection": false,
-          "editOnly": false,
-          "fieldName": "sortField",
-          "label": "Sort features and attachments by field",
-          "tooltip": "Sort features and attachments by field",
-          "supportedTypes": ["esriFieldTypeSmallInteger", "esriFieldTypeInteger", "esriFieldTypeSingle", "esriFieldTypeDouble", "esriFieldTypeString", "esriFieldTypeDate", "esriFieldTypeOID"]
-        }],
-        "layerOptions": {
-          "supportedTypes": ["FeatureLayer"]
-        }
-      }, {
-        "type": "options",
-        "fieldName": "order",
-        "tooltip": "Select the scroll order of the features",
-        "label": "Select the scroll order of the features",
-        "options": [{
-          "label": "Ascending",
-          "value": "ASC"
-        }, {
-          "label": "Descending",
-          "value": "DESC"
-        }]
-      }, {
-        "type": "string",
-        "fieldName": "title",
-        "tooltip": "Use this to title your app.",
-        "label": "Title of your application"
-      }, {
-        "type": "conditional",
-        "fieldName": "customOnboardingContentEnabled",
-        "label": "Add a custom onboarding panel",
-        "condition": false,
-        "items": [{
-          "type": "paragraph",
-          "value": "These are advanced settings that work best together. Define the structure of the onboarding panel via the html editor and then style it via the CSS input.  For more information on the HTML that can be used, see this topic <a href='https://doc.arcgis.com/en/arcgis-online/reference/supported-html.htm' target='_blank' rel='noopener'>format help</a> for more information."
-        }, {
-          "label": "Onboarding HTML",
-          "tooltip": "Use this to provide custom onboarding content",
+  "configurationSettings": [
+    {
+      "category": "General",
+      "fields": [
+        {
+          "type": "itembrowser",
+          "fieldName": "webmap",
+          "label": "Select",
+          "itemTypes": ["Web Map"],
+          "conditions": ["4x", "attachments"],
+          "defaultContent": true,
+          "showOnLoad": true
+        },
+        { "type": "appproxies" },
+        {
+          "type": "options",
+          "fieldName": "appMode",
+          "tooltip": "Choose whether the map or the attachment is prominent in the app window.",
+          "label": "App layout: ",
+          "options": [
+            { "label": "Attachment", "value": "photo-centric" },
+            { "label": "Map", "value": "map-centric" }
+          ]
+        },
+        {
+          "type": "multilayerandfieldselector",
+          "fieldName": "attachmentLayers",
+          "label": "Order layer features by specifying a layer and a field to sort by",
+          "tooltip": "Order layer features by specifying a layer and a field to sort by",
+          "fieldOptions": {
+            "multipleSelection": false,
+            "supportedTypes": [
+              "esriFieldTypeSmallInteger",
+              "esriFieldTypeInteger",
+              "esriFieldTypeSingle",
+              "esriFieldTypeDouble",
+              "esriFieldTypeString",
+              "esriFieldTypeDate",
+              "esriFieldTypeOID"
+            ]
+          },
+          "layerOptions": { "supportedTypes": ["FeatureLayer"] }
+        },
+        {
+          "type": "options",
+          "fieldName": "order",
+          "tooltip": "Select the scroll order of the features",
+          "label": "Select the scroll order of the features",
+          "options": [
+            { "label": "Ascending", "value": "ASC" },
+            { "label": "Descending", "value": "DESC" }
+          ]
+        },
+        {
           "type": "string",
-          "fieldName": "customOnboardingHTML",
-          "stringFieldOption": "richtext"
-        }]
-      },
-      {
-        "type": "string",
-        "fieldName": "onboardingButtonText",
-        "tooltip": "Use this to update the button text on the onboarding panel",
-        "label": "Onboarding button text"
-      },
-      {
-        "type": "string",
-        "fieldName": "onboardingImage",
-        "tooltip": "Use this to display an image via URL in the attachment container while the onboarding panel is active",
-        "label": "Enter an image URL to display an image when the onboarding panel is active"
-      },
-      {
-        "type": "color",
-        "label": "Choose a header background color",
-        "fieldName": "headerBackground",
-        "transparency": true,
-        "noColor": true
-      },
-      {
-        "type": "color",
-        "label": "Choose a header text color",
-        "fieldName": "headerColor",
-        "transparency": true,
-        "noColor": true
-      },
-      {
-        "label": "Custom CSS",
-        "tooltip": "Use this to style different elements of the app",
-        "type": "string",
-        "fieldName": "customCSS"
-      }
-    ]
-  }, {
-    "category": "Options",
-    "fields": [{
-        "type": "boolean",
-        "fieldName": "mapToolsExpanded",
-        "label": "Map tools open at start"
-      },
-      {
-        "type": "boolean",
-        "fieldName": "homeEnabled",
-        "label": "Home"
-      }, {
-        "type": "boolean",
-        "fieldName": "zoomEnabled",
-        "label": "Zoom Controls"
-      }, {
-        "type": "boolean",
-        "fieldName": "legendEnabled",
-        "label": "Legend"
-      }, {
-        "type": "boolean",
-        "fieldName": "layerListEnabled",
-        "label": "Layer List"
-      },
-      {
-        "type": "boolean",
-        "fieldName": "fullScreenEnabled",
-        "label": "Full Screen"
-      },
-      {
-        "type": "boolean",
-        "fieldName": "downloadEnabled",
-        "label": "Enable image downloads"
-      },
-      {
-        "type": "boolean",
-        "fieldName": "socialSharingEnabled",
-        "label": "Enable social sharing"
-      }, {
-        "type": "boolean",
-        "fieldName": "addressEnabled",
-        "label": "Display the selected feature's address, if any"
-      }, {
-        "type": "scaleList",
-        "fieldName": "zoomLevel",
-        "label": "Select a scale for the Zoom To option"
-      }
-    ]
-  }, {
-    "category": "Search",
-    "fields": [{
-      "type": "conditional",
-      "fieldName": "searchEnabled",
-      "label": "Search",
-      "condition": false,
-      "items": [{
-        "type": "search",
-        "fieldName": "searchConfig",
-        "label": "Configure search options"
-      }, {
-        "type": "boolean",
-        "fieldName": "searchExpanded",
-        "label": "Search open at start"
-      }]
-    }]
-  }],
+          "fieldName": "title",
+          "tooltip": "Use this to title your app.",
+          "label": "Title of your application"
+        },
+        {
+          "type": "conditional",
+          "fieldName": "customOnboardingContentEnabled",
+          "label": "Add a custom onboarding panel",
+          "condition": false,
+          "items": [
+            {
+              "type": "paragraph",
+              "value": "These are advanced settings that work best together. Define the structure of the onboarding panel via the html editor and then style it via the CSS input.  For more information on the HTML that can be used, see this topic <a href='https://doc.arcgis.com/en/arcgis-online/reference/supported-html.htm' target='_blank' rel='noopener'>format help</a> for more information."
+            },
+            {
+              "label": "Onboarding HTML",
+              "tooltip": "Use this to provide custom onboarding content",
+              "type": "string",
+              "fieldName": "customOnboardingHTML",
+              "stringFieldOption": "richtext"
+            }
+          ]
+        },
+        {
+          "type": "string",
+          "fieldName": "onboardingButtonText",
+          "tooltip": "Use this to update the button text on the onboarding panel",
+          "label": "Onboarding button text"
+        },
+        {
+          "type": "string",
+          "fieldName": "onboardingImage",
+          "tooltip": "Use this to display an image via URL in the attachment container while the onboarding panel is active",
+          "label": "Enter an image URL to display an image when the onboarding panel is active"
+        },
+        {
+          "type": "color",
+          "label": "Choose a header background color",
+          "fieldName": "headerBackground",
+          "transparency": true,
+          "noColor": true
+        },
+        {
+          "type": "color",
+          "label": "Choose a header text color",
+          "fieldName": "headerColor",
+          "transparency": true,
+          "noColor": true
+        },
+        {
+          "label": "Custom CSS",
+          "tooltip": "Use this to style different elements of the app",
+          "type": "string",
+          "fieldName": "customCSS"
+        }
+      ]
+    },
+    {
+      "category": "Options",
+      "fields": [
+        {
+          "type": "boolean",
+          "fieldName": "mapToolsExpanded",
+          "label": "Map tools open at start"
+        },
+        { "type": "boolean", "fieldName": "homeEnabled", "label": "Home" },
+        {
+          "type": "boolean",
+          "fieldName": "zoomEnabled",
+          "label": "Zoom Controls"
+        },
+        { "type": "boolean", "fieldName": "legendEnabled", "label": "Legend" },
+        {
+          "type": "boolean",
+          "fieldName": "layerListEnabled",
+          "label": "Layer List"
+        },
+        {
+          "type": "boolean",
+          "fieldName": "fullScreenEnabled",
+          "label": "Full Screen"
+        },
+        {
+          "type": "boolean",
+          "fieldName": "downloadEnabled",
+          "label": "Enable image downloads"
+        },
+        {
+          "type": "boolean",
+          "fieldName": "socialSharingEnabled",
+          "label": "Enable social sharing"
+        },
+        {
+          "type": "boolean",
+          "fieldName": "addressEnabled",
+          "label": "Display the selected feature's address, if any"
+        },
+        {
+          "type": "scaleList",
+          "fieldName": "zoomLevel",
+          "label": "Select a scale for the Zoom To option"
+        },
+        {
+          "type": "boolean",
+          "fieldName": "selectFeaturesEnabled",
+          "label": "Enable feature selection"
+        },
+        {
+          "type": "boolean",
+          "fieldName": "onlyDisplayFeaturesWithAttachmentsIsEnabled",
+          "label": "Only display features that have attachments"
+        },
+        {
+          "type": "boolean",
+          "fieldName": "imageDirectionEnabled",
+          "label": "Display image direction icon, if available"
+        },
+        {
+          "type": "conditional",
+          "fieldName": "imagePanZoomEnabled",
+          "label": "Enable image pan/zoom",
+          "condition": false,
+          "items": [
+            {
+              "type": "paragraph",
+              "value": "Please note: Image pan/zoom tool is not available on IE11."
+            }
+          ]
+        },
+        {
+          "type": "boolean",
+          "fieldName": "mapCentricTooltipEnabled",
+          "label": "Enable feature label (Please note: This option only affects the the map focused layout.)"
+        }
+      ]
+    },
+    {
+      "category": "Search",
+      "fields": [
+        {
+          "type": "conditional",
+          "fieldName": "searchEnabled",
+          "label": "Search",
+          "condition": false,
+          "items": [
+            {
+              "type": "search",
+              "fieldName": "searchConfig",
+              "label": "Configure search options"
+            },
+            {
+              "type": "boolean",
+              "fieldName": "searchExpanded",
+              "label": "Search open at start"
+            }
+          ]
+        }
+      ]
+    }
+  ],
   "values": {
     "downloadEnabled": false,
     "socialSharingEnabled": true,
@@ -174,7 +229,13 @@
     "addressEnabled": false,
     "searchExpanded": true,
     "mapToolsExpanded": true,
+    "mapCentricTooltipEnabled": false,
     "headerBackground": "#0079c1",
-    "headerColor": "#ffffff"
+    "headerColor": "#ffffff",
+    "appMode": "photo-centric",
+    "selectFeaturesEnabled": false,
+    "onlyDisplayFeaturesWithAttachmentsIsEnabled": false,
+    "imageDirectionEnabled": false,
+    "imagePanZoomEnabled": false
   }
 }

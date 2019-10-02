@@ -38,7 +38,12 @@
     "webmap",
     "webscene",
     "featureIndex",
-    "attachmentIndex"
+    "attachmentIndex",
+    "appMode",
+    "onlyDisplayFeaturesWithAttachmentsIsEnabled",
+    "selectFeaturesEnabled",
+    "imageDirectionEnabled",
+    "imagePanZoomEnabled"
   ],
   "webMap": {
     "default": "f283e8db389241f7bbc61aaa1c342d97",

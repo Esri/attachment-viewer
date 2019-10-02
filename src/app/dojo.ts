@@ -16,11 +16,11 @@
   const templateAppPath = appPath.slice(0, appPath.lastIndexOf("/"));
   const localeUrlParamRegex = /locale=([\w-]+)/;
   const dojoLocale = search.match(localeUrlParamRegex) ? RegExp.$1 : undefined;
+
   const config = {
     async: true,
     has: {
-      "esri-promise-compatibility": 1,
-      "esri-promise-compatibility-deprecation-warnings": 1
+      "esri-native-promise": true
     },
     locale: dojoLocale,
     packages: [
@@ -38,6 +38,11 @@
         name: "TemplateApplicationBase",
         location: `${templateAppPath}/node_modules/@esri/application-base-js`,
         main: "ApplicationBase"
+      },
+      {
+        name: "ImageViewer",
+        location: `${distPath}/Components/iv-viewer`,
+        main: "iv-viewer.min"
       },
       { name: "config", location: `${distPath}/config` }
     ]

@@ -1,0 +1,92 @@
+.esri-layer-switcher {
+  background-color: #fff;
+  width: 100%;
+  height: 100%;
+  .esri-layer-switcher__select-layer-dropdown.esri-layer-switcher__photo-centric {
+    height: 100%;
+    box-sizing: border-box;
+    border: 1px solid #e6e6e6;
+    border-radius: 5px;
+    font-size: 15px;
+    background-color: transparent;
+
+    .esri-layer-switcher__dropdown-arrow-icon {
+      color: #6e6e6e;
+    }
+  }
+
+  .esri-layer-switcher__select-layer-dropdown.esri-layer-switcher__photo-centric:hover {
+    cursor: pointer;
+  }
+
+  .esri-layer-switcher__select-layer-dropdown.esri-layer-switcher__map-centric {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .esri-layer-switcher__select-layer-dropdown {
+    display: flex;
+    align-items: center;
+    transition: background-color 0.15s ease-in-out;
+    -o-transition: background-color 0.15s ease-in-out;
+    -moz-transition: background-color 0.15s ease-in-out;
+    -webkit-transition: background-color 0.15s ease-in-out;
+  }
+
+  .esri-layer-switcher__select-layer-dropdown-title {
+    box-sizing: border-box;
+    padding-left: 1%;
+    width: auto;
+  }
+  .esri-layer-switcher__dropdown-arrow-icon {
+    font-size: 13px;
+  }
+
+  .esri-layer-switcher__layer-dropdown-list {
+    position: absolute;
+    z-index: 700;
+    width: 100%;
+    border-bottom: 1px solid #ccc;
+  }
+
+  .esri-layer-switcher__layer-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2% 3%;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-bottom: none;
+    font-size: 14px;
+    transition: background-color 0.15s ease-in-out;
+    -o-transition: background-color 0.15s ease-in-out;
+    -moz-transition: background-color 0.15s ease-in-out;
+    -webkit-transition: background-color 0.15s ease-in-out;
+  }
+
+  .esri-layer-switcher__layer-item:hover {
+    cursor: pointer;
+    background-color: #d2e9f9;
+  }
+
+  .esri-layer-switcher__layer-item--selected {
+    cursor: pointer;
+    background-color: #d2e9f9;
+  }
+}
+
+.map-centric-body {
+  .esri-layer-switcher__layer-dropdown-list {
+    left: 0;
+  }
+}
+
+.esri-layer-switcher__dropdown-map-centric {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  text-align: center;
+  background-color: #323232;
+}
