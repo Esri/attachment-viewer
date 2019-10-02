@@ -1,8 +1,17 @@
 # Attachment Viewer
 
-Attachment Viewer is a configurable app template that allows you to view photos and videos stored as feature attachments. 
+Attachment Viewer is a configurable app template that allows you to view photos and videos stored as feature attachments.
 
 ![Attachment Viewer Preview](images/attachment-viewer.png)
+
+## 7.3 Release Updates
+
+1. Map centric layout
+2. Multiple layer support
+3. PDF support
+4. Image pan/zoom tool using [iv-viewer](https://github.com/s-yadav/iv-viewer)
+5. Only display features with attachments only
+6. Display image direction camera icon (GPS Image direction)
 
 ## Features
 
@@ -11,13 +20,13 @@ Attachment Viewer is a configurable app template that allows you to view photos 
 2. Scroll through attachments from a single feature.
 
 3. Supported attachment types:
-       
-       a. images(jpeg, jpg, png, gif)
-       b. videos (mp4, mov)
-       
+     
+    a. images(jpeg, jpg, png, gif)
+   b. videos (mp4, mov)
+     
    Please note: Other attachment types such as (doc, pdf) will display in the feature content panel as hyperlinks.
-4. Feauture Content - Panel which provides information about the feature. The content displays pop-up information by default and can display custom information by configuring the pop-up in the web map.     
-5. Social Sharing - Share to Facebook, Twitter, or generate a share link. The app will be shared at the app's currently selected feature and viewed attachment. 
+4. Feauture Content - Panel which provides information about the feature. The content displays pop-up information by default and can display custom information by configuring the pop-up in the web map.
+5. Social Sharing - Share to Facebook, Twitter, or generate a share link. The app will be shared at the app's currently selected feature and viewed attachment.
 
 6. Download images
 
@@ -33,29 +42,28 @@ Configuration options:
 
 3. Onboarding
 
-       a. Content - Provide custom onboarding information to help end-users get a better understanding of what the app is about.
-       b. Image - Provide an image URL to display an image when the onboarding panel is open.
-       
+   a. Content - Provide custom onboarding information to help end-users get a better understanding of what the app is about.
+   b. Image - Provide an image URL to display an image when the onboarding panel is open.
+
 4. Modify the header background and header text colors.
 
 5. Add custom CSS
 
 #### Options
 
-1. Select from a set of map tools: 
+1. Select from a set of map tools:
 
-       a. Home
-       b. Zoom Controls
-       c. Legend
-       d. Full Screen
-       e. Layer List
-       f. Search - configure search to work with a feature layer and field in the web map, as search results will pull up feature information and attachments
-       
- 2. Set the scale for the Zoom to button. Default value: 32000
- 3. Enable or disable social sharing
- 4. Enable or disable download
- 5. Enable or disable the option to display the selected feature's address.
+   a. Home
+   b. Zoom Controls
+   c. Legend
+   d. Full Screen
+   e. Layer List
+   f. Search - configure search to work with a feature layer and field in the web map, as search results will pull up feature information and attachments
 
+2. Set the scale for the Zoom to button. Default value: 32000
+3. Enable or disable social sharing
+4. Enable or disable download
+5. Enable or disable the option to display the selected feature's address.
 
 ## Instructions
 
