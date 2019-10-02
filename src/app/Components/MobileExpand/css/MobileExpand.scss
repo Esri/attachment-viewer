@@ -11,7 +11,6 @@
   limitations under the License.​
 */
 
-
 .esri-expand__content.esri-mobile-expand__content.esri-expand__content--expanded {
   top: 100%;
   left: 0;
@@ -22,8 +21,6 @@
   .esri-mobile-expand__component {
     border-bottom: 0.5px solid #ccc;
     border-top: 0.5px solid #ccc;
-
-
   }
 }
 
@@ -36,8 +33,14 @@
 }
 
 @media screen and (-ms-high-contrast: active),
-screen and (-ms-high-contrast: none) {
+  screen and (-ms-high-contrast: none) {
   .esri-mobile-expand__expand-collapse-icon {
     width: 30px;
+  }
+}
+
+html[dir="rtl"] {
+  .esri-expand__content.esri-mobile-expand__content.esri-expand__content--expanded {
+    right: 0;
   }
 }

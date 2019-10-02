@@ -21,7 +21,7 @@ define({
     "stop": "일시 정지"
   },
   "copy": "복사",
-  "create": "생성하기",
+  "create": "생성",
   "cut": "잘라내기",
   "delete": "삭제",
   "details": "세부정보",
@@ -34,12 +34,12 @@ define({
   "fieldsSummary": "속성 및 값 목록",
   "find": "찾기",
   "form": {
-    "no": "아니오.",
+    "no": "아니오",
     "ok": "확인",
     "password": "비밀번호",
     "submit": "제출",
     "username": "사용자 이름",
-    "yes": "예."
+    "yes": "예"
   },
   "help": "도움말",
   "home": "홈",
@@ -49,7 +49,7 @@ define({
   "loading": "로드 중",
   "maximize": "최대화",
   "menu": "메뉴",
-  "more": "알아보기",
+  "more": "기타",
   "none": "없음",
   "open": "열기",
   "pagination": {
@@ -77,7 +77,7 @@ define({
   "select": "선택",
   "settings": "설정",
   "sort": "정렬",
-  "share": "공유하기",
+  "share": "공유",
   "title": "제목",
   "untitled": "제목 없음",
   "unnamed": "이름 없음",

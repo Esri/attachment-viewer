@@ -8,15 +8,18 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.​
-var __assign = (this && this.__assign) || Object.assign || function(t) {
-    for (var s, i = 1, n = arguments.length; i < n; i++) {
-        s = arguments[i];
-        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-            t[p] = s[p];
-    }
-    return t;
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
 };
-define(["require", "exports", "ApplicationBase/support/itemUtils", "ApplicationBase/support/domHelper", "./Components/AttachmentViewer", "esri/widgets/Search", "esri/widgets/Expand", "./Components/MobileExpand/MobileExpand", "esri/widgets/Legend", "esri/widgets/LayerList", "esri/widgets/Home", "esri/layers/FeatureLayer", "./Components/Onboarding/OnboardingContent", "dojo/i18n!./nls/common", "esri/widgets/Fullscreen", "esri/core/Collection", "esri/widgets/Zoom"], function (require, exports, itemUtils_1, domHelper_1, AttachmentViewer, Search, Expand, MobileExpand, Legend, LayerList, Home, FeatureLayer, OnboardingContent, i18n, FullScreen, Collection, Zoom) {
+define(["require", "exports", "ApplicationBase/support/itemUtils", "ApplicationBase/support/domHelper", "dojo/i18n!./nls/common", "dojo/i18n!./Components/MapCentric/nls/resources", "esri/widgets/Expand", "esri/widgets/Fullscreen", "esri/widgets/Home", "esri/widgets/LayerList", "esri/widgets/Legend", "esri/widgets/Sketch", "esri/widgets/Search", "esri/widgets/Zoom", "esri/core/Collection", "esri/core/Handles", "esri/core/watchUtils", "esri/layers/FeatureLayer", "esri/layers/GraphicsLayer", "./Components/LayerSwitcher", "./Components/MapCentric", "./Components/MobileExpand", "./Components/OnboardingContent", "./Components/PhotoCentric"], function (require, exports, itemUtils_1, domHelper_1, i18n, i18nMapCentric, Expand, FullScreen, Home, LayerList, Legend, Sketch, Search, Zoom, Collection, Handles, watchUtils, FeatureLayer, GraphicsLayer, LayerSwitcher, MapCentric, MobileExpand, OnboardingContent, PhotoCentric) {
     "use strict";
     var CSS = {
         loading: "configurable-application--loading"
@@ -36,6 +39,12 @@ define(["require", "exports", "ApplicationBase/support/itemUtils", "ApplicationB
             this.searchWidgetMobile = null;
             this.view = null;
             this.widgets = new Collection();
+            this.graphicsLayer = null;
+            this.sketchWidget = null;
+            this.app = null;
+            this.handles = new Handles();
+            this.layerSwitcher = null;
+            this.layerList = null;
         }
         //--------------------------------------------------------------------------
         //
@@ -53,7 +62,7 @@ define(["require", "exports", "ApplicationBase/support/itemUtils", "ApplicationB
             domHelper_1.setPageLocale(base.locale);
             domHelper_1.setPageDirection(base.direction);
             this.base = base;
-            var find = config.find, marker = config.marker, appMode = config.appMode, title = config.title, attachmentLayer = config.attachmentLayer, order = config.order, downloadEnabled = config.downloadEnabled, homeEnabled = config.homeEnabled, zoomEnabled = config.zoomEnabled, legendEnabled = config.legendEnabled, layerListEnabled = config.layerListEnabled, searchConfig = config.searchConfig, searchEnabled = config.searchEnabled, zoomLevel = config.zoomLevel, addressEnabled = config.addressEnabled, fullScreenEnabled = config.fullScreenEnabled, socialSharingEnabled = config.socialSharingEnabled, onboardingImage = config.onboardingImage, onboardingButtonText = config.onboardingButtonText, mapToolsExpanded = config.mapToolsExpanded, searchExpanded = config.searchExpanded;
+            var addressEnabled = config.addressEnabled, appMode = config.appMode, attachmentLayer = config.attachmentLayer, attachmentLayers = config.attachmentLayers, downloadEnabled = config.downloadEnabled, find = config.find, fullScreenEnabled = config.fullScreenEnabled, homeEnabled = config.homeEnabled, imageDirectionEnabled = config.imageDirectionEnabled, imagePanZoomEnabled = config.imagePanZoomEnabled, layerListEnabled = config.layerListEnabled, legendEnabled = config.legendEnabled, mapCentricTooltipEnabled = config.mapCentricTooltipEnabled, mapToolsExpanded = config.mapToolsExpanded, marker = config.marker, onboardingButtonText = config.onboardingButtonText, onboardingImage = config.onboardingImage, onlyDisplayFeaturesWithAttachmentsIsEnabled = config.onlyDisplayFeaturesWithAttachmentsIsEnabled, order = config.order, searchConfig = config.searchConfig, searchEnabled = config.searchEnabled, searchExpanded = config.searchExpanded, selectFeaturesEnabled = config.selectFeaturesEnabled, socialSharingEnabled = config.socialSharingEnabled, title = config.title, zoomEnabled = config.zoomEnabled, zoomLevel = config.zoomLevel;
             var webMapItems = results.webMapItems;
             var validWebMapItems = webMapItems.map(function (response) {
                 return response.value;
@@ -85,58 +94,119 @@ define(["require", "exports", "ApplicationBase/support/itemUtils", "ApplicationB
                     return itemUtils_1.createView(__assign({}, viewProperties, { map: map })).then(function (view) {
                         return itemUtils_1.findQuery(find, view).then(function () {
                             _this.view = view;
-                            if (document.body.clientWidth > 813) {
+                            var selectedLayerId = _this._getURLParameter("selectedLayerId");
+                            if (selectedLayerId) {
+                                var layer = _this.view.map.allLayers.find(function (layer) {
+                                    return layer.id === selectedLayerId;
+                                });
+                                if (!layer || (layer && !layer.visible)) {
+                                    var url = new URL(window.location.href);
+                                    var params = new URLSearchParams(url.search);
+                                    params.delete("center");
+                                    params.delete("level");
+                                    params.delete("attachmentIndex");
+                                    params.delete("selectedLayerId");
+                                    params.delete("defaultObjectId");
+                                    window.history.replaceState({}, "", "" + location.pathname);
+                                    location.reload();
+                                    return;
+                                }
+                            }
+                            if (document.body.clientWidth > 813 &&
+                                appMode === "photo-centric") {
                                 _this.view.padding.bottom = 380;
                             }
                             var appTitle = title
                                 ? title
                                 : view.map.get("portalItem").title
                                     ? view.map.get("portalItem").title
-                                    : "Feature Browser";
+                                    : "Attachment Viewer";
                             _this.view.ui.remove("zoom");
-                            _this._handleSearchWidget(searchConfig, searchEnabled, searchExpanded);
+                            _this._handleSearchWidget(searchConfig, searchEnabled, searchExpanded, mapCentricTooltipEnabled);
                             _this._handleZoomControls(zoomEnabled);
                             _this._handleHomeWidget(homeEnabled);
                             _this._handleLegendWidget(legendEnabled);
                             _this._handleLayerListWidget(layerListEnabled);
                             _this._handleFullScreenWidget(fullScreenEnabled);
+                            _this._handleSketchWidget(selectFeaturesEnabled);
+                            if (_this.layerList && _this.sketchWidget) {
+                                var operationalItems_1 = _this.layerList.get("operationalItems");
+                                watchUtils.when(_this.layerList, "operationalItems.length", function () {
+                                    var graphicsLayer = operationalItems_1 &&
+                                        operationalItems_1.find(function (operationalItem) {
+                                            var layer = operationalItem.layer;
+                                            return layer.id === _this.graphicsLayer.id;
+                                        });
+                                    _this.layerList.operationalItems.remove(graphicsLayer);
+                                });
+                            }
                             _this._addWidgetsToUI(mapToolsExpanded);
                             var defaultObjectIdParam = parseInt(_this._getURLParameter("defaultObjectId"));
-                            var defaultObjectId = isNaN(defaultObjectIdParam)
-                                ? null
-                                : defaultObjectIdParam;
+                            var defaultObjectId = socialSharingEnabled
+                                ? isNaN(defaultObjectIdParam)
+                                    ? null
+                                    : defaultObjectIdParam
+                                : null;
                             var featureAttachmentIndexParam = parseInt(_this._getURLParameter("attachmentIndex"));
-                            var attachmentIndex = isNaN(featureAttachmentIndexParam)
-                                ? null
-                                : featureAttachmentIndexParam;
+                            var attachmentIndex = socialSharingEnabled
+                                ? isNaN(featureAttachmentIndexParam)
+                                    ? null
+                                    : featureAttachmentIndexParam
+                                : null;
+                            _this._handleLayerSwitcher(appMode, selectedLayerId, socialSharingEnabled);
                             var container = document.createElement("div");
                             var onboardingContent = new OnboardingContent({
                                 container: container,
-                                config: config
+                                config: config,
+                                appMode: appMode
                             });
                             var scale = isNaN(zoomLevel) ? parseInt(zoomLevel) : zoomLevel;
                             var docDirection = document
                                 .querySelector("html")
                                 .getAttribute("dir");
-                            new AttachmentViewer({
-                                view: view,
-                                container: document.getElementById("app-container"),
-                                appMode: appMode,
-                                title: appTitle,
-                                searchWidget: _this.searchWidget,
-                                defaultObjectId: defaultObjectId,
-                                attachmentIndex: attachmentIndex,
-                                attachmentLayer: attachmentLayer,
-                                order: order,
-                                downloadEnabled: downloadEnabled,
-                                socialSharingEnabled: socialSharingEnabled,
-                                onboardingContent: onboardingContent,
-                                zoomLevel: scale,
-                                docDirection: docDirection,
+                            var isIE11 = navigator.userAgent.indexOf("MSIE") !== -1 ||
+                                navigator.appVersion.indexOf("Trident/") > -1;
+                            var imagePanZoomValue = isIE11 ? false : imagePanZoomEnabled;
+                            var appConfig = {
                                 addressEnabled: addressEnabled,
+                                attachmentLayer: attachmentLayer,
+                                attachmentLayers: attachmentLayers,
+                                appMode: appMode,
+                                attachmentIndex: attachmentIndex,
+                                container: document.getElementById("app-container"),
+                                defaultObjectId: defaultObjectId,
+                                downloadEnabled: downloadEnabled,
+                                docDirection: docDirection,
+                                graphicsLayer: _this.graphicsLayer,
+                                imageDirectionEnabled: imageDirectionEnabled,
+                                imagePanZoomEnabled: imagePanZoomValue,
+                                layerSwitcher: _this.layerSwitcher,
+                                mapCentricTooltipEnabled: mapCentricTooltipEnabled,
+                                onboardingButtonText: onboardingButtonText,
+                                onboardingContent: onboardingContent,
                                 onboardingImage: onboardingImage,
-                                onboardingButtonText: onboardingButtonText
-                            });
+                                onlyDisplayFeaturesWithAttachmentsIsEnabled: onlyDisplayFeaturesWithAttachmentsIsEnabled,
+                                order: order,
+                                searchWidget: _this.searchWidget,
+                                selectFeaturesEnabled: selectFeaturesEnabled,
+                                sketchWidget: _this.sketchWidget,
+                                selectedLayerId: selectedLayerId,
+                                socialSharingEnabled: socialSharingEnabled,
+                                title: appTitle,
+                                view: view,
+                                zoomLevel: scale
+                            };
+                            if (appMode === "photo-centric") {
+                                _this.app = new PhotoCentric(appConfig);
+                                document.body.classList.add("photo-centric-body");
+                            }
+                            else if (appMode === "map-centric") {
+                                _this.app = new MapCentric(appConfig);
+                                if (_this.layerSwitcher) {
+                                    _this.layerSwitcher.mapCentricViewModel = _this.app.viewModel;
+                                }
+                                document.body.classList.add("map-centric-body");
+                            }
                             itemUtils_1.goToMarker(marker, view);
                             if (config.customCSS) {
                                 _this._handleCustomCSS(config);
@@ -166,13 +236,15 @@ define(["require", "exports", "ApplicationBase/support/itemUtils", "ApplicationB
             }
         };
         // _handleSearchWidget
-        AttachmentViewerApp.prototype._handleSearchWidget = function (searchConfig, searchEnabled, searchExpanded) {
+        AttachmentViewerApp.prototype._handleSearchWidget = function (searchConfig, searchEnabled, searchExpanded, mapCentricTooltipEnabled) {
             var _this = this;
             if (!searchEnabled) {
                 return;
             }
+            var popupEnabled = mapCentricTooltipEnabled ? true : false;
             var searchProperties = {
-                view: this.view
+                view: this.view,
+                popupEnabled: popupEnabled
             };
             if (searchConfig) {
                 if (searchConfig.sources) {
@@ -213,8 +285,9 @@ define(["require", "exports", "ApplicationBase/support/itemUtils", "ApplicationB
                 expanded: searchExpanded,
                 expandTooltip: i18n.search
             });
-            this.view.ui.add(expand, "top-right");
+            this.view.ui.add(expand, "top-left");
         };
+        // _handleLegendWidget
         AttachmentViewerApp.prototype._handleLegendWidget = function (legendEnabled) {
             if (legendEnabled) {
                 var legend = new Legend({
@@ -224,23 +297,49 @@ define(["require", "exports", "ApplicationBase/support/itemUtils", "ApplicationB
                     view: this.view,
                     content: legend,
                     mode: "floating",
-                    group: "top-left",
+                    group: "top-right",
                     expandTooltip: legend.label
+                }));
+            }
+        };
+        //  _handleSketchWidget
+        AttachmentViewerApp.prototype._handleSketchWidget = function (selectFeaturesEnabled) {
+            if (selectFeaturesEnabled) {
+                this.graphicsLayer = new GraphicsLayer();
+                this.view.map.layers.unshift(this.graphicsLayer);
+                var sketch = new Sketch({
+                    layer: this.graphicsLayer,
+                    view: this.view,
+                    availableCreateTools: ["rectangle"],
+                    defaultUpdateOptions: {
+                        toggleToolOnClick: false,
+                        enableRotation: false
+                    },
+                    iconClass: "custom-sketch"
+                });
+                this.sketchWidget = sketch;
+                this.sketchWidget.viewModel.updateOnGraphicClick = false;
+                this.widgets.add(new Expand({
+                    view: this.view,
+                    content: sketch,
+                    mode: "floating",
+                    group: "top-right",
+                    expandTooltip: i18nMapCentric.drawToSelectFeatures
                 }));
             }
         };
         // _handleLayerListWidget
         AttachmentViewerApp.prototype._handleLayerListWidget = function (layerListEnabled) {
             if (layerListEnabled) {
-                var layerList = new LayerList({
+                this.layerList = new LayerList({
                     view: this.view
                 });
                 this.widgets.add(new Expand({
                     view: this.view,
-                    content: layerList,
+                    content: this.layerList,
                     mode: "floating",
-                    group: "top-left",
-                    expandTooltip: layerList.label
+                    group: "top-right",
+                    expandTooltip: this.layerList.label
                 }));
             }
         };
@@ -252,6 +351,33 @@ define(["require", "exports", "ApplicationBase/support/itemUtils", "ApplicationB
                 });
                 this.widgets.add(fullscreen);
             }
+        };
+        // _handleLayerSwitcher
+        AttachmentViewerApp.prototype._handleLayerSwitcher = function (appMode, selectedLayerId, socialSharingEnabled) {
+            var _this = this;
+            var layerId = socialSharingEnabled ? selectedLayerId : null;
+            var layerSwitcher = new LayerSwitcher({
+                container: document.createElement("div"),
+                view: this.view,
+                appMode: appMode,
+                selectedLayerId: layerId
+            });
+            this.layerSwitcher = layerSwitcher;
+            watchUtils.watch(layerSwitcher, "selectedLayer", function () {
+                watchUtils.when(_this.app, "selectedAttachmentViewerData", function () {
+                    if (!layerSwitcher.selectedLayer) {
+                        return;
+                    }
+                    var selectedLayer = layerSwitcher.get("selectedLayer");
+                    var featureLayerId = selectedLayer.get("id");
+                    var attachmentViewerDataCollection = _this.app.get("attachmentViewerDataCollection");
+                    var selectedLayerData = attachmentViewerDataCollection.find(function (attachmentViewerData) {
+                        return (attachmentViewerData.get("layerData.featureLayer.id") ===
+                            featureLayerId);
+                    });
+                    _this.app.selectedAttachmentViewerData = selectedLayerData;
+                });
+            });
         };
         // _addWidgetsToUI
         AttachmentViewerApp.prototype._addWidgetsToUI = function (mapToolsExpanded) {
@@ -268,13 +394,13 @@ define(["require", "exports", "ApplicationBase/support/itemUtils", "ApplicationB
                     expandTooltip: i18n.moreTools,
                     expanded: mapToolsExpanded
                 });
-                this.view.ui.add(mobileExpand, "top-left");
+                this.view.ui.add(mobileExpand, "top-right");
             }
             else if (this.widgets.length === 1) {
-                this.view.ui.add(this.widgets.getItemAt(0), "top-left");
+                this.view.ui.add(this.widgets.getItemAt(0), "top-right");
             }
-            // this.view.ui.add(this.searchWidget);
         };
+        // _getURLParameter
         AttachmentViewerApp.prototype._getURLParameter = function (name) {
             return (decodeURIComponent((new RegExp("[?|&]" + name + "=" + "([^&;]+?)(&|#|;|$)").exec(location.search) || [null, ""])[1].replace(/\+/g, "%20")) || null);
         };
@@ -288,12 +414,40 @@ define(["require", "exports", "ApplicationBase/support/itemUtils", "ApplicationB
         // _applySharedTheme
         AttachmentViewerApp.prototype._applySharedTheme = function (config) {
             var styles = [];
-            styles.push(config.headerBackground
-                ? ".esri-photo-centric__header{background:" + config.headerBackground + ";}"
-                : null);
-            styles.push(config.headerColor
-                ? ".esri-photo-centric__header{color:" + config.headerColor + ";}"
-                : null);
+            var headerBackground = config.headerBackground &&
+                !isNaN(config.headerBackground.r) &&
+                !isNaN(config.headerBackground.g) &&
+                !isNaN(config.headerBackground.b) &&
+                !isNaN(config.headerBackground.a)
+                ? "rgba(" + config.headerBackground.r + ", " + config.headerBackground.g + ", " + config.headerBackground.b + ", " + config.headerBackground.a + ")"
+                : config.headerBackground === "no-color"
+                    ? "transparent"
+                    : config.headerBackground;
+            var headerColor = config.headerColor &&
+                !isNaN(config.headerColor.r) &&
+                !isNaN(config.headerColor.g) &&
+                !isNaN(config.headerColor.b) &&
+                !isNaN(config.headerColor.a)
+                ? "rgba(" + config.headerColor.r + ", " + config.headerColor.g + ", " + config.headerColor.b + ", " + config.headerColor.a + ")"
+                : config.headerColor === "no-color"
+                    ? "transparent"
+                    : config.headerColor;
+            if (config.appMode === "photo-centric") {
+                styles.push(config.headerBackground
+                    ? ".esri-photo-centric__header{background:" + headerBackground + ";}"
+                    : null);
+                styles.push(config.headerColor
+                    ? ".esri-photo-centric__header{color:" + headerColor + ";}"
+                    : null);
+            }
+            else {
+                styles.push(config.headerBackground
+                    ? ".esri-map-centric__header{background:" + headerBackground + ";}"
+                    : null);
+                styles.push(config.headerColor
+                    ? ".esri-map-centric__header{color:" + headerColor + ";}"
+                    : null);
+            }
             var style = document.createElement("style");
             style.appendChild(document.createTextNode(styles.join("")));
             document.getElementsByTagName("head")[0].appendChild(style);

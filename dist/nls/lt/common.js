@@ -1,7 +1,7 @@
 define({
   "about": "Apie",
   "add": "Pridėti",
-  "all": "Visi",
+  "all": "Viskas",
   "apply": "Taikyti",
   "auth": {
     "logOut": "Atsijungti",
@@ -22,7 +22,7 @@ define({
   },
   "copy": "Kopijuoti",
   "create": "Kurti",
-  "cut": "Iškirpti",
+  "cut": "Kirpti",
   "delete": "Ištrinti",
   "details": "Išsami informacija",
   "done": "Atlikta",
@@ -49,9 +49,9 @@ define({
   "loading": "Kraunama",
   "maximize": "Išdidinti",
   "menu": "Meniu",
-  "more": "daugiau",
+  "more": "Daugiau",
   "none": "Nėra",
-  "open": "Atverta",
+  "open": "Atverti",
   "pagination": {
     "first": "Pirmas",
     "last": "Paskutinis",
@@ -60,7 +60,7 @@ define({
     "pageText": "{index} iš {total}",
     "previous": "Atgal"
   },
-  "paste": "Įklijuoti",
+  "paste": "Įdėti",
   "percent": "{percent} %",
   "preview": "Peržiūra",
   "print": "Spausdinti",
@@ -72,7 +72,7 @@ define({
   "reset": "Nustatyti iš naujo",
   "restore": "Grąžinti",
   "save": "Išsaugoti",
-  "search": "Paieška",
+  "search": "Ieškoti",
   "searching": "Ieškoma",
   "select": "Pasirinkti",
   "settings": "Parametrai",
@@ -83,7 +83,7 @@ define({
   "unnamed": "Be pavadinimo",
   "update": "Kaita",
   "upload": "Įkelti",
-  "undo": "Anuliuoti",
+  "undo": "Atšaukti",
   "view": "Peržiūrėti",
   "visibility": {
     "hide": "Slėpti",

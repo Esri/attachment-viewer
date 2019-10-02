@@ -1,13 +1,24 @@
-// Copyright 2019 Esri
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//   http://www.apache.org/licenses/LICENSE-2.0
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.​
+/*
+  Copyright 2017 Esri
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+
+  you may not use this file except in compliance with the License.
+
+  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+
+  distributed under the License is distributed on an "AS IS" BASIS,
+
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+
+  See the License for the specific language governing permissions and
+
+  limitations under the License.​
+*/
 
 import Camera = require("esri/Camera");
 import Graphic = require("esri/Graphic");
@@ -17,9 +28,6 @@ import requireUtils = require("esri/core/requireUtils");
 
 import Extent = require("esri/geometry/Extent");
 import Point = require("esri/geometry/Point");
-
-import MapView = require("esri/views/MapView");
-import SceneView = require("esri/views/SceneView");
 
 interface CameraProperties {
   heading?: number;
@@ -183,17 +191,17 @@ export function parseMarker(marker: string): IPromise<Graphic> {
 
       const markerSymbol = icon_url
         ? new PictureMarkerSymbol({
-            url: icon_url,
-            height: "32px",
-            width: "32px"
-          })
+          url: icon_url,
+          height: "32px",
+          width: "32px"
+        })
         : new SimpleMarkerSymbol({
-            outline: {
-              width: 1
-            },
-            size: 14,
-            color: [255, 255, 255, 0]
-          });
+          outline: {
+            width: 1
+          },
+          size: 14,
+          color: [255, 255, 255, 0]
+        });
 
       const point = new Point({
         x: x,
@@ -206,9 +214,9 @@ export function parseMarker(marker: string): IPromise<Graphic> {
       const hasPopupDetails = content || label;
       const popupTemplate = hasPopupDetails
         ? new PopupTemplate({
-            title: content || null,
-            content: label || null
-          })
+          title: content || null,
+          content: label || null
+        })
         : null;
 
       const graphic = new Graphic({
@@ -272,9 +280,9 @@ function _getHeadingAndTilt(headingAndTilt: string): CameraProperties {
 
   return tiltHeadingArray.length >= 0
     ? {
-        heading: parseFloat(tiltHeadingArray[0]),
-        tilt: parseFloat(tiltHeadingArray[1])
-      }
+      heading: parseFloat(tiltHeadingArray[0]),
+      tilt: parseFloat(tiltHeadingArray[1])
+    }
     : null;
 }
 

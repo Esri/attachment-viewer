@@ -30,31 +30,35 @@ import {
   setPageTitle
 } from "ApplicationBase/support/domHelper";
 
-import AttachmentViewer = require("./Components/AttachmentViewer");
-
-import Search = require("esri/widgets/Search");
-
-import Expand = require("esri/widgets/Expand");
-
-import MobileExpand = require("./Components/MobileExpand/MobileExpand");
-
-import Legend = require("esri/widgets/Legend");
-
-import LayerList = require("esri/widgets/LayerList");
-
-import Home = require("esri/widgets/Home");
-
-import FeatureLayer = require("esri/layers/FeatureLayer");
-
-import OnboardingContent = require("./Components/Onboarding/OnboardingContent");
-
+// i18n
 import * as i18n from "dojo/i18n!./nls/common";
+import * as i18nMapCentric from "dojo/i18n!./Components/MapCentric/nls/resources";
 
+// esri.widgets
+import Expand = require("esri/widgets/Expand");
 import FullScreen = require("esri/widgets/Fullscreen");
-
-import Collection = require("esri/core/Collection");
-
+import Home = require("esri/widgets/Home");
+import LayerList = require("esri/widgets/LayerList");
+import Legend = require("esri/widgets/Legend");
+import Sketch = require("esri/widgets/Sketch");
+import Search = require("esri/widgets/Search");
 import Zoom = require("esri/widgets/Zoom");
+
+// esri.core
+import Collection = require("esri/core/Collection");
+import Handles = require("esri/core/Handles");
+import watchUtils = require("esri/core/watchUtils");
+
+// esri.layers
+import FeatureLayer = require("esri/layers/FeatureLayer");
+import GraphicsLayer = require("esri/layers/GraphicsLayer");
+
+// Components
+import LayerSwitcher = require("./Components/LayerSwitcher");
+import MapCentric = require("./Components/MapCentric");
+import MobileExpand = require("./Components/MobileExpand");
+import OnboardingContent = require("./Components/OnboardingContent");
+import PhotoCentric = require("./Components/PhotoCentric");
 
 import {
   ApplicationConfig,
@@ -76,6 +80,12 @@ class AttachmentViewerApp {
   searchWidgetMobile: Search = null;
   view: __esri.MapView = null;
   widgets: Collection<__esri.Widget> = new Collection();
+  graphicsLayer: __esri.GraphicsLayer = null;
+  sketchWidget: __esri.Sketch = null;
+  app: PhotoCentric | MapCentric = null;
+  handles: Handles = new Handles();
+  layerSwitcher: LayerSwitcher = null;
+  layerList: __esri.LayerList = null;
 
   //--------------------------------------------------------------------------
   //
@@ -98,27 +108,33 @@ class AttachmentViewerApp {
     this.base = base;
 
     const {
-      find,
-      marker,
+      addressEnabled,
       appMode,
-      title,
       attachmentLayer,
-      order,
+      attachmentLayers,
       downloadEnabled,
+      find,
+      fullScreenEnabled,
       homeEnabled,
-      zoomEnabled,
-      legendEnabled,
+      imageDirectionEnabled,
+      imagePanZoomEnabled,
       layerListEnabled,
+      legendEnabled,
+      mapCentricTooltipEnabled,
+      mapToolsExpanded,
+      marker,
+      onboardingButtonText,
+      onboardingImage,
+      onlyDisplayFeaturesWithAttachmentsIsEnabled,
+      order,
       searchConfig,
       searchEnabled,
-      zoomLevel,
-      addressEnabled,
-      fullScreenEnabled,
+      searchExpanded,
+      selectFeaturesEnabled,
       socialSharingEnabled,
-      onboardingImage,
-      onboardingButtonText,
-      mapToolsExpanded,
-      searchExpanded
+      title,
+      zoomEnabled,
+      zoomLevel
     } = config;
     const { webMapItems } = results;
 
@@ -169,22 +185,47 @@ class AttachmentViewerApp {
           findQuery(find, view).then(() => {
             this.view = view as __esri.MapView;
 
-            if (document.body.clientWidth > 813) {
+            const selectedLayerId = this._getURLParameter("selectedLayerId");
+
+            if (selectedLayerId) {
+              const layer = this.view.map.allLayers.find(layer => {
+                return layer.id === selectedLayerId;
+              }) as __esri.Layer;
+
+              if (!layer || (layer && !layer.visible)) {
+                const url = new URL(window.location.href);
+                const params = new URLSearchParams(url.search);
+                params.delete("center");
+                params.delete("level");
+                params.delete("attachmentIndex");
+                params.delete("selectedLayerId");
+                params.delete("defaultObjectId");
+                window.history.replaceState({}, "", `${location.pathname}`);
+                location.reload();
+                return;
+              }
+            }
+
+            if (
+              document.body.clientWidth > 813 &&
+              appMode === "photo-centric"
+            ) {
               this.view.padding.bottom = 380;
             }
 
             const appTitle = title
               ? title
               : (view.map.get("portalItem") as __esri.PortalItem).title
-                ? (view.map.get("portalItem") as __esri.PortalItem).title
-                : "Feature Browser";
+              ? (view.map.get("portalItem") as __esri.PortalItem).title
+              : "Attachment Viewer";
 
             this.view.ui.remove("zoom");
 
             this._handleSearchWidget(
               searchConfig,
               searchEnabled,
-              searchExpanded
+              searchExpanded,
+              mapCentricTooltipEnabled
             );
 
             this._handleZoomControls(zoomEnabled);
@@ -197,25 +238,54 @@ class AttachmentViewerApp {
 
             this._handleFullScreenWidget(fullScreenEnabled);
 
+            this._handleSketchWidget(selectFeaturesEnabled);
+
+            if (this.layerList && this.sketchWidget) {
+              const operationalItems = this.layerList.get(
+                "operationalItems"
+              ) as __esri.Collection<__esri.ListItem>;
+              watchUtils.when(this.layerList, "operationalItems.length", () => {
+                const graphicsLayer =
+                  operationalItems &&
+                  operationalItems.find(operationalItem => {
+                    const { layer } = operationalItem;
+                    return layer.id === this.graphicsLayer.id;
+                  });
+                this.layerList.operationalItems.remove(graphicsLayer);
+              });
+            }
+
             this._addWidgetsToUI(mapToolsExpanded);
 
             const defaultObjectIdParam = parseInt(
               this._getURLParameter("defaultObjectId")
             );
-            const defaultObjectId = isNaN(defaultObjectIdParam)
-              ? null
-              : defaultObjectIdParam;
+            const defaultObjectId = socialSharingEnabled
+              ? isNaN(defaultObjectIdParam)
+                ? null
+                : defaultObjectIdParam
+              : null;
             const featureAttachmentIndexParam = parseInt(
               this._getURLParameter("attachmentIndex")
             );
 
-            const attachmentIndex = isNaN(featureAttachmentIndexParam)
-              ? null
-              : featureAttachmentIndexParam;
+            const attachmentIndex = socialSharingEnabled
+              ? isNaN(featureAttachmentIndexParam)
+                ? null
+                : featureAttachmentIndexParam
+              : null;
+
+            this._handleLayerSwitcher(
+              appMode,
+              selectedLayerId,
+              socialSharingEnabled
+            );
+
             const container = document.createElement("div");
             const onboardingContent = new OnboardingContent({
               container,
-              config
+              config,
+              appMode
             });
 
             const scale = isNaN(zoomLevel) ? parseInt(zoomLevel) : zoomLevel;
@@ -223,25 +293,52 @@ class AttachmentViewerApp {
             const docDirection = document
               .querySelector("html")
               .getAttribute("dir");
-            new AttachmentViewer({
-              view,
-              container: document.getElementById("app-container"),
-              appMode,
-              title: appTitle,
-              searchWidget: this.searchWidget,
-              defaultObjectId,
-              attachmentIndex,
-              attachmentLayer,
-              order,
-              downloadEnabled,
-              socialSharingEnabled,
-              onboardingContent,
-              zoomLevel: scale,
-              docDirection,
+
+            const isIE11 =
+              navigator.userAgent.indexOf("MSIE") !== -1 ||
+              navigator.appVersion.indexOf("Trident/") > -1;
+
+            const imagePanZoomValue = isIE11 ? false : imagePanZoomEnabled;
+            const appConfig = {
               addressEnabled,
+              attachmentLayer,
+              attachmentLayers,
+              appMode,
+              attachmentIndex,
+              container: document.getElementById("app-container"),
+              defaultObjectId,
+              downloadEnabled,
+              docDirection,
+              graphicsLayer: this.graphicsLayer,
+              imageDirectionEnabled,
+              imagePanZoomEnabled: imagePanZoomValue,
+              layerSwitcher: this.layerSwitcher,
+              mapCentricTooltipEnabled,
+              onboardingButtonText,
+              onboardingContent,
               onboardingImage,
-              onboardingButtonText
-            });
+              onlyDisplayFeaturesWithAttachmentsIsEnabled,
+              order,
+              searchWidget: this.searchWidget,
+              selectFeaturesEnabled,
+              sketchWidget: this.sketchWidget,
+              selectedLayerId,
+              socialSharingEnabled,
+              title: appTitle,
+              view,
+
+              zoomLevel: scale
+            };
+            if (appMode === "photo-centric") {
+              this.app = new PhotoCentric(appConfig);
+              document.body.classList.add("photo-centric-body");
+            } else if (appMode === "map-centric") {
+              this.app = new MapCentric(appConfig);
+              if (this.layerSwitcher) {
+                this.layerSwitcher.mapCentricViewModel = this.app.viewModel;
+              }
+              document.body.classList.add("map-centric-body");
+            }
             goToMarker(marker, view);
 
             if (config.customCSS) {
@@ -279,13 +376,16 @@ class AttachmentViewerApp {
   private _handleSearchWidget(
     searchConfig: any,
     searchEnabled: boolean,
-    searchExpanded: boolean
+    searchExpanded: boolean,
+    mapCentricTooltipEnabled: boolean
   ): void {
     if (!searchEnabled) {
       return;
     }
+    const popupEnabled = mapCentricTooltipEnabled ? true : false;
     const searchProperties: any = {
-      view: this.view
+      view: this.view,
+      popupEnabled
     };
     if (searchConfig) {
       if (searchConfig.sources) {
@@ -338,9 +438,10 @@ class AttachmentViewerApp {
       expandTooltip: i18n.search
     });
 
-    this.view.ui.add(expand, "top-right");
+    this.view.ui.add(expand, "top-left");
   }
 
+  // _handleLegendWidget
   private _handleLegendWidget(legendEnabled: boolean): void {
     if (legendEnabled) {
       const legend = new Legend({
@@ -352,8 +453,38 @@ class AttachmentViewerApp {
           view: this.view,
           content: legend,
           mode: "floating",
-          group: "top-left",
+          group: "top-right",
           expandTooltip: legend.label
+        })
+      );
+    }
+  }
+
+  //  _handleSketchWidget
+  private _handleSketchWidget(selectFeaturesEnabled: boolean): any {
+    if (selectFeaturesEnabled) {
+      this.graphicsLayer = new GraphicsLayer();
+
+      this.view.map.layers.unshift(this.graphicsLayer);
+      const sketch = new Sketch({
+        layer: this.graphicsLayer,
+        view: this.view,
+        availableCreateTools: ["rectangle"],
+        defaultUpdateOptions: {
+          toggleToolOnClick: false,
+          enableRotation: false
+        },
+        iconClass: "custom-sketch"
+      });
+      this.sketchWidget = sketch;
+      this.sketchWidget.viewModel.updateOnGraphicClick = false;
+      this.widgets.add(
+        new Expand({
+          view: this.view,
+          content: sketch,
+          mode: "floating",
+          group: "top-right",
+          expandTooltip: i18nMapCentric.drawToSelectFeatures
         })
       );
     }
@@ -362,17 +493,17 @@ class AttachmentViewerApp {
   // _handleLayerListWidget
   private _handleLayerListWidget(layerListEnabled: boolean): void {
     if (layerListEnabled) {
-      const layerList = new LayerList({
+      this.layerList = new LayerList({
         view: this.view
       });
 
       this.widgets.add(
         new Expand({
           view: this.view,
-          content: layerList,
+          content: this.layerList,
           mode: "floating",
-          group: "top-left",
-          expandTooltip: layerList.label
+          group: "top-right",
+          expandTooltip: this.layerList.label
         })
       );
     }
@@ -386,6 +517,47 @@ class AttachmentViewerApp {
       });
       this.widgets.add(fullscreen);
     }
+  }
+
+  // _handleLayerSwitcher
+  private _handleLayerSwitcher(
+    appMode: string,
+    selectedLayerId: string,
+    socialSharingEnabled: boolean
+  ): void {
+    const layerId = socialSharingEnabled ? selectedLayerId : null;
+    const layerSwitcher = new LayerSwitcher({
+      container: document.createElement("div"),
+      view: this.view,
+      appMode,
+      selectedLayerId: layerId
+    });
+
+    this.layerSwitcher = layerSwitcher;
+
+    watchUtils.watch(layerSwitcher, "selectedLayer", () => {
+      watchUtils.when(this.app, "selectedAttachmentViewerData", () => {
+        if (!layerSwitcher.selectedLayer) {
+          return;
+        }
+        const selectedLayer = layerSwitcher.get(
+          "selectedLayer"
+        ) as __esri.FeatureLayer;
+        const featureLayerId = selectedLayer.get("id") as string;
+        const attachmentViewerDataCollection = this.app.get(
+          "attachmentViewerDataCollection"
+        ) as __esri.Collection<any>;
+        const selectedLayerData = attachmentViewerDataCollection.find(
+          attachmentViewerData => {
+            return (
+              attachmentViewerData.get("layerData.featureLayer.id") ===
+              featureLayerId
+            );
+          }
+        );
+        this.app.selectedAttachmentViewerData = selectedLayerData;
+      });
+    });
   }
 
   // _addWidgetsToUI
@@ -403,13 +575,13 @@ class AttachmentViewerApp {
         expandTooltip: i18n.moreTools,
         expanded: mapToolsExpanded
       });
-      this.view.ui.add(mobileExpand, "top-left");
+      this.view.ui.add(mobileExpand, "top-right");
     } else if (this.widgets.length === 1) {
-      this.view.ui.add(this.widgets.getItemAt(0), "top-left");
+      this.view.ui.add(this.widgets.getItemAt(0), "top-right");
     }
-    // this.view.ui.add(this.searchWidget);
   }
 
+  // _getURLParameter
   private _getURLParameter(name: string): string {
     return (
       decodeURIComponent(
@@ -431,16 +603,50 @@ class AttachmentViewerApp {
   // _applySharedTheme
   private _applySharedTheme(config: ApplicationConfig): void {
     const styles = [];
-    styles.push(
-      config.headerBackground
-        ? `.esri-photo-centric__header{background:${config.headerBackground};}`
-        : null
-    );
-    styles.push(
-      config.headerColor
-        ? `.esri-photo-centric__header{color:${config.headerColor};}`
-        : null
-    );
+    const headerBackground =
+      config.headerBackground &&
+      !isNaN(config.headerBackground.r) &&
+      !isNaN(config.headerBackground.g) &&
+      !isNaN(config.headerBackground.b) &&
+      !isNaN(config.headerBackground.a)
+        ? `rgba(${config.headerBackground.r}, ${config.headerBackground.g}, ${config.headerBackground.b}, ${config.headerBackground.a})`
+        : config.headerBackground === "no-color"
+        ? "transparent"
+        : config.headerBackground;
+    const headerColor =
+      config.headerColor &&
+      !isNaN(config.headerColor.r) &&
+      !isNaN(config.headerColor.g) &&
+      !isNaN(config.headerColor.b) &&
+      !isNaN(config.headerColor.a)
+        ? `rgba(${config.headerColor.r}, ${config.headerColor.g}, ${config.headerColor.b}, ${config.headerColor.a})`
+        : config.headerColor === "no-color"
+        ? "transparent"
+        : config.headerColor;
+
+    if (config.appMode === "photo-centric") {
+      styles.push(
+        config.headerBackground
+          ? `.esri-photo-centric__header{background:${headerBackground};}`
+          : null
+      );
+      styles.push(
+        config.headerColor
+          ? `.esri-photo-centric__header{color:${headerColor};}`
+          : null
+      );
+    } else {
+      styles.push(
+        config.headerBackground
+          ? `.esri-map-centric__header{background:${headerBackground};}`
+          : null
+      );
+      styles.push(
+        config.headerColor
+          ? `.esri-map-centric__header{color:${headerColor};}`
+          : null
+      );
+    }
 
     const style = document.createElement("style");
     style.appendChild(document.createTextNode(styles.join("")));

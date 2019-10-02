@@ -20,9 +20,12 @@ body {
   width: 100%;
   height: 100%;
   box-sizing: border-box;
+  overflow: hidden;
 }
 
 #app-container {
+  position: fixed;
+  bottom: 0;
   width: 100%;
   height: 100%;
 }
@@ -52,19 +55,116 @@ body {
   flex-direction: column;
 }
 
-
-
 .esri-ui {
   height: 100%;
 }
 
-@media only screen and (max-width: 813px) {
-  #app-container {
-    position: fixed;
-    bottom: 0;
-    z-index: 10;
-    height: 100%;
-    width: 100%;
+.esri-sketch__panel:first-of-type .esri-sketch__section:first-child {
+  display: none;
+}
+
+.esri-popup {
+  .esri-feature__media.esri-feature__content-element {
+    display: none;
   }
 
+  .esri-feature__text.esri-feature__content-element {
+    display: none;
+  }
+
+  .esri-feature__attachments.esri-feature__content-element.esri-feature__attachments--list {
+    display: none;
+  }
+
+  .esri-popup__header-buttons {
+    display: none;
+  }
+
+  .esri-popup__header-title {
+    padding: 0 7px;
+    margin: 6px 7px;
+  }
+
+  .esri-feature__fields.esri-feature__content-element > .esri-widget__table {
+    height: 15px;
+  }
+
+  .esri-popup__header-title {
+    margin: 6px 7px 0;
+  }
+
+  .esri-popup__content {
+    margin: 0 15px 10px;
+  }
+
+  .esri-feature__content-element {
+    padding: 0;
+  }
+
+  .esri-popup__header-title:hover {
+    background-color: #fff;
+    cursor: default;
+  }
+
+  .esri-feature__last-edited-info.esri-feature__content-element {
+    display: none;
+  }
+}
+
+.esri-widget__table {
+  display: none;
+}
+
+.esri-feature__text.esri-feature__content-element {
+  word-break: break-word;
+}
+
+.esri-attachment-viewer__svg {
+  width: 17px;
+  height: 17px;
+  fill: #fff;
+}
+
+.photo-centric-body {
+  .esri-attachment-viewer__svg {
+    fill: #000;
+  }
+}
+
+.map-centric-body .esri-popup__main-container {
+  width: auto;
+  max-width: 200px;
+  height: auto;
+  padding: 7px 5px 0px 5px;
+}
+
+.esri-map-centric__slider {
+  display: flex;
+  position: absolute;
+  bottom: 3%;
+  background: #fff;
+  align-items: center;
+  width: 50%;
+}
+
+.custom-sketch {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 16px;
+  height: 16px;
+}
+
+.custom-sketch:before {
+  width: 16px;
+  height: 16px;
+  content: url("../assets/Icon_draw_icon24.svg");
+}
+
+@media screen and (-ms-high-contrast: active),
+  screen and (-ms-high-contrast: none) {
+  .esri-popup__content {
+    width: 150px;
+  }
 }
