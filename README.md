@@ -17,7 +17,7 @@ Attachment Viewer is a configurable app template that allows you to view photos,
 
 1. Attachment focused layout: Scroll through features to view feature information and attachments or simply click on a feature in the map.
 
-2. Map foucsed layout: Explore map to update gallery items in side panel. Gallery items in side panel will be based on features within map extent. Select gallery item to view feature's attachments and pop-up information.
+2. Map focused layout: Explore map to update gallery items in side panel. Gallery items in side panel will be based on features within map extent. Select gallery item to view feature's attachments and pop-up information.
 
    a. Title tooltip option is available which will display at the feature's location when a gallery item in the side panel is hovered or selected. The title used in the tooltip label can be configured in the map viewer.
 
