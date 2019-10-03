@@ -10,7 +10,7 @@ Attachment Viewer is a configurable app template that allows you to view photos,
 2. Multiple layer support
 3. PDF support
 4. Image pan/zoom tool using [iv-viewer](https://github.com/s-yadav/iv-viewer)
-5. Only display features with attachments only
+5. Only display features with attachments
 6. Display image direction camera icon (GPS Image direction)
 
 ## Features
