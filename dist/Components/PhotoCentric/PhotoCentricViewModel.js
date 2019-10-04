@@ -46,6 +46,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             _this._queryObjectIdPromises = [];
             _this._queryFeaturesPromises = [];
             _this._queryAttachmentsPromises = [];
+            _this._queryingFeatures = null;
             // currentImageUrl
             _this.currentImageUrl = null;
             // attachmentLayer
@@ -73,7 +74,9 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             get: function () {
                 var ready = this.get("view.ready");
                 return ready
-                    ? this._queryingForFeaturesPhotoCentric || this._queryingForObjectIds
+                    ? this._queryingForFeaturesPhotoCentric ||
+                        this._queryingForObjectIds ||
+                        this._queryingFeatures
                         ? "querying"
                         : "ready"
                     : this.view
@@ -296,9 +299,12 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             }
         };
         // _initQueryObjectIdPromises
-        PhotoCentricViewModel.prototype._initQueryObjectIdPromises = function (sketchQuery, isSketchDelete) {
+        PhotoCentricViewModel.prototype._initQueryObjectIdPromises = function (sketchGeometry, isSketchDelete) {
             var _this = this;
             this.attachmentViewerDataCollection.forEach(function (attachmentViewerData) {
+                var sketchQuery = sketchGeometry
+                    ? _this._generateSketchQuery(sketchGeometry, attachmentViewerData)
+                    : null;
                 _this._setupQueryObjectIdPromises(attachmentViewerData, sketchQuery);
             });
             Promise.all(this._queryObjectIdPromises).then(function (objectIdPromiseResults) {
@@ -540,8 +546,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                     geometry = event_2.graphic.geometry;
                 }
                 this._currentSketchExtentPhotoCentric = geometry;
-                var sketchQuery = this._generateSketchQuery(geometry);
-                this._queryFeaturesWithinSketchExtent(sketchQuery);
+                this._queryFeaturesWithinSketchExtent(geometry);
                 this._handleSketchFeatureEffect(geometry);
             }
         };
@@ -558,9 +563,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             }));
         };
         // _generateSketchQuery
-        PhotoCentricViewModel.prototype._generateSketchQuery = function (geometry) {
-            var photoCentricData = this
-                .selectedAttachmentViewerData;
+        PhotoCentricViewModel.prototype._generateSketchQuery = function (geometry, photoCentricData) {
             var attachmentObjectIds = this._getAttachmentObjectIds(photoCentricData);
             var where = this._createUpdatedDefinitionExpression(photoCentricData);
             var queryConfig = {
@@ -589,14 +592,17 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             });
         };
         // _queryFeaturesWithinSketchExtent
-        PhotoCentricViewModel.prototype._queryFeaturesWithinSketchExtent = function (sketchQuery) {
+        PhotoCentricViewModel.prototype._queryFeaturesWithinSketchExtent = function (sketchGeometry) {
             this._queryObjectIdPromises = [];
-            this._initQueryObjectIdPromises(sketchQuery);
+            this._initQueryObjectIdPromises(sketchGeometry);
         };
         // _detectFeatureClick
         PhotoCentricViewModel.prototype._detectFeatureClick = function () {
             var _this = this;
             return this.view.on("click", function (event) {
+                if (_this.queryingState !== "ready") {
+                    return;
+                }
                 if (!_this.imagePanZoomEnabled) {
                     if (_this.state !== "ready" || _this._performingHitTestPhotoCentric) {
                         return;
@@ -1156,12 +1162,14 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             var layerFeatures = selectedAttachmentViewerData.get("layerFeatures");
             var featureLayer = this.selectedAttachmentViewerData.layerData.featureLayer;
             var featureQuery = this._setupFeatureQuery(selectedAttachmentViewerData);
-            featureLayer
-                .queryFeatures(featureQuery)
+            this._queryingFeatures = featureLayer.queryFeatures(featureQuery);
+            this._queryingFeatures
                 .catch(function (err) {
                 console.error("ERROR: ", err);
             })
                 .then(function (queriedFeatures) {
+                _this._queryingFeatures = null;
+                _this.notifyChange("queryingState");
                 // Reset features
                 layerFeatures.removeAll();
                 var _a = selectedAttachmentViewerData.queryRange, low = _a[0], high = _a[1];
@@ -1177,6 +1185,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                 _this.setUpdateShareIndexes();
                 _this._setFeaturePhotoCentric();
             });
+            this.notifyChange("queryingState");
         };
         // _updateFeatureClick
         PhotoCentricViewModel.prototype._updateFeatureClick = function (objectId) {

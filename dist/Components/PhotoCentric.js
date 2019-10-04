@@ -675,7 +675,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         // _renderVideo
         PhotoCentric.prototype._renderVideo = function (currentImageUrl) {
             this.set("imageIsLoaded", true);
-            return (widget_1.tsx("video", { bind: this, key: "" + currentImageUrl, class: CSS.videoContainer, controls: true },
+            return (widget_1.tsx("video", { bind: this, key: buildKey("video-" + currentImageUrl), class: CSS.videoContainer, controls: true },
                 widget_1.tsx("source", { src: currentImageUrl, type: "video/mp4" }),
                 widget_1.tsx("source", { src: currentImageUrl, type: "video/quicktime" }),
                 widget_1.tsx("source", { src: currentImageUrl, type: "video/ogg" }),
@@ -685,7 +685,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         // _renderPDF
         PhotoCentric.prototype._renderPDF = function (currentImageUrl) {
             this.set("imageIsLoaded", true);
-            return (widget_1.tsx("embed", { class: CSS.pdf, key: "" + currentImageUrl, src: currentImageUrl, type: "application/pdf" }));
+            return (widget_1.tsx("embed", { class: CSS.pdf, key: buildKey("pdf-" + currentImageUrl), src: currentImageUrl, type: "application/pdf" }));
         };
         // _renderCurrentImage
         PhotoCentric.prototype._renderCurrentImage = function () {
@@ -910,7 +910,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                 ((typeof contentInfo.content === "string" &&
                     contentInfo.content.trim() !== "") ||
                     contentInfo.content !== null);
-            return (widget_1.tsx("div", { key: buildKey("" + (contentInfo.attribute - contentInfo.content)), class: CSS.featureContentInfo },
+            return (widget_1.tsx("div", { key: buildKey(contentInfo.attribute + "-" + contentInfo.content), class: CSS.featureContentInfo },
                 widget_1.tsx("h4", { class: CSS.attributeHeading, innerHTML: contentInfo.attribute }),
                 contentInfo && contentInfo.content && contentCheck ? (hyperlink ? (widget_1.tsx("p", { class: CSS.attributeContent },
                     widget_1.tsx("div", { innerHTML: contentInfo.content.replace(hyperlink, "") }),
@@ -956,7 +956,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                     !this.imageIsLoaded && !this.imagePanZoomEnabled
                         ? this._renderMediaViewerLoader()
                         : null)) : null,
-                this.imageIsLoaded ? featureContentInfos : null));
+                featureContentInfos));
         };
         // _renderAttachmentMobile
         PhotoCentric.prototype._renderAttachmentMobile = function (attachment) {
@@ -1006,7 +1006,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         };
         // _mobileImageDirection
         PhotoCentric.prototype._renderMobileImageDirection = function (attachmentUrl, imageDirectionValue) {
-            return (widget_1.tsx("div", { key: attachmentUrl, class: CSS.imageDirectionMobile },
+            return (widget_1.tsx("div", { key: buildKey("mobile-image-direction-" + attachmentUrl), class: CSS.imageDirectionMobile },
                 widget_1.tsx("svg", { styles: { transform: "rotateZ(" + imageDirectionValue + "deg)" }, class: CSS.photoCentricCamera },
                     widget_1.tsx("g", null,
                         widget_1.tsx("path", { d: "M19.1,10.8h-0.3h-0.3h-1.3v2h-1v-0.7v-0.3h-11l0,0h-1v1.1v5.8v0h16v-1.9v-3.9v-1.1\nC20.2,11.3,19.7,10.8,19.1,10.8z" }),
@@ -1040,14 +1040,15 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             var attachmentUrl = this._convertAttachmentUrl(url);
             return (widget_1.tsx("div", { class: this.classes(CSS.mobileAttachmentContainer, addPadding) }, attachment &&
                 attachment.contentType &&
-                attachment.contentType.indexOf("video") !== -1 ? (widget_1.tsx("video", { class: CSS.videoContainer, controls: true },
+                attachment.contentType.indexOf("video") !== -1 ? (widget_1.tsx("video", { key: buildKey("mobile-video-" + attachmentUrl), class: CSS.videoContainer, controls: true },
                 widget_1.tsx("source", { src: attachmentUrl, type: "video/mp4" }),
                 widget_1.tsx("source", { src: attachmentUrl, type: "video/ogg" }),
                 widget_1.tsx("source", { src: attachmentUrl, type: "video/mov" }),
                 i18n.doesNotSupportVideo)) : attachment &&
                 attachment.contentType &&
-                attachment.contentType.indexOf("pdf") !== -1 &&
-                document.body.clientWidth > 813 ? (widget_1.tsx("embed", { class: CSS.pdf, src: this.currentImageUrl, type: "application/pdf" })) : (widget_1.tsx("img", { class: this.classes(CSS.imageMobile, removeBorderRadius, removeOpacity), src: attachmentUrl, alt: name }))));
+                attachment.contentType.indexOf("pdf") !== -1 ? (widget_1.tsx("embed", { key: buildKey("mobile-pdf-" + attachmentUrl), class: CSS.pdf, src: this.currentImageUrl, type: "application/pdf" })) : attachment &&
+                attachment.contentType &&
+                attachment.contentType.indexOf("image") !== -1 ? (widget_1.tsx("img", { key: buildKey("mobile-image-" + attachmentUrl), class: this.classes(CSS.imageMobile, removeBorderRadius, removeOpacity), src: attachmentUrl, alt: name })) : null));
         };
         //----------------------------------
         //
@@ -1105,11 +1106,9 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         };
         // _previousFeature
         PhotoCentric.prototype._previousFeature = function () {
-            var _a = this.viewModel, state = _a.state, queryingState = _a.queryingState;
-            if (!this.imagePanZoomEnabled) {
-                if (queryingState !== "ready" || state !== "ready") {
-                    return;
-                }
+            var queryingState = this.viewModel.queryingState;
+            if (queryingState !== "ready") {
+                return;
             }
             this.viewModel.previousFeature();
             this.set("currentImageUrl", null);
@@ -1126,11 +1125,9 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         };
         // _nextFeature
         PhotoCentric.prototype._nextFeature = function () {
-            var _a = this.viewModel, state = _a.state, queryingState = _a.queryingState;
-            if (!this.imagePanZoomEnabled) {
-                if (queryingState !== "ready" || state !== "ready") {
-                    return;
-                }
+            var queryingState = this.viewModel.queryingState;
+            if (queryingState !== "ready") {
+                return;
             }
             this.viewModel.nextFeature();
             this.set("currentImageUrl", null);

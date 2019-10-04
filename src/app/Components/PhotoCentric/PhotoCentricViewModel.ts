@@ -58,6 +58,7 @@ class PhotoCentricViewModel extends declared(AttachmentViewerViewModel) {
   private _queryObjectIdPromises: IPromise[] = [];
   private _queryFeaturesPromises: IPromise[] = [];
   private _queryAttachmentsPromises: IPromise[] = [];
+  private _queryingFeatures: IPromise = null;
 
   //----------------------------------
   //
@@ -71,7 +72,9 @@ class PhotoCentricViewModel extends declared(AttachmentViewerViewModel) {
   get queryingState(): State {
     const ready = this.get("view.ready");
     return ready
-      ? this._queryingForFeaturesPhotoCentric || this._queryingForObjectIds
+      ? this._queryingForFeaturesPhotoCentric ||
+        this._queryingForObjectIds ||
+        this._queryingFeatures
         ? "querying"
         : "ready"
       : this.view
@@ -380,11 +383,14 @@ class PhotoCentricViewModel extends declared(AttachmentViewerViewModel) {
 
   // _initQueryObjectIdPromises
   private _initQueryObjectIdPromises(
-    sketchQuery?: any,
+    sketchGeometry?: __esri.Extent,
     isSketchDelete?: boolean
   ): void {
     this.attachmentViewerDataCollection.forEach(
       (attachmentViewerData: PhotoCentricData) => {
+        const sketchQuery = sketchGeometry
+          ? this._generateSketchQuery(sketchGeometry, attachmentViewerData)
+          : null;
         this._setupQueryObjectIdPromises(attachmentViewerData, sketchQuery);
       }
     );
@@ -549,6 +555,7 @@ class PhotoCentricViewModel extends declared(AttachmentViewerViewModel) {
       featureObjectIds.addMany([...objectIds]);
 
       const featureQuery = this._setupFeatureQuery(attachmentViewerData);
+
       this._queryFeaturesPromises.push(
         attachmentViewerData.layerData.featureLayer
           .queryFeatures(featureQuery)
@@ -729,8 +736,7 @@ class PhotoCentricViewModel extends declared(AttachmentViewerViewModel) {
         geometry = event.graphic.geometry;
       }
       this._currentSketchExtentPhotoCentric = geometry;
-      const sketchQuery = this._generateSketchQuery(geometry);
-      this._queryFeaturesWithinSketchExtent(sketchQuery);
+      this._queryFeaturesWithinSketchExtent(geometry);
       this._handleSketchFeatureEffect(geometry);
     }
   }
@@ -750,9 +756,10 @@ class PhotoCentricViewModel extends declared(AttachmentViewerViewModel) {
   }
 
   // _generateSketchQuery
-  private _generateSketchQuery(geometry: __esri.Extent): any {
-    const photoCentricData = this
-      .selectedAttachmentViewerData as PhotoCentricData;
+  private _generateSketchQuery(
+    geometry: __esri.Extent,
+    photoCentricData: PhotoCentricData
+  ): any {
     const attachmentObjectIds = this._getAttachmentObjectIds(photoCentricData);
     const where = this._createUpdatedDefinitionExpression(photoCentricData);
     const queryConfig = {
@@ -787,14 +794,19 @@ class PhotoCentricViewModel extends declared(AttachmentViewerViewModel) {
   }
 
   // _queryFeaturesWithinSketchExtent
-  private _queryFeaturesWithinSketchExtent(sketchQuery: any): void {
+  private _queryFeaturesWithinSketchExtent(
+    sketchGeometry: __esri.Extent
+  ): void {
     this._queryObjectIdPromises = [];
-    this._initQueryObjectIdPromises(sketchQuery);
+    this._initQueryObjectIdPromises(sketchGeometry);
   }
 
   // _detectFeatureClick
   private _detectFeatureClick(): __esri.WatchHandle {
     return this.view.on("click", (event: __esri.MapViewClickEvent) => {
+      if (this.queryingState !== "ready") {
+        return;
+      }
       if (!this.imagePanZoomEnabled) {
         if (this.state !== "ready" || this._performingHitTestPhotoCentric) {
           return;
@@ -1454,6 +1466,7 @@ class PhotoCentricViewModel extends declared(AttachmentViewerViewModel) {
       "defaultLayerExpression"
     ) as string;
     const where = definitionExpression ? definitionExpression : "1=1";
+
     const queryConfig = {
       objectIds: currentSet.toArray(),
       outFields: ["*"],
@@ -1587,13 +1600,17 @@ class PhotoCentricViewModel extends declared(AttachmentViewerViewModel) {
 
     const { featureLayer } = this.selectedAttachmentViewerData.layerData;
     const featureQuery = this._setupFeatureQuery(selectedAttachmentViewerData);
-    featureLayer
-      .queryFeatures(featureQuery)
+    this._queryingFeatures = featureLayer.queryFeatures(featureQuery);
+
+    this._queryingFeatures
       .catch(err => {
         console.error("ERROR: ", err);
       })
       .then((queriedFeatures: __esri.FeatureSet) => {
+        this._queryingFeatures = null;
+        this.notifyChange("queryingState");
         // Reset features
+
         layerFeatures.removeAll();
         const [low, high] = selectedAttachmentViewerData.queryRange;
 
@@ -1625,6 +1642,7 @@ class PhotoCentricViewModel extends declared(AttachmentViewerViewModel) {
         this.setUpdateShareIndexes();
         this._setFeaturePhotoCentric();
       });
+    this.notifyChange("queryingState");
   }
 
   // _updateFeatureClick

@@ -607,7 +607,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         // _renderMultipleSVGIcon
         MapCentric.prototype._renderMultipleSVGIcon = function (objectId) {
             var layerId = this.get("selectedAttachmentViewerData.layerData.featureLayer.id");
-            return (widget_1.tsx("div", { key: "mult-svg-icon-" + layerId + "-" + objectId, class: CSS.svg.multipleAttachmentsIcon },
+            return (widget_1.tsx("div", { key: buildKey("mult-svg-icon-" + layerId + "-" + objectId), class: CSS.svg.multipleAttachmentsIcon },
                 widget_1.tsx("svg", { class: CSS.svg.size },
                     widget_1.tsx("g", null,
                         widget_1.tsx("path", { d: "M18.2,23.8H1.1c-0.5,0-0.9-0.4-0.9-0.9V5.8c0-0.5,0.4-0.9,0.9-0.9h17.1c0.5,0,0.9,0.4,0.9,0.9v17.1\nC19.2,23.4,18.8,23.8,18.2,23.8z M2.2,21.8h15v-15h-15V21.8z" })),
@@ -639,6 +639,9 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                     contentType.indexOf("mp4") !== -1 ||
                     contentType.indexOf("quicktime") !== -1);
             var pdf = isPDF ? this._renderPDFThumbnailContainer() : null;
+            var attachmentUrl = attachment && attachment.url
+                ? this.viewModel.updateAttachmentUrlToHTTPS(attachment.url)
+                : null;
             return (widget_1.tsx("div", { class: CSS.thumbnailContainer }, !attachments || (attachments && attachments.length === 0) ? (widget_1.tsx("div", { key: buildKey("no-attachments-container"), class: CSS.noAttachmentsContainer },
                 widget_1.tsx("svg", { class: CSS.svg.noAttachments },
                     widget_1.tsx("g", null,
@@ -646,7 +649,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                             widget_1.tsx("path", { d: "M29.6,17c0-0.7,0.2-1.2,0.7-1.7s1-0.7,1.7-0.7c0.7,0,1.3,0.2,1.7,0.7c0.5,0.5,0.7,1.1,0.7,1.8\n\t\t\tc0,0.7-0.2,1.2-0.7,1.7c-0.5,0.5-1,0.7-1.7,0.7H32c-0.7,0-1.2-0.2-1.7-0.7c-0.5-0.5-0.7-1-0.7-1.7V17z M13.7,35.9V31\n\t\t\tc0.4,0.2,0.8,0.3,1.2,0.3c0.8,0,1.4-0.3,1.9-0.8l6.4-6.5l6.3,5.4c0.5,0.4,1.1,0.7,1.8,0.7c0.7,0,1.3-0.2,1.8-0.6l3.5-2.7l4.1,4.2\n\t\t\tv5H13.7z M37.4,24.7c-0.4-0.4-0.8-0.4-1.3-0.1L32,27.8c-0.4,0.3-0.8,0.3-1.2,0l-7-6c-0.2-0.2-0.4-0.2-0.7-0.2\n\t\t\tc-0.3,0-0.5,0.1-0.6,0.3l-7,7.2c-0.2,0.2-0.4,0.3-0.7,0.2c-0.3,0-0.5-0.1-0.6-0.3c-0.2-0.2-0.4-0.3-0.7-0.3\n\t\t\tc-0.3,0-0.5,0.1-0.7,0.3l-1,1.1v7.8h30.9V30L37.4,24.7z M42.7,41.8H11.7v-2h30.9V41.8z M44.6,43.8H9.8V12.1h34.8V43.8z M7.9,10.1\n\t\t\tv35.6h38.7V10.1H7.9z" })),
                         widget_1.tsx("g", null,
                             widget_1.tsx("polygon", { points: "3.8,8.8 5.5,6.9 49.4,47.5 47.7,49.4" }),
-                            widget_1.tsx("path", { d: "M6,8l42.7,39.5l-1.1,1.2L4.9,9.2L6,8 M5.5,6.2L4.8,6.9L3.8,8.1L3.1,8.8l0.7,0.7l43.2,40l0.7,0.7l0.7-0.7\n\t\t\tl1.1-1.2l0.7-0.7l-0.7-0.7L6.2,6.8L5.5,6.2L5.5,6.2z" })))))) : isImage ? (widget_1.tsx("img", { bind: this, styles: imageStyles, class: CSS.imageThumbnail, src: attachment.url, afterCreate: this._fadeInImage, afterUpdate: this._fadeInImage, alt: "" })) : isPDF ? (pdf) : isVideo ? (widget_1.tsx("svg", { class: CSS.svg.video },
+                            widget_1.tsx("path", { d: "M6,8l42.7,39.5l-1.1,1.2L4.9,9.2L6,8 M5.5,6.2L4.8,6.9L3.8,8.1L3.1,8.8l0.7,0.7l43.2,40l0.7,0.7l0.7-0.7\n\t\t\tl1.1-1.2l0.7-0.7l-0.7-0.7L6.2,6.8L5.5,6.2L5.5,6.2z" })))))) : isImage ? (widget_1.tsx("img", { bind: this, styles: imageStyles, class: CSS.imageThumbnail, src: attachmentUrl, afterCreate: this._fadeInImage, afterUpdate: this._fadeInImage, alt: "" })) : isPDF ? (pdf) : isVideo ? (widget_1.tsx("svg", { class: CSS.svg.video },
                 widget_1.tsx("path", { d: "M31,21.3h-3.5v3.6H31V21.3z M15.1,32.1H9.8v1.8h5.3V32.1z M52.2,39.3H51L41.6,33v-8.9l9.4-6.4h1.2V39.3z\n           M50.5,15.9l-10.6,7.2v10.8l10.6,7.2H54V15.9H50.5z M4.4,41.1l-1.6-1.6V17.6l1.6-1.6h30.3l1.6,1.6v21.9l-1.6,1.6L4.4,41.1z\n           M38.1,40.2V16.8l-2.6-2.7h-5.8l-7.1-7.2H9.8v1.8h12l5.3,5.4H3.6L1,16.8v23.4l2.6,2.7h31.8L38.1,40.2z" }))) : null));
         };
         // _renderPDFThumbnailContainer
@@ -796,11 +799,11 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             var fadeImage = (_a = {},
                 _a[CSS.fadeImage] = !this.imageIsLoaded,
                 _a);
-            return (widget_1.tsx("img", { bind: this, class: this.classes(CSS.imageDesktop, fadeImage), styles: imageStyles, src: this.currentImageUrl, afterCreate: this._fadeInImage, afterUpdate: this._fadeInImage, onload: this._fadeInImage, alt: name }));
+            return (widget_1.tsx("img", { bind: this, key: buildKey("image-desktop-" + this.currentImageUrl), class: this.classes(CSS.imageDesktop, fadeImage), styles: imageStyles, src: this.currentImageUrl, afterCreate: this._fadeInImage, afterUpdate: this._fadeInImage, onload: this._fadeInImage, alt: name }));
         };
         // _renderVideo
         MapCentric.prototype._renderVideo = function (currentImageUrl) {
-            return (widget_1.tsx("video", { bind: this, key: "" + currentImageUrl, class: CSS.videoContainer, controls: true },
+            return (widget_1.tsx("video", { bind: this, key: buildKey("video-" + currentImageUrl), class: CSS.videoContainer, controls: true },
                 widget_1.tsx("source", { src: currentImageUrl, type: "video/mp4" }),
                 widget_1.tsx("source", { src: currentImageUrl, type: "video/quicktime" }),
                 widget_1.tsx("source", { src: currentImageUrl, type: "video/ogg" }),
@@ -809,7 +812,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         };
         // _renderPdf
         MapCentric.prototype._renderPdf = function (currentImageUrl) {
-            return (widget_1.tsx("embed", { key: "" + currentImageUrl, class: CSS.pdf, src: currentImageUrl, type: "application/pdf" }));
+            return (widget_1.tsx("embed", { key: buildKey("pdf-" + currentImageUrl), class: CSS.pdf, src: currentImageUrl, type: "application/pdf" }));
         };
         // _renderAttachmentScrollContainer
         MapCentric.prototype._renderAttachmentScrollContainer = function () {

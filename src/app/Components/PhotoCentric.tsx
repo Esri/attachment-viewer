@@ -1162,7 +1162,7 @@ class PhotoCentric extends declared(Widget) {
     return (
       <video
         bind={this}
-        key={`${currentImageUrl}`}
+        key={buildKey(`video-${currentImageUrl}`)}
         class={CSS.videoContainer}
         controls
       >
@@ -1181,7 +1181,7 @@ class PhotoCentric extends declared(Widget) {
     return (
       <embed
         class={CSS.pdf}
-        key={`${currentImageUrl}`}
+        key={buildKey(`pdf-${currentImageUrl}`)}
         src={currentImageUrl}
         type="application/pdf"
       />
@@ -1196,7 +1196,6 @@ class PhotoCentric extends declared(Widget) {
 
     const attachment = this._getCurrentAttachment(attachments);
     const name = attachment ? attachment.name : null;
-
     return (
       <img
         bind={this}
@@ -1723,7 +1722,7 @@ class PhotoCentric extends declared(Widget) {
 
     return (
       <div
-        key={buildKey(`${contentInfo.attribute - contentInfo.content}`)}
+        key={buildKey(`${contentInfo.attribute}-${contentInfo.content}`)}
         class={CSS.featureContentInfo}
       >
         <h4 class={CSS.attributeHeading} innerHTML={contentInfo.attribute} />
@@ -1820,7 +1819,7 @@ class PhotoCentric extends declared(Widget) {
               : null}
           </div>
         ) : null}
-        {this.imageIsLoaded ? featureContentInfos : null}
+        {featureContentInfos}
       </div>
     );
   }
@@ -1915,7 +1914,10 @@ class PhotoCentric extends declared(Widget) {
     imageDirectionValue: number
   ): VNode {
     return (
-      <div key={attachmentUrl} class={CSS.imageDirectionMobile}>
+      <div
+        key={buildKey(`mobile-image-direction-${attachmentUrl}`)}
+        class={CSS.imageDirectionMobile}
+      >
         <svg
           styles={{ transform: `rotateZ(${imageDirectionValue}deg)` }}
           class={CSS.photoCentricCamera}
@@ -1975,7 +1977,11 @@ c6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z"
         {attachment &&
         attachment.contentType &&
         attachment.contentType.indexOf("video") !== -1 ? (
-          <video class={CSS.videoContainer} controls>
+          <video
+            key={buildKey(`mobile-video-${attachmentUrl}`)}
+            class={CSS.videoContainer}
+            controls
+          >
             <source src={attachmentUrl} type="video/mp4" />
             <source src={attachmentUrl} type="video/ogg" />
             <source src={attachmentUrl} type="video/mov" />
@@ -1983,15 +1989,18 @@ c6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z"
           </video>
         ) : attachment &&
           attachment.contentType &&
-          attachment.contentType.indexOf("pdf") !== -1 &&
-          document.body.clientWidth > 813 ? (
+          attachment.contentType.indexOf("pdf") !== -1 ? (
           <embed
+            key={buildKey(`mobile-pdf-${attachmentUrl}`)}
             class={CSS.pdf}
             src={this.currentImageUrl}
             type="application/pdf"
           />
-        ) : (
+        ) : attachment &&
+          attachment.contentType &&
+          attachment.contentType.indexOf("image") !== -1 ? (
           <img
+            key={buildKey(`mobile-image-${attachmentUrl}`)}
             class={this.classes(
               CSS.imageMobile,
               removeBorderRadius,
@@ -2000,7 +2009,7 @@ c6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z"
             src={attachmentUrl}
             alt={name}
           />
-        )}
+        ) : null}
       </div>
     );
   }
@@ -2074,11 +2083,9 @@ c6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z"
   // _previousFeature
   @accessibleHandler()
   private _previousFeature(): void {
-    const { state, queryingState } = this.viewModel;
-    if (!this.imagePanZoomEnabled) {
-      if (queryingState !== "ready" || state !== "ready") {
-        return;
-      }
+    const { queryingState } = this.viewModel;
+    if (queryingState !== "ready") {
+      return;
     }
     this.viewModel.previousFeature();
     this.set("currentImageUrl", null);
@@ -2102,13 +2109,10 @@ c6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z"
   // _nextFeature
   @accessibleHandler()
   private _nextFeature(): void {
-    const { state, queryingState } = this.viewModel;
-    if (!this.imagePanZoomEnabled) {
-      if (queryingState !== "ready" || state !== "ready") {
-        return;
-      }
+    const { queryingState } = this.viewModel;
+    if (queryingState !== "ready") {
+      return;
     }
-
     this.viewModel.nextFeature();
     this.set("currentImageUrl", null);
     const featureLayer = this.get(

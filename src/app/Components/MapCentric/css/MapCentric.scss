@@ -140,9 +140,9 @@ $calcite-blue: #0079c1;
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 8%;
+    width: 10%;
     height: 100%;
-    background-color: #323232;
+    background-color: transparent;
 
     .esri-icon-left-arrow,
     .esri-icon-right-arrow {
@@ -1011,7 +1011,7 @@ $calcite-blue: #0079c1;
     }
 
     .esri-map-centric__back-to-gallery {
-      width: 5%;
+      width: 8%;
     }
 
     .esri-map-centric__feature-content-panel-container {

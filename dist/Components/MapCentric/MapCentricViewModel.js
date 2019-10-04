@@ -180,6 +180,10 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         // _handleFeatureClickEvent
         MapCentricViewModel.prototype._handleFeatureClickEvent = function () {
             var _this = this;
+            var popup = this.get("view.popup");
+            if (this.mapCentricTooltipEnabled && popup) {
+                this.set("view.popup.autoOpenEnabled", false);
+            }
             return this.view.on("click", function (event) {
                 if (_this.state !== "ready") {
                     return;
@@ -188,12 +192,13 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                 _this._performingHitTestMapCentric = view.hitTest(event);
                 _this.notifyChange("mapCentricState");
                 _this._performingHitTestMapCentric.then(function (hitTestRes) {
-                    _this._handleHitTestRes(hitTestRes);
+                    var mapPoint = event && event.mapPoint;
+                    _this._handleHitTestRes(hitTestRes, mapPoint);
                 });
             });
         };
         // _handleHitTestRes
-        MapCentricViewModel.prototype._handleHitTestRes = function (hitTestRes) {
+        MapCentricViewModel.prototype._handleHitTestRes = function (hitTestRes, mapPoint) {
             if (!hitTestRes.results.length) {
                 this._resetHitTest();
                 return;
@@ -237,7 +242,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             }
             var selectedAttachmentViewerDataId = this.get("selectedAttachmentViewerData.layerData.featureLayer.id");
             this._setLayerFromHitTestResult(resultFeatureLayerId, selectedAttachmentViewerDataId, resultLayerFromGraphic);
-            this._setClickedFeature(hitTestRes, resultAttachmentViewerData);
+            this._setClickedFeature(hitTestRes, resultAttachmentViewerData, mapPoint);
             this._performingHitTestMapCentric = null;
             this.notifyChange("mapCentricState");
         };
@@ -265,13 +270,13 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             }
         };
         // _setClickedFeature
-        MapCentricViewModel.prototype._setClickedFeature = function (hitTestRes, attachmentViewerData) {
+        MapCentricViewModel.prototype._setClickedFeature = function (hitTestRes, attachmentViewerData, mapPoint) {
             var _a = attachmentViewerData.layerData, featureLayer = _a.featureLayer, layerView = _a.layerView;
             var graphic = hitTestRes.results.filter(function (result) {
                 var layer = result.graphic.layer;
                 return layer.id === featureLayer.id;
             })[0].graphic;
-            this._processSelectedFeatureIndicator(layerView, graphic);
+            this._processSelectedFeatureIndicator(layerView, graphic, null, mapPoint);
             attachmentViewerData.set("selectedFeature", graphic);
             this.setUpdateShareIndexes();
             this._setFeatureMapCentric(graphic);
@@ -564,9 +569,11 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                     ? [sortField + " " + order]
                     : [objectIdField + " " + order];
                 var featureLayer = attachmentViewerData.get("layerData.featureLayer");
-                var attachmentObjectIds = Object.keys(attachmentViewerData.attachments).map(function (objectId) {
-                    return parseInt(objectId);
-                });
+                var attachmentObjectIds = attachmentViewerData && attachmentViewerData.attachments
+                    ? Object.keys(attachmentViewerData.attachments).map(function (objectId) {
+                        return parseInt(objectId);
+                    })
+                    : [];
                 var where = _this.onlyDisplayFeaturesWithAttachmentsIsEnabled
                     ? attachmentObjectIds && attachmentObjectIds.length
                         ? attachmentViewerData.defaultLayerExpression
@@ -627,7 +634,10 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             featureObjectIds.addMany(objectIdResult.objectIds.slice());
             var featureObjectIdArr = featureObjectIds.slice();
             var attachmentsArr = featureObjectIdArr.map(function (objectId) {
-                var attachments = objectIdResult.attachmentViewerData.attachments["" + objectId];
+                var attachments = objectIdResult &&
+                    objectIdResult.attachmentViewerData &&
+                    objectIdResult.attachmentViewerData.attachments &&
+                    objectIdResult.attachmentViewerData.attachments["" + objectId];
                 return attachments
                     ? {
                         objectId: objectId,
@@ -1017,7 +1027,9 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             if (attachmentDataCollectionLength < featureObjectIdsLength) {
                 var featureObjectIdArr = selectedAttachmentViewerData.featureObjectIds.slice();
                 var attachmentsArr = featureObjectIdArr.map(function (objectId) {
-                    var attachments = selectedAttachmentViewerData.attachments["" + objectId];
+                    var attachments = selectedAttachmentViewerData &&
+                        selectedAttachmentViewerData.attachments &&
+                        selectedAttachmentViewerData.attachments["" + objectId];
                     return attachments
                         ? {
                             attachments: attachments,
@@ -1100,13 +1112,20 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             }
         };
         // _processSelectedFeatureIndicator
-        MapCentricViewModel.prototype._processSelectedFeatureIndicator = function (layerView, graphic, queryPromise) {
+        MapCentricViewModel.prototype._processSelectedFeatureIndicator = function (layerView, graphic, queryPromise, mapPoint) {
             if (this.mapCentricTooltipEnabled) {
-                var config = {
-                    features: [graphic],
-                    featureMenuOpen: false,
-                    collapsed: true
-                };
+                var config = mapPoint
+                    ? {
+                        location: mapPoint,
+                        features: [graphic],
+                        featureMenuOpen: false,
+                        collapsed: true
+                    }
+                    : {
+                        features: [graphic],
+                        featureMenuOpen: false,
+                        collapsed: true
+                    };
                 var popupConfigToOpen = queryPromise
                     ? __assign({}, config, { promises: [queryPromise] }) : config;
                 this.view.popup.open(popupConfigToOpen);
@@ -1153,6 +1172,9 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         };
         // updateAttachmentUrlToHTTPS
         MapCentricViewModel.prototype.updateAttachmentUrlToHTTPS = function (attachmentUrl) {
+            if (!attachmentUrl) {
+                return;
+            }
             var featureLayer = this.selectedAttachmentViewerData.get("layerData.featureLayer");
             var parentPortalUrl = featureLayer &&
                 featureLayer.get("parent.portalItem.portal.url");
