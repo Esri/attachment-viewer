@@ -143,7 +143,6 @@ class AttachmentViewerApp {
     });
 
     const firstItem = validWebMapItems[0];
-
     if (!firstItem) {
       const error = "Could not load an item to display";
       document.body.classList.remove("configurable-application--loading");

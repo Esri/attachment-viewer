@@ -987,7 +987,7 @@ class MapCentric extends declared(Widget) {
     ) as string;
     return (
       <div
-        key={`mult-svg-icon-${layerId}-${objectId}`}
+        key={buildKey(`mult-svg-icon-${layerId}-${objectId}`)}
         class={CSS.svg.multipleAttachmentsIcon}
       >
         <svg class={CSS.svg.size}>
@@ -1022,7 +1022,6 @@ c0.6,0,1.1,0.5,1.1,1.1v14.8C23.8,16.8,23.3,17.3,22.6,17.3z"
       this.imageIsLoaded && attachment && attachment.orientationInfo
         ? getOrientationStylesImageThumbnail(attachment.orientationInfo)
         : {};
-
     const imageAttachmentTypes = [
       "image/jpeg",
       "image/jpg",
@@ -1041,6 +1040,12 @@ c0.6,0,1.1,0.5,1.1,1.1v14.8C23.8,16.8,23.3,17.3,22.6,17.3z"
         contentType.indexOf("quicktime") !== -1);
 
     const pdf = isPDF ? this._renderPDFThumbnailContainer() : null;
+
+    const attachmentUrl =
+      attachment && attachment.url
+        ? this.viewModel.updateAttachmentUrlToHTTPS(attachment.url)
+        : null;
+
     return (
       <div class={CSS.thumbnailContainer}>
         {!attachments || (attachments && attachments.length === 0) ? (
@@ -1076,7 +1081,7 @@ c0.6,0,1.1,0.5,1.1,1.1v14.8C23.8,16.8,23.3,17.3,22.6,17.3z"
             bind={this}
             styles={imageStyles}
             class={CSS.imageThumbnail}
-            src={attachment.url}
+            src={attachmentUrl}
             afterCreate={this._fadeInImage}
             afterUpdate={this._fadeInImage}
             alt=""
@@ -1377,6 +1382,7 @@ c0.6,0,1.1,0.5,1.1,1.1v14.8C23.8,16.8,23.3,17.3,22.6,17.3z"
     return (
       <img
         bind={this}
+        key={buildKey(`image-desktop-${this.currentImageUrl}`)}
         class={this.classes(CSS.imageDesktop, fadeImage)}
         styles={imageStyles}
         src={this.currentImageUrl}
@@ -1393,7 +1399,7 @@ c0.6,0,1.1,0.5,1.1,1.1v14.8C23.8,16.8,23.3,17.3,22.6,17.3z"
     return (
       <video
         bind={this}
-        key={`${currentImageUrl}`}
+        key={buildKey(`video-${currentImageUrl}`)}
         class={CSS.videoContainer}
         controls
       >
@@ -1410,7 +1416,7 @@ c0.6,0,1.1,0.5,1.1,1.1v14.8C23.8,16.8,23.3,17.3,22.6,17.3z"
   private _renderPdf(currentImageUrl: string): VNode {
     return (
       <embed
-        key={`${currentImageUrl}`}
+        key={buildKey(`pdf-${currentImageUrl}`)}
         class={CSS.pdf}
         src={currentImageUrl}
         type="application/pdf"

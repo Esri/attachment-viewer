@@ -232,6 +232,10 @@ class MapCentricViewModel extends declared(AttachmentViewerViewModel) {
 
   // _handleFeatureClickEvent
   private _handleFeatureClickEvent(): __esri.WatchHandle {
+    const popup = this.get("view.popup");
+    if (this.mapCentricTooltipEnabled && popup) {
+      this.set("view.popup.autoOpenEnabled", false);
+    }
     return this.view.on("click", (event: __esri.MapViewClickEvent) => {
       if (this.state !== "ready") {
         return;
@@ -241,14 +245,18 @@ class MapCentricViewModel extends declared(AttachmentViewerViewModel) {
       this.notifyChange("mapCentricState");
       this._performingHitTestMapCentric.then(
         (hitTestRes: __esri.HitTestResult) => {
-          this._handleHitTestRes(hitTestRes);
+          const mapPoint = event && event.mapPoint;
+          this._handleHitTestRes(hitTestRes, mapPoint);
         }
       );
     });
   }
 
   // _handleHitTestRes
-  private _handleHitTestRes(hitTestRes: __esri.HitTestResult): void {
+  private _handleHitTestRes(
+    hitTestRes: __esri.HitTestResult,
+    mapPoint: __esri.Point
+  ): void {
     if (!hitTestRes.results.length) {
       this._resetHitTest();
       return;
@@ -302,7 +310,6 @@ class MapCentricViewModel extends declared(AttachmentViewerViewModel) {
     const resultAttachmentViewerData = this._getResultAttachmentViewerData(
       resultFeatureLayerId
     );
-
     if (!resultAttachmentViewerData) {
       this._performingHitTestMapCentric = null;
       this.notifyChange("mapCentricState");
@@ -318,7 +325,7 @@ class MapCentricViewModel extends declared(AttachmentViewerViewModel) {
       selectedAttachmentViewerDataId,
       resultLayerFromGraphic
     );
-    this._setClickedFeature(hitTestRes, resultAttachmentViewerData);
+    this._setClickedFeature(hitTestRes, resultAttachmentViewerData, mapPoint);
     this._performingHitTestMapCentric = null;
     this.notifyChange("mapCentricState");
   }
@@ -359,15 +366,15 @@ class MapCentricViewModel extends declared(AttachmentViewerViewModel) {
   // _setClickedFeature
   private _setClickedFeature(
     hitTestRes: __esri.HitTestResult,
-    attachmentViewerData: MapCentricData
+    attachmentViewerData: MapCentricData,
+    mapPoint: __esri.Point
   ): void {
     const { featureLayer, layerView } = attachmentViewerData.layerData;
     const graphic = hitTestRes.results.filter(result => {
       const { layer } = result.graphic;
       return layer.id === featureLayer.id;
     })[0].graphic;
-
-    this._processSelectedFeatureIndicator(layerView, graphic);
+    this._processSelectedFeatureIndicator(layerView, graphic, null, mapPoint);
     attachmentViewerData.set("selectedFeature", graphic);
     this.setUpdateShareIndexes();
     this._setFeatureMapCentric(graphic);
@@ -752,11 +759,12 @@ class MapCentricViewModel extends declared(AttachmentViewerViewModel) {
           "layerData.featureLayer"
         ) as __esri.FeatureLayer;
 
-        const attachmentObjectIds = Object.keys(
-          attachmentViewerData.attachments
-        ).map(objectId => {
-          return parseInt(objectId);
-        });
+        const attachmentObjectIds =
+          attachmentViewerData && attachmentViewerData.attachments
+            ? Object.keys(attachmentViewerData.attachments).map(objectId => {
+                return parseInt(objectId);
+              })
+            : [];
 
         const where = this.onlyDisplayFeaturesWithAttachmentsIsEnabled
           ? attachmentObjectIds && attachmentObjectIds.length
@@ -838,6 +846,9 @@ class MapCentricViewModel extends declared(AttachmentViewerViewModel) {
 
     const attachmentsArr = featureObjectIdArr.map(objectId => {
       const attachments =
+        objectIdResult &&
+        objectIdResult.attachmentViewerData &&
+        objectIdResult.attachmentViewerData.attachments &&
         objectIdResult.attachmentViewerData.attachments[`${objectId}`];
       return attachments
         ? {
@@ -1375,6 +1386,8 @@ class MapCentricViewModel extends declared(AttachmentViewerViewModel) {
       const featureObjectIdArr = selectedAttachmentViewerData.featureObjectIds.slice();
       const attachmentsArr = featureObjectIdArr.map(objectId => {
         const attachments =
+          selectedAttachmentViewerData &&
+          selectedAttachmentViewerData.attachments &&
           selectedAttachmentViewerData.attachments[`${objectId}`];
         return attachments
           ? {
@@ -1476,14 +1489,22 @@ class MapCentricViewModel extends declared(AttachmentViewerViewModel) {
   private _processSelectedFeatureIndicator(
     layerView: __esri.FeatureLayerView,
     graphic: __esri.Graphic,
-    queryPromise?: IPromise
+    queryPromise?: IPromise,
+    mapPoint?: __esri.Point
   ) {
     if (this.mapCentricTooltipEnabled) {
-      const config = {
-        features: [graphic],
-        featureMenuOpen: false,
-        collapsed: true
-      };
+      const config = mapPoint
+        ? {
+            location: mapPoint,
+            features: [graphic],
+            featureMenuOpen: false,
+            collapsed: true
+          }
+        : {
+            features: [graphic],
+            featureMenuOpen: false,
+            collapsed: true
+          };
       const popupConfigToOpen = queryPromise
         ? { ...config, promises: [queryPromise] }
         : config;
@@ -1543,6 +1564,9 @@ class MapCentricViewModel extends declared(AttachmentViewerViewModel) {
 
   // updateAttachmentUrlToHTTPS
   updateAttachmentUrlToHTTPS(attachmentUrl: string): string {
+    if (!attachmentUrl) {
+      return;
+    }
     const featureLayer = this.selectedAttachmentViewerData.get(
       "layerData.featureLayer"
     ) as __esri.FeatureLayer;
