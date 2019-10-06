@@ -789,8 +789,11 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             var attachment = this.viewModel.getCurrentAttachment();
             var orientationInfo = attachment && attachment.get("orientationInfo");
             var name = attachment ? attachment.name : null;
-            var imageStyles = orientationInfo && this._mediaViewerContainer && this.imageIsLoaded
-                ? imageUtils_1.getOrientationStyles(orientationInfo, this._mediaViewerContainer, this.appMode)
+            var container = this._fullAttachmentContainerIsOpen
+                ? this._mediaViewerContainerFullAttachment
+                : this._mediaViewerContainer;
+            var imageStyles = orientationInfo && container && this.imageIsLoaded
+                ? imageUtils_1.getOrientationStyles(orientationInfo, container, this.appMode)
                 : {
                     transform: "none",
                     height: "initial",

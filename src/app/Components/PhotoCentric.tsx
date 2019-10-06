@@ -2281,8 +2281,14 @@ c6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z"
             )
           : ({} as any);
       const { style } = this._imageAttachment;
-      style.width = `${imageStyles.width}`;
-      style.height = `${imageStyles.height}`;
+      style.width =
+        imageStyles && imageStyles.transform && imageStyles.transform === "none"
+          ? ""
+          : `${imageStyles.width}`;
+      style.height =
+        imageStyles && imageStyles.transform && imageStyles.transform === "none"
+          ? ""
+          : `${imageStyles.height}`;
       style.maxHeight = `${imageStyles.maxHeight}`;
       style.transform = `${imageStyles.transform}`;
       style.opacity = "1";

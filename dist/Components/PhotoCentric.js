@@ -1254,8 +1254,14 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                         ? imageUtils_1.getOrientationStyles(attachment.orientationInfo, this._photoViewerContainer)
                         : {};
                 var style = this._imageAttachment.style;
-                style.width = "" + imageStyles.width;
-                style.height = "" + imageStyles.height;
+                style.width =
+                    imageStyles && imageStyles.transform && imageStyles.transform === "none"
+                        ? ""
+                        : "" + imageStyles.width;
+                style.height =
+                    imageStyles && imageStyles.transform && imageStyles.transform === "none"
+                        ? ""
+                        : "" + imageStyles.height;
                 style.maxHeight = "" + imageStyles.maxHeight;
                 style.transform = "" + imageStyles.transform;
                 style.opacity = "1";

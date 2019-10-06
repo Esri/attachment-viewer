@@ -73,27 +73,44 @@ export function getOrientationStyles(
   maxHeight?: string;
 } {
   const orientation = ORIENTATION_MAP[orientationInfo.id];
-  const width =
-    containerNode &&
-    containerNode.offsetWidth &&
-    orientationInfo.rotation !== 0 &&
-    appMode !== "map-centric"
-      ? `${containerNode.offsetWidth / 2}px`
-      : "";
-  const height =
-    containerNode &&
-    containerNode.offsetHeight &&
-    orientationInfo.rotation !== 0 &&
-    appMode !== "map-centric"
-      ? `${containerNode.offsetHeight}px`
-      : "";
+  let width = "auto";
+  let height = "auto";
+  let maxHeight = "100%";
+  const { offsetWidth, offsetHeight } = containerNode;
+  const { rotation } = orientationInfo;
+  const { scaleX } = orientation;
+
+  if (offsetWidth && rotation === 90) {
+    if (scaleX === 1) {
+      height = `${offsetWidth}px`;
+      width = `${offsetHeight}px`;
+      maxHeight = "unset";
+    } else if (scaleX === -1) {
+      maxHeight = "unset";
+      height = `${offsetWidth}px`;
+      width = `${offsetHeight}px`;
+    }
+  }
+
+  if (offsetWidth && rotation === -90) {
+    if (scaleX === 1) {
+      maxHeight = "unset";
+      height = `${offsetWidth}px`;
+      width = `${offsetHeight}px`;
+    } else if (scaleX === -1) {
+      height = `${offsetWidth}px`;
+      width = `${offsetHeight}px`;
+      maxHeight = "unset";
+    }
+  }
 
   return orientation
     ? {
         transform: `rotate(${orientationInfo.rotation}deg) scaleX(${orientation.scaleX})`,
-        height: width,
-        width: height,
-        maxHeight: "100%"
+        height,
+        width,
+        maxHeight,
+        objectFit: "contain"
       }
     : {};
 }
