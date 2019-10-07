@@ -91,8 +91,7 @@ define(["require", "exports"], function (require, exports) {
                 transform: "rotate(" + orientationInfo.rotation + "deg) scaleX(" + orientation.scaleX + ")",
                 height: height,
                 width: width,
-                maxHeight: maxHeight,
-                objectFit: "contain"
+                maxHeight: maxHeight
             }
             : {};
     }

@@ -137,18 +137,14 @@ class PhotoCentricViewModel extends declared(AttachmentViewerViewModel) {
   private _initSelectedAttachmentViewerDataWatcher(): void {
     this._photoCentricHandles.add([
       watchUtils.watch(this, "selectedAttachmentViewerData", () => {
-        if (this.socialSharingEnabled) {
+        if (this.socialSharingEnabled && this.defaultObjectId !== null) {
           this._handleSharedFeature();
           this.updateSharePropIndexes();
+        } else {
+          this._setFeaturePhotoCentric();
         }
         this._removeFeatureHighlight();
         this._highlightFeature();
-        if (
-          !this.selectedAttachmentViewerData.selectedFeature ||
-          this._currentSketchExtentPhotoCentric
-        ) {
-          this._setFeaturePhotoCentric();
-        }
       })
     ]);
   }
@@ -973,14 +969,10 @@ class PhotoCentricViewModel extends declared(AttachmentViewerViewModel) {
   private _watchFeatureWidgetLoad(
     featureWidgetKey: string
   ): __esri.WatchHandle {
-    return watchUtils.whenFalse(
-      this,
-      "featureWidget.viewModel.waitingForContent",
-      () => {
-        this._photoCentricHandles.remove(featureWidgetKey);
-        this._setupFeatureWidgetContent();
-      }
-    );
+    return watchUtils.whenOnce(this, "featureWidget.viewModel.content", () => {
+      this._photoCentricHandles.remove(featureWidgetKey);
+      this._setupFeatureWidgetContent();
+    });
   }
 
   // _setupFeatureWidgetContent
@@ -998,14 +990,12 @@ class PhotoCentricViewModel extends declared(AttachmentViewerViewModel) {
     layerAttachments: __esri.AttachmentInfo[]
   ): void {
     let currentIndex = null;
-
     if (this.socialSharingEnabled && this.attachmentIndex !== null) {
       this.set(
         "selectedAttachmentViewerData.attachmentIndex",
         this.attachmentIndex
       );
       currentIndex = this.attachmentIndex;
-
       this.set("attachmentIndex", null);
     } else {
       this.set("selectedAttachmentViewerData.attachmentIndex", 0);
@@ -1279,7 +1269,6 @@ class PhotoCentricViewModel extends declared(AttachmentViewerViewModel) {
     const selectedAttachmentViewerData = this.get(
       "selectedAttachmentViewerData"
     ) as PhotoCentricData;
-
     if (!selectedAttachmentViewerData) {
       return;
     }
@@ -1287,7 +1276,6 @@ class PhotoCentricViewModel extends declared(AttachmentViewerViewModel) {
     const selectedFeature = this._setSelectedFeature(
       selectedAttachmentViewerData
     );
-
     if (this.addressEnabled && selectedFeature) {
       this.getAddress(selectedFeature.geometry);
     }
@@ -1296,7 +1284,6 @@ class PhotoCentricViewModel extends declared(AttachmentViewerViewModel) {
       selectedAttachmentViewerData,
       selectedFeature
     );
-
     this._setFeatureWidget();
   }
 
@@ -1563,7 +1550,6 @@ class PhotoCentricViewModel extends declared(AttachmentViewerViewModel) {
         "selectedAttachmentViewerData.objectIdIndex",
         this.selectedAttachmentViewerData.featureObjectIds.indexOf(objectId)
       );
-
       this._setFeaturePhotoCentric();
       this._highlightFeature(
         (this.selectedAttachmentViewerData as PhotoCentricData)

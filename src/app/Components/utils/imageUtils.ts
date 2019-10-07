@@ -109,8 +109,7 @@ export function getOrientationStyles(
         transform: `rotate(${orientationInfo.rotation}deg) scaleX(${orientation.scaleX})`,
         height,
         width,
-        maxHeight,
-        objectFit: "contain"
+        maxHeight
       }
     : {};
 }

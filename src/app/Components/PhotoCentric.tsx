@@ -1688,7 +1688,6 @@ class PhotoCentric extends declared(Widget) {
       "selectedAttachmentViewerData.layerFeatures.length"
     );
     const zoomTo = layerFeaturesLength ? this._renderZoomTo() : null;
-
     return (
       <div class={CSS.featureTitleZoomContainer}>
         <div class={CSS.featureContentTitle}>

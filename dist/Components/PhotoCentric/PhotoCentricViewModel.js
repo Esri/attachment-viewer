@@ -106,16 +106,15 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             var _this = this;
             this._photoCentricHandles.add([
                 watchUtils.watch(this, "selectedAttachmentViewerData", function () {
-                    if (_this.socialSharingEnabled) {
+                    if (_this.socialSharingEnabled && _this.defaultObjectId !== null) {
                         _this._handleSharedFeature();
                         _this.updateSharePropIndexes();
                     }
-                    _this._removeFeatureHighlight();
-                    _this._highlightFeature();
-                    if (!_this.selectedAttachmentViewerData.selectedFeature ||
-                        _this._currentSketchExtentPhotoCentric) {
+                    else {
                         _this._setFeaturePhotoCentric();
                     }
+                    _this._removeFeatureHighlight();
+                    _this._highlightFeature();
                 })
             ]);
         };
@@ -722,7 +721,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         // _watchFeatureWidgetLoad
         PhotoCentricViewModel.prototype._watchFeatureWidgetLoad = function (featureWidgetKey) {
             var _this = this;
-            return watchUtils.whenFalse(this, "featureWidget.viewModel.waitingForContent", function () {
+            return watchUtils.whenOnce(this, "featureWidget.viewModel.content", function () {
                 _this._photoCentricHandles.remove(featureWidgetKey);
                 _this._setupFeatureWidgetContent();
             });
