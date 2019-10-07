@@ -1132,8 +1132,7 @@ $text-color: #c3c3c3;
         overflow: hidden;
 
         .esri-photo-centric__image--desktop {
-          width: auto;
-          height: 100%;
+          object-fit: contain;
           opacity: 0;
           transition: opacity 0.15s ease-in-out;
           -o-transition: opacity 0.15s ease-in-out;

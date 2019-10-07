@@ -56,24 +56,42 @@ define(["require", "exports"], function (require, exports) {
     exports.getOrientationStylesImageThumbnail = getOrientationStylesImageThumbnail;
     function getOrientationStyles(orientationInfo, containerNode, appMode) {
         var orientation = ORIENTATION_MAP[orientationInfo.id];
-        var width = containerNode &&
-            containerNode.offsetWidth &&
-            orientationInfo.rotation !== 0 &&
-            appMode !== "map-centric"
-            ? containerNode.offsetWidth / 2 + "px"
-            : "";
-        var height = containerNode &&
-            containerNode.offsetHeight &&
-            orientationInfo.rotation !== 0 &&
-            appMode !== "map-centric"
-            ? containerNode.offsetHeight + "px"
-            : "";
+        var width = "auto";
+        var height = "auto";
+        var maxHeight = "100%";
+        var offsetWidth = containerNode.offsetWidth, offsetHeight = containerNode.offsetHeight;
+        var rotation = orientationInfo.rotation;
+        var scaleX = orientation.scaleX;
+        if (offsetWidth && rotation === 90) {
+            if (scaleX === 1) {
+                height = offsetWidth + "px";
+                width = offsetHeight + "px";
+                maxHeight = "unset";
+            }
+            else if (scaleX === -1) {
+                maxHeight = "unset";
+                height = offsetWidth + "px";
+                width = offsetHeight + "px";
+            }
+        }
+        if (offsetWidth && rotation === -90) {
+            if (scaleX === 1) {
+                maxHeight = "unset";
+                height = offsetWidth + "px";
+                width = offsetHeight + "px";
+            }
+            else if (scaleX === -1) {
+                height = offsetWidth + "px";
+                width = offsetHeight + "px";
+                maxHeight = "unset";
+            }
+        }
         return orientation
             ? {
                 transform: "rotate(" + orientationInfo.rotation + "deg) scaleX(" + orientation.scaleX + ")",
-                height: width,
-                width: height,
-                maxHeight: "100%"
+                height: height,
+                width: width,
+                maxHeight: maxHeight
             }
             : {};
     }

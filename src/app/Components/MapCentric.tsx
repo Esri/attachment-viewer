@@ -1363,13 +1363,12 @@ c0.6,0,1.1,0.5,1.1,1.1v14.8C23.8,16.8,23.3,17.3,22.6,17.3z"
 
     const orientationInfo = attachment && attachment.get("orientationInfo");
     const name = attachment ? attachment.name : null;
+    const container = this._fullAttachmentContainerIsOpen
+      ? this._mediaViewerContainerFullAttachment
+      : this._mediaViewerContainer;
     const imageStyles =
-      orientationInfo && this._mediaViewerContainer && this.imageIsLoaded
-        ? getOrientationStyles(
-            orientationInfo,
-            this._mediaViewerContainer,
-            this.appMode
-          )
+      orientationInfo && container && this.imageIsLoaded
+        ? getOrientationStyles(orientationInfo, container, this.appMode)
         : {
             transform: "none",
             height: "initial",
