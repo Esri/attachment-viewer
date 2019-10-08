@@ -7,10 +7,15 @@ Attachment Viewer is a configurable app template that allows you to view photos,
 ## 7.3 Release Updates
 
 1. Map layout
+
 2. Multiple layer support
+
 3. PDF support
+
 4. Image pan/zoom tool using [iv-viewer](https://github.com/s-yadav/iv-viewer)
+
 5. Only display features with attachments
+
 6. Display image direction camera icon (GPS Image direction)
 
 ## Features
@@ -28,7 +33,9 @@ Attachment Viewer is a configurable app template that allows you to view photos,
 5. Supported attachment types:
 
    a. images(jpeg, jpg, png, gif)
+   
    b. videos (mp4, mov)
+   
    c. pdf
 
    Please note: Other attachment types such as `doc` will display in the feature content panel as hyperlinks.
@@ -54,6 +61,7 @@ Configuration options:
 4. Onboarding
 
    a. Content - Provide custom onboarding information to help end-users get a better understanding of what the app is about.
+   
    b. Image - Provide an image URL to display an image when the onboarding panel is open.
 
 5. Modify the header background and header text colors.
@@ -65,29 +73,47 @@ Configuration options:
 1. Select from a set of map tools:
 
    a. Home
+   
    b. Zoom Controls
+   
    c. Legend
+   
    d. Layer List
+   
    e. Full Screen
+   
    f. Search - configure search to work with a feature layer and field in the web map, as search results will pull up feature information and attachments
 
 2. Set the scale for the Zoom to button. Default value: 32000
+
 3. Toggle social sharing
+
 4. Toggle image downloads
+
 5. Toggle the option to display the selected feature's address.
+
 6. Toggle feature selection
+
 7. Toggle image direction icon
+
 8. Toggle image pan/zoom
+
 9. Toggle feature label (title tooltip in map)
+
 10. Toggle the option to only display features with attachments
 
 ## Instructions
 
 1. Fork and then clone the repo.
+
 2. Run `npm install`
+
 3. Host on local web server.
+
 4. Open web browser.
+
 5. Click on dist directory within browser tab.
+
 6. Test with different web maps with feature layers that support and contain attachments.
 
 ## Requirements
