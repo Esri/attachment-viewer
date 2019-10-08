@@ -91,7 +91,9 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                         this._galleryItemPromise ||
                         this._performingHitTestMapCentric
                         ? "querying"
-                        : "ready"
+                        : this.get("featureWidget.viewModel.waitingForContent")
+                            ? "waitingForContent"
+                            : "ready"
                     : this.view
                         ? "loading"
                         : "disabled";
@@ -278,8 +280,18 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             })[0].graphic;
             this._processSelectedFeatureIndicator(layerView, graphic, null, mapPoint);
             attachmentViewerData.set("selectedFeature", graphic);
-            this.setUpdateShareIndexes();
+            if (this.socialSharingEnabled) {
+                this.setUpdateShareIndexes();
+            }
             this._setFeatureMapCentric(graphic);
+            this._updateAddress(graphic);
+        };
+        // _updateAddress
+        MapCentricViewModel.prototype._updateAddress = function (graphic) {
+            if (this.addressEnabled && graphic && graphic.geometry) {
+                this.set("selectedAttachmentViewerData.selectedFeatureAddress", null);
+                this.getAddress(graphic.geometry);
+            }
         };
         // _handleLayerLoadPromises
         MapCentricViewModel.prototype._handleLayerLoadPromises = function () {
@@ -701,6 +713,11 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                 this._updateAttachmentViewerDataOnSearch(selectedResult);
                 this.set("selectedAttachmentViewerData.attachmentIndex", 0);
                 this._setFeatureMapCentric(selectedResult.feature);
+                if (selectedResult &&
+                    selectedResult.feature &&
+                    selectedResult.feature.geometry) {
+                    this._updateAddress(selectedResult.feature);
+                }
             }
         };
         MapCentricViewModel.prototype._updateAttachmentViewerDataOnSearch = function (selectedResult) {
@@ -766,6 +783,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                         return;
                     }
                     _this._setFeatureMapCentric(feature);
+                    _this._updateAddress(feature);
                 });
             }), handleDefaultObjectIdKey);
         };
@@ -855,7 +873,6 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             }
             this.imageIsLoaded = false;
             this.set("selectedAttachmentViewerData.selectedFeature", feature);
-            this._updateSelectedAttachmentViewerData(feature);
             this._handleFeatureWidget();
         };
         // _updateSelectedAttachmentViewerData
@@ -883,6 +900,9 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             this.featureWidget.set("visibleElements.title", false);
             var featureWidgetKey = "feature-widget";
             this._mapCentricHandles.add(watchUtils.when(this, "featureWidget", function () {
+                if (_this.socialSharingEnabled) {
+                    _this.updateSharePropIndexes();
+                }
                 _this._watchForFeatureContentLoad(featureWidgetKey);
             }), featureWidgetKey);
         };
@@ -902,6 +922,9 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             _mapCentricHandles.remove(featureWidgetKey);
             var featureWidgetContentKey = "feature-widget-content";
             _mapCentricHandles.add(watchUtils.whenFalse(this, "featureWidget.viewModel.waitingForContent", function () {
+                if (_this.featureWidget && _this.featureWidget.graphic) {
+                    _this._updateSelectedAttachmentViewerData(_this.featureWidget.graphic);
+                }
                 _this._handleFeatureWidgetContent(featureWidgetContentKey);
             }), featureWidgetContentKey);
         };
@@ -965,7 +988,6 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         // _setupSocialSharing
         MapCentricViewModel.prototype._setupSocialSharing = function () {
             this.setupShare();
-            this.sharePropIndexesWatcher();
         };
         //----------------------------------
         //
@@ -980,12 +1002,11 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         // updateSelectedFeatureMapCentric
         MapCentricViewModel.prototype.updateSelectedFeatureMapCentric = function (graphic) {
             this.set("selectedAttachmentViewerData.selectedFeature", graphic);
-            this.setUpdateShareIndexes();
-            this._setFeatureMapCentric(graphic);
-            if (this.selectedAttachmentViewerData.selectedFeature &&
-                this.addressEnabled) {
-                this.getAddress(graphic.geometry);
+            if (this.socialSharingEnabled) {
+                this.setUpdateShareIndexes();
             }
+            this._setFeatureMapCentric(graphic);
+            this._updateAddress(graphic);
         };
         // handleGalleryItem
         MapCentricViewModel.prototype.handleGalleryItem = function (objectId) {

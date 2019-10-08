@@ -260,7 +260,8 @@ class AttachmentViewerViewModel extends declared(Accessor) {
         "selectedAttachmentViewerData.attachmentIndex",
         "selectedAttachmentViewerData.defaultObjectId",
         "selectedAttachmentViewerData.selectedLayerId",
-        "selectedAttachmentViewerData.layerFeatureIndex"
+        "selectedAttachmentViewerData.layerFeatureIndex",
+        "selectedAttachmentViewerData.selectedLayerId"
       ],
       () => {
         this.updateSharePropIndexes();
