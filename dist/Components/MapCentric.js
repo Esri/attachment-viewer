@@ -304,8 +304,11 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                 this._galleryScrollTopOnFeatureRemoval(),
                 this._watchAttachmentData(),
                 this._scrollGalleryToTopOnAttachmentRemoval(),
-                this._watchAddressAndFeature()
+                this._watchSelectedFeature()
             ]);
+            if (this.addressEnabled) {
+                this.own([this._watchSelectedFeatureAddress()]);
+            }
         };
         // _handleOnboarding
         MapCentric.prototype._handleOnboarding = function () {
@@ -369,10 +372,17 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                 });
             }
         };
-        // _watchFeatureAddressAndFeature
-        MapCentric.prototype._watchAddressAndFeature = function () {
+        // _watchSelectedFeature
+        MapCentric.prototype._watchSelectedFeature = function () {
             var _this = this;
             return watchUtils.watch(this, "selectedAttachmentViewerData.selectedFeature", function () {
+                _this.scheduleRender();
+            });
+        };
+        // _watchSelectedFeatureAddress
+        MapCentric.prototype._watchSelectedFeatureAddress = function () {
+            var _this = this;
+            return watchUtils.watch(this, "selectedAttachmentViewerData.selectedFeatureAddress", function () {
                 _this.scheduleRender();
             });
         };
@@ -938,7 +948,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             }
             var featureTotal = this.selectedAttachmentViewerData &&
                 this.selectedAttachmentViewerData.get("featureObjectIds.length");
-            return (widget_1.tsx("div", { class: CSS.featureContent }, this.viewModel.mapCentricState === "querying" ? (widget_1.tsx("div", { class: CSS.featureContentLoader },
+            return (widget_1.tsx("div", { class: CSS.featureContent }, this.viewModel.mapCentricState === "waitingForContent" ? (widget_1.tsx("div", { class: CSS.featureContentLoader },
                 widget_1.tsx("div", { class: CSS.loaderGraphic }),
                 widget_1.tsx("div", null,
                     i18n.loading,

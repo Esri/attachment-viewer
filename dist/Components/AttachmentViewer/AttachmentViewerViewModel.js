@@ -148,7 +148,8 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                 "selectedAttachmentViewerData.attachmentIndex",
                 "selectedAttachmentViewerData.defaultObjectId",
                 "selectedAttachmentViewerData.selectedLayerId",
-                "selectedAttachmentViewerData.layerFeatureIndex"
+                "selectedAttachmentViewerData.layerFeatureIndex",
+                "selectedAttachmentViewerData.selectedLayerId"
             ], function () {
                 _this.updateSharePropIndexes();
             });

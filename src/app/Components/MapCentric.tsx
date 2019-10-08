@@ -460,8 +460,11 @@ class MapCentric extends declared(Widget) {
       this._galleryScrollTopOnFeatureRemoval(),
       this._watchAttachmentData(),
       this._scrollGalleryToTopOnAttachmentRemoval(),
-      this._watchAddressAndFeature()
+      this._watchSelectedFeature()
     ]);
+    if (this.addressEnabled) {
+      this.own([this._watchSelectedFeatureAddress()]);
+    }
   }
 
   // _handleOnboarding
@@ -543,11 +546,22 @@ class MapCentric extends declared(Widget) {
     }
   }
 
-  // _watchFeatureAddressAndFeature
-  private _watchAddressAndFeature(): __esri.WatchHandle {
+  // _watchSelectedFeature
+  private _watchSelectedFeature(): __esri.WatchHandle {
     return watchUtils.watch(
       this,
       "selectedAttachmentViewerData.selectedFeature",
+      () => {
+        this.scheduleRender();
+      }
+    );
+  }
+
+  // _watchSelectedFeatureAddress
+  private _watchSelectedFeatureAddress(): __esri.WatchHandle {
+    return watchUtils.watch(
+      this,
+      "selectedAttachmentViewerData.selectedFeatureAddress",
       () => {
         this.scheduleRender();
       }
@@ -1683,7 +1697,7 @@ c0.6,0,1.1,0.5,1.1,1.1v14.8C23.8,16.8,23.3,17.3,22.6,17.3z"
 
     return (
       <div class={CSS.featureContent}>
-        {this.viewModel.mapCentricState === "querying" ? (
+        {this.viewModel.mapCentricState === "waitingForContent" ? (
           <div class={CSS.featureContentLoader}>
             <div class={CSS.loaderGraphic} />
             <div>{i18n.loading}...</div>

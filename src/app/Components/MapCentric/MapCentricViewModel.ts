@@ -44,7 +44,12 @@ import SelectedFeatureAttachments = require("../AttachmentViewer/SelectedFeature
 import { AttachmentData } from "../../interfaces/interfaces";
 
 // MapCentricState
-type MapCentricState = "ready" | "querying" | "loading" | "disabled";
+type MapCentricState =
+  | "ready"
+  | "querying"
+  | "loading"
+  | "disabled"
+  | "waitingForContent";
 
 @subclass("MapCentricViewModel")
 class MapCentricViewModel extends declared(AttachmentViewerViewModel) {
@@ -80,6 +85,8 @@ class MapCentricViewModel extends declared(AttachmentViewerViewModel) {
         this._galleryItemPromise ||
         this._performingHitTestMapCentric
         ? "querying"
+        : this.get("featureWidget.viewModel.waitingForContent")
+        ? "waitingForContent"
         : "ready"
       : this.view
       ? "loading"
@@ -376,8 +383,19 @@ class MapCentricViewModel extends declared(AttachmentViewerViewModel) {
     })[0].graphic;
     this._processSelectedFeatureIndicator(layerView, graphic, null, mapPoint);
     attachmentViewerData.set("selectedFeature", graphic);
-    this.setUpdateShareIndexes();
+    if (this.socialSharingEnabled) {
+      this.setUpdateShareIndexes();
+    }
     this._setFeatureMapCentric(graphic);
+    this._updateAddress(graphic);
+  }
+
+  // _updateAddress
+  private _updateAddress(graphic: __esri.Graphic): void {
+    if (this.addressEnabled && graphic && graphic.geometry) {
+      this.set("selectedAttachmentViewerData.selectedFeatureAddress", null);
+      this.getAddress(graphic.geometry);
+    }
   }
 
   // _handleLayerLoadPromises
@@ -932,6 +950,13 @@ class MapCentricViewModel extends declared(AttachmentViewerViewModel) {
       this._updateAttachmentViewerDataOnSearch(selectedResult);
       this.set("selectedAttachmentViewerData.attachmentIndex", 0);
       this._setFeatureMapCentric(selectedResult.feature);
+      if (
+        selectedResult &&
+        selectedResult.feature &&
+        selectedResult.feature.geometry
+      ) {
+        this._updateAddress(selectedResult.feature);
+      }
     }
   }
 
@@ -1033,6 +1058,7 @@ class MapCentricViewModel extends declared(AttachmentViewerViewModel) {
                 return;
               }
               this._setFeatureMapCentric(feature);
+              this._updateAddress(feature);
             });
         }
       ),
@@ -1146,7 +1172,6 @@ class MapCentricViewModel extends declared(AttachmentViewerViewModel) {
     }
     this.imageIsLoaded = false;
     this.set("selectedAttachmentViewerData.selectedFeature", feature);
-    this._updateSelectedAttachmentViewerData(feature);
     this._handleFeatureWidget();
   }
 
@@ -1184,6 +1209,9 @@ class MapCentricViewModel extends declared(AttachmentViewerViewModel) {
     const featureWidgetKey = "feature-widget";
     this._mapCentricHandles.add(
       watchUtils.when(this, "featureWidget", () => {
+        if (this.socialSharingEnabled) {
+          this.updateSharePropIndexes();
+        }
         this._watchForFeatureContentLoad(featureWidgetKey);
       }),
       featureWidgetKey
@@ -1213,6 +1241,11 @@ class MapCentricViewModel extends declared(AttachmentViewerViewModel) {
         this,
         "featureWidget.viewModel.waitingForContent",
         () => {
+          if (this.featureWidget && this.featureWidget.graphic) {
+            this._updateSelectedAttachmentViewerData(
+              this.featureWidget.graphic
+            );
+          }
           this._handleFeatureWidgetContent(featureWidgetContentKey);
         }
       ),
@@ -1307,7 +1340,6 @@ class MapCentricViewModel extends declared(AttachmentViewerViewModel) {
   // _setupSocialSharing
   private _setupSocialSharing(): void {
     this.setupShare();
-    this.sharePropIndexesWatcher();
   }
 
   //----------------------------------
@@ -1325,15 +1357,11 @@ class MapCentricViewModel extends declared(AttachmentViewerViewModel) {
   // updateSelectedFeatureMapCentric
   updateSelectedFeatureMapCentric(graphic: __esri.Graphic) {
     this.set("selectedAttachmentViewerData.selectedFeature", graphic);
-    this.setUpdateShareIndexes();
-    this._setFeatureMapCentric(graphic);
-
-    if (
-      this.selectedAttachmentViewerData.selectedFeature &&
-      this.addressEnabled
-    ) {
-      this.getAddress(graphic.geometry);
+    if (this.socialSharingEnabled) {
+      this.setUpdateShareIndexes();
     }
+    this._setFeatureMapCentric(graphic);
+    this._updateAddress(graphic);
   }
 
   // handleGalleryItem
