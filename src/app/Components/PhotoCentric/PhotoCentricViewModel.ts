@@ -46,19 +46,25 @@ type State =
   | "querying"
   | "performingHitTest";
 
+import {
+  PhotoCentricOIDPromise,
+  PhotoCentricFeaturesPromise,
+  HitTestResult
+} from "../../interfaces/interfaces";
+
 @subclass("PhotoCentricViewModel")
 class PhotoCentricViewModel extends declared(AttachmentViewerViewModel) {
   private _photoCentricHandles: Handles = new Handles();
-  private _queryingForFeaturesPhotoCentric: IPromise<any> = null;
-  private _highlightedFeaturePhotoCentric: any = null;
-  private _performingHitTestPhotoCentric: IPromise<any> = null;
+  private _queryingForFeaturesPhotoCentric: Promise<void> = null;
+  private _highlightedFeaturePhotoCentric: __esri.Handle = null;
+  private _performingHitTestPhotoCentric: Promise<__esri.HitTestResult> = null;
   private _currentSketchExtentPhotoCentric: __esri.Extent = null;
-  private _queryingForObjectIds: IPromise<any> = null;
-  private _layerViewLoadPromises: IPromise[] = [];
-  private _queryObjectIdPromises: IPromise[] = [];
-  private _queryFeaturesPromises: IPromise[] = [];
-  private _queryAttachmentsPromises: IPromise[] = [];
-  private _queryingFeatures: IPromise = null;
+  private _queryingForObjectIds: Promise<void> = null;
+  private _layerViewLoadPromises: Promise<__esri.FeatureLayerView>[] = [];
+  private _queryObjectIdPromises: Promise<PhotoCentricOIDPromise>[] = [];
+  private _queryFeaturesPromises: Promise<PhotoCentricFeaturesPromise>[] = [];
+  private _queryAttachmentsPromises: Promise<void>[] = [];
+  private _queryingFeatures: Promise<__esri.FeatureSet> = null;
 
   //----------------------------------
   //
@@ -137,11 +143,17 @@ class PhotoCentricViewModel extends declared(AttachmentViewerViewModel) {
   private _initSelectedAttachmentViewerDataWatcher(): void {
     this._photoCentricHandles.add([
       watchUtils.watch(this, "selectedAttachmentViewerData", () => {
-        if (this.socialSharingEnabled && this.defaultObjectId !== null) {
+        if (
+          this.socialSharingEnabled &&
+          this.defaultObjectId !== null &&
+          this.selectedLayerId
+        ) {
           this._handleSharedFeature();
-          this.updateSharePropIndexes();
         } else {
           this._setFeaturePhotoCentric();
+        }
+        if (this.socialSharingEnabled) {
+          this.updateSharePropIndexes();
         }
         this._removeFeatureHighlight();
         this._highlightFeature();
@@ -151,26 +163,24 @@ class PhotoCentricViewModel extends declared(AttachmentViewerViewModel) {
 
   // _handleShareFeature
   private _handleSharedFeature(): void {
-    const { defaultObjectId, selectedLayerId } = this;
-    if (defaultObjectId && selectedLayerId) {
-      const { featureLayer } = this.selectedAttachmentViewerData.layerData;
-      featureLayer
-        .queryFeatures({
-          outFields: ["*"],
-          objectIds: [defaultObjectId],
-          returnGeometry: true
-        })
-        .then((featureSet: __esri.FeatureSet) => {
-          const graphic = featureSet && featureSet.features[0];
-          if (!graphic) {
-            return;
-          }
-          this.set("selectedAttachmentViewerData.selectedFeature", graphic);
-          this.updateSelectedFeatureFromClickOrSearch(graphic);
-        });
-      this.set("defaultObjectId", null);
-      this.set("selectedLayerId", null);
-    }
+    const { defaultObjectId } = this;
+    const { featureLayer } = this.selectedAttachmentViewerData.layerData;
+    featureLayer
+      .queryFeatures({
+        outFields: ["*"],
+        objectIds: [defaultObjectId],
+        returnGeometry: true
+      })
+      .then((featureSet: __esri.FeatureSet) => {
+        const graphic = featureSet && featureSet.features[0];
+        if (!graphic) {
+          return;
+        }
+        this.set("selectedAttachmentViewerData.selectedFeature", graphic);
+        this.updateSelectedFeatureFromClickOrSearch(graphic);
+      });
+    this.set("defaultObjectId", null);
+    this.set("selectedLayerId", null);
   }
 
   // _initializeAppData
@@ -184,14 +194,18 @@ class PhotoCentricViewModel extends declared(AttachmentViewerViewModel) {
   }
 
   // _initLayerViewLoadPromises
-  private _initLayerViewLoadPromises(featureLayersRes: any): void {
+  private _initLayerViewLoadPromises(
+    featureLayersRes: __esri.Collection<__esri.FeatureLayer>
+  ): void {
     featureLayersRes.forEach(featureLayerRes => {
       featureLayerRes.popupEnabled = false;
 
       this._layerViewLoadPromises.push(
-        this.view.whenLayerView(featureLayerRes).then(layerView => {
-          return layerView;
-        })
+        this.view
+          .whenLayerView(featureLayerRes)
+          .then((layerView: __esri.FeatureLayerView) => {
+            return layerView;
+          })
       );
     });
     Promise.all(this._layerViewLoadPromises).then(layerViewPromiseResults => {
@@ -200,7 +214,9 @@ class PhotoCentricViewModel extends declared(AttachmentViewerViewModel) {
   }
 
   // _handleLayerViewPromises
-  private _handleLayerViewPromises(layerViewPromiseResults: any): void {
+  private _handleLayerViewPromises(
+    layerViewPromiseResults: __esri.FeatureLayerView[]
+  ): void {
     this._handleLayerViewPromiseResults(layerViewPromiseResults);
     this._initQueryAttachmentsPromise();
     Promise.all(this._queryAttachmentsPromises).then(() => {
@@ -223,14 +239,22 @@ class PhotoCentricViewModel extends declared(AttachmentViewerViewModel) {
   // _handleQueryAttachments
   private _handleQueryAttachments(
     attachmentViewerData: PhotoCentricData
-  ): IPromise {
+  ): Promise<void> {
     const { featureLayer } = attachmentViewerData.layerData;
     return featureLayer
       .queryAttachments({
         where: "1=1",
         returnMetadata: true
       })
-      .then(attachmentsRes => {
+      .catch(err => {
+        console.error("ATTACHMENT QUERY ERROR: ", err);
+        this._handleOnlyDisplayFeaturesWithAttachmentsExpression(
+          attachmentViewerData,
+          null
+        );
+        attachmentViewerData.set("attachments", null);
+      })
+      .then((attachmentsRes: Object) => {
         this._handleOnlyDisplayFeaturesWithAttachmentsExpression(
           attachmentViewerData,
           attachmentsRes
@@ -242,7 +266,7 @@ class PhotoCentricViewModel extends declared(AttachmentViewerViewModel) {
   // _handleOnlyDisplayFeaturesWithAttachmentsExpression
   private _handleOnlyDisplayFeaturesWithAttachmentsExpression(
     attachmentViewerData: PhotoCentricData,
-    attachments: any
+    attachments: Object
   ): void {
     const { featureLayer } = attachmentViewerData.layerData;
     if (this.onlyDisplayFeaturesWithAttachmentsIsEnabled) {
@@ -252,13 +276,23 @@ class PhotoCentricViewModel extends declared(AttachmentViewerViewModel) {
         })
         .then(objectIds => {
           const objectIdsLength = objectIds.length;
-          const attacmentsLength = Object.keys(attachments).map(objectId => {
-            return parseInt(objectId);
-          }).length;
-          if (objectIdsLength !== attacmentsLength) {
+          const attacmentsLength = attachments
+            ? Object.keys(attachments).map(objectId => {
+                return parseInt(objectId);
+              }).length
+            : 0;
+          const supportsQueryAttachments = featureLayer.get(
+            "capabilities.operations.supportsQueryAttachments"
+          );
+
+          if (
+            objectIdsLength !== attacmentsLength &&
+            supportsQueryAttachments
+          ) {
             const definitionExpressionForLayer = this._createUpdatedDefinitionExpressionForLayer(
               attachmentViewerData
             );
+
             featureLayer.set(
               "definitionExpression",
               definitionExpressionForLayer
@@ -287,9 +321,11 @@ class PhotoCentricViewModel extends declared(AttachmentViewerViewModel) {
 
   // _createAttachmentObjectIdArr
   private _createAttachmentObjectIdArr(attachmentsRes): string[] {
-    return Object.keys(attachmentsRes).map(objectId => {
-      return `'${objectId}'`;
-    });
+    return attachmentsRes
+      ? Object.keys(attachmentsRes).map(objectId => {
+          return `'${objectId}'`;
+        })
+      : [];
   }
 
   // _handleLayerViewPromiseResults
@@ -304,9 +340,10 @@ class PhotoCentricViewModel extends declared(AttachmentViewerViewModel) {
 
   // _addAttachmentViewerDataToCollection
   private _addAttachmentViewerDataToCollection(
-    layerViewPromiseResult: any
+    layerViewPromiseResult: __esri.FeatureLayerView
   ): PhotoCentricData {
     const { layer } = layerViewPromiseResult;
+
     const layerData = new AttachmentViewerLayerData({
       featureLayer: layer,
       layerView: layerViewPromiseResult
@@ -391,12 +428,14 @@ class PhotoCentricViewModel extends declared(AttachmentViewerViewModel) {
       }
     );
 
-    Promise.all(this._queryObjectIdPromises).then(objectIdPromiseResults => {
-      this._handleQueryObjectIdPromisesResults(
-        objectIdPromiseResults,
-        isSketchDelete
-      );
-    });
+    Promise.all(this._queryObjectIdPromises).then(
+      (objectIdPromiseResults: PhotoCentricOIDPromise[]) => {
+        this._handleQueryObjectIdPromisesResults(
+          objectIdPromiseResults,
+          isSketchDelete
+        );
+      }
+    );
   }
 
   // _handleQueryObjectIdPromises
@@ -455,11 +494,12 @@ class PhotoCentricViewModel extends declared(AttachmentViewerViewModel) {
   private _createUpdatedDefinitionExpression(
     attachmentViewerData: PhotoCentricData
   ): string {
-    const attachmentObjectIds = Object.keys(
-      attachmentViewerData.attachments
-    ).map(objectId => {
-      return parseInt(objectId);
-    });
+    const attachmentObjectIds =
+      attachmentViewerData && attachmentViewerData.attachments
+        ? Object.keys(attachmentViewerData.attachments).map(objectId => {
+            return parseInt(objectId);
+          })
+        : [];
     return this.onlyDisplayFeaturesWithAttachmentsIsEnabled
       ? attachmentObjectIds && attachmentObjectIds.length
         ? attachmentViewerData.defaultLayerExpression
@@ -521,14 +561,14 @@ class PhotoCentricViewModel extends declared(AttachmentViewerViewModel) {
 
   // _handleQueryObjectIdPromisesResults
   private _handleQueryObjectIdPromisesResults(
-    objectIdPromiseResults: any,
+    objectIdPromiseResults: PhotoCentricOIDPromise[],
     isSketchDelete?: boolean
   ): void {
     this._queryFeaturesPromises = [];
     this._initQueryFeaturesPromises(objectIdPromiseResults);
 
     Promise.all(this._queryFeaturesPromises).then(
-      queriedFeaturesPromisesResults => {
+      (queriedFeaturesPromisesResults: PhotoCentricFeaturesPromise[]) => {
         this._handleQueryFeaturesPromisesResults(
           queriedFeaturesPromisesResults,
           isSketchDelete
@@ -538,33 +578,37 @@ class PhotoCentricViewModel extends declared(AttachmentViewerViewModel) {
   }
 
   // _initQueryFeaturesPromises
-  private _initQueryFeaturesPromises(objectIdPromiseResults: any): void {
-    objectIdPromiseResults.forEach(objectIdPromiseResult => {
-      const { attachmentViewerData, objectIds } = objectIdPromiseResult;
-      const { featureObjectIds } = attachmentViewerData;
+  private _initQueryFeaturesPromises(
+    objectIdPromiseResults: PhotoCentricOIDPromise[]
+  ): void {
+    objectIdPromiseResults.forEach(
+      (objectIdPromiseResult: PhotoCentricOIDPromise) => {
+        const { attachmentViewerData, objectIds } = objectIdPromiseResult;
+        const { featureObjectIds } = attachmentViewerData;
 
-      if (!objectIds) {
-        return;
+        if (!objectIds) {
+          return;
+        }
+
+        featureObjectIds.removeAll();
+        featureObjectIds.addMany([...objectIds]);
+
+        const featureQuery = this._setupFeatureQuery(attachmentViewerData);
+
+        this._queryFeaturesPromises.push(
+          attachmentViewerData.layerData.featureLayer
+            .queryFeatures(featureQuery)
+            .catch(err => {
+              this._queryingForFeaturesPhotoCentric = null;
+              this.notifyChange("state");
+              console.error("ERROR: ", err);
+            })
+            .then((queriedFeatures: __esri.FeatureSet) => {
+              return { attachmentViewerData, queriedFeatures };
+            })
+        );
       }
-
-      featureObjectIds.removeAll();
-      featureObjectIds.addMany([...objectIds]);
-
-      const featureQuery = this._setupFeatureQuery(attachmentViewerData);
-
-      this._queryFeaturesPromises.push(
-        attachmentViewerData.layerData.featureLayer
-          .queryFeatures(featureQuery)
-          .catch(err => {
-            this._queryingForFeaturesPhotoCentric = null;
-            this.notifyChange("state");
-            console.error("ERROR: ", err);
-          })
-          .then((queriedFeatures: __esri.FeatureSet) => {
-            return { attachmentViewerData, queriedFeatures };
-          })
-      );
-    });
+    );
   }
 
   // _handleQueryFeaturesPromisesResults
@@ -821,12 +865,29 @@ class PhotoCentricViewModel extends declared(AttachmentViewerViewModel) {
 
   // _handleHitTestRes
   private _handleHitTestRes(hitTestRes: __esri.HitTestResult): void {
-    this._performingHitTestPhotoCentric = null;
-    this.notifyChange("state");
-    const result = hitTestRes.results[0];
-    if (!result) {
+    const results = hitTestRes && hitTestRes.results;
+
+    const layerIds = this.attachmentViewerDataCollection
+      .slice()
+      .map(attachmentViewerData => {
+        return attachmentViewerData.selectedLayerId;
+      });
+    const filteredResults =
+      results &&
+      results.filter(result => {
+        const { id } = result.graphic.layer;
+        return (
+          layerIds.indexOf(id) !== -1 ||
+          (this.graphicsLayer && this.graphicsLayer.id === id)
+        );
+      });
+
+    if (!filteredResults || (filteredResults && filteredResults.length === 0)) {
+      this._resetHitTestState();
       return;
     }
+
+    const result = filteredResults[0] as HitTestResult;
 
     if (this._currentSketchExtentPhotoCentric) {
       const mapPoint = result && (result.mapPoint as __esri.Point);
@@ -886,7 +947,9 @@ class PhotoCentricViewModel extends declared(AttachmentViewerViewModel) {
   }
 
   // _getHitTestAttachmentViewerData
-  private _getHitTestAttachmentViewerData(result: any): PhotoCentricData {
+  private _getHitTestAttachmentViewerData(
+    result: HitTestResult
+  ): PhotoCentricData {
     return this.attachmentViewerDataCollection.find(attachmentViewerData => {
       return (
         attachmentViewerData.layerData.featureLayer.id ===
@@ -1023,7 +1086,7 @@ class PhotoCentricViewModel extends declared(AttachmentViewerViewModel) {
 
   // _extractLayerAttachments
   private _extractLayerAttachments(): __esri.AttachmentInfo[] {
-    const attributes = this.get("featureWidget.graphic.attributes") as any;
+    const attributes = this.get("featureWidget.graphic.attributes");
     const objectIdField = this.get(
       "selectedAttachmentViewerData.layerData.featureLayer.objectIdField"
     ) as string;
@@ -1050,7 +1113,7 @@ class PhotoCentricViewModel extends declared(AttachmentViewerViewModel) {
           } else {
             const unsupportedAttachmentTypes = this.get(
               "selectedAttachmentViewerData.unsupportedAttachmentTypes"
-            ) as any;
+            ) as __esri.AttachmentInfo[];
             unsupportedAttachmentTypes.push(attachmentInfo);
           }
         });

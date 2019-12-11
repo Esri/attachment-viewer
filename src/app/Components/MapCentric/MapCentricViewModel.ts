@@ -41,7 +41,13 @@ import AttachmentViewerLayerData = require("../AttachmentViewer/AttachmentViewer
 import MapCentricData = require("./MapCentricData");
 import SelectedFeatureAttachments = require("../AttachmentViewer/SelectedFeatureAttachments");
 
-import { AttachmentData } from "../../interfaces/interfaces";
+import {
+  AttachmentData,
+  MapCentricOIDPromise,
+  MapCentricAttachmentsPromise,
+  MapCentricLayerViewPromise,
+  MapCentricAttachmentDataPromise
+} from "../../interfaces/interfaces";
 
 // MapCentricState
 type MapCentricState =
@@ -60,14 +66,18 @@ class MapCentricViewModel extends declared(AttachmentViewerViewModel) {
   //----------------------------------
   private _highlightedFeatureMapCentric: any = null;
   private _mapCentricHandles = new Handles();
-  private _performingHitTestMapCentric: IPromise = null;
-  private _layerViewPromises: IPromise[] = [];
-  private _objectIdPromises: IPromise[] = [];
-  private _attachmentDataPromises: IPromise[] = [];
-  private _queriedAttachmentsPromises: IPromise[] = [];
+  private _performingHitTestMapCentric: Promise<__esri.HitTestResult> = null;
+  private _layerViewPromises: Promise<MapCentricLayerViewPromise>[] = [];
+  private _objectIdPromises: Promise<MapCentricOIDPromise>[] = [];
+  private _attachmentDataPromises: Promise<
+    MapCentricAttachmentDataPromise
+  >[] = [];
+  private _queriedAttachmentsPromises: Promise<
+    MapCentricAttachmentsPromise
+  >[] = [];
   private _settingUpAttachments = false;
-  private _openToolTipPromise: IPromise = null;
-  private _galleryItemPromise: IPromise = null;
+  private _openToolTipPromise: Promise<void | __esri.FeatureSet> = null;
+  private _galleryItemPromise: Promise<void> = null;
 
   //----------------------------------
   //
@@ -264,11 +274,30 @@ class MapCentricViewModel extends declared(AttachmentViewerViewModel) {
     hitTestRes: __esri.HitTestResult,
     mapPoint: __esri.Point
   ): void {
-    if (!hitTestRes.results.length) {
+    const results = hitTestRes && hitTestRes.results;
+
+    const layerIds = this.attachmentViewerDataCollection
+      .slice()
+      .map(attachmentViewerData => {
+        return attachmentViewerData.selectedLayerId;
+      });
+
+    const filteredResults =
+      results &&
+      results.filter(result => {
+        const { id } = result.graphic.layer;
+        return (
+          layerIds.indexOf(id) !== -1 ||
+          (this.graphicsLayer && this.graphicsLayer.id === id)
+        );
+      });
+
+    if (!filteredResults || (filteredResults && filteredResults.length === 0)) {
       this._resetHitTest();
       return;
     }
-    const result = hitTestRes.results[0];
+
+    const result = filteredResults[0];
     const selectedFeature = this.get(
       "selectedAttachmentViewerData.selectedFeature"
     ) as __esri.Graphic;
@@ -288,10 +317,10 @@ class MapCentricViewModel extends declared(AttachmentViewerViewModel) {
       const objectIdField = this.getObjectIdField();
       if (
         layerIdFromGraphic === selectedAttachmentViewerDataLayerId &&
-        (resultAttributes &&
-          selectedFeatureAttributes &&
-          resultAttributes[objectIdField] ===
-            selectedFeature.attributes[objectIdField])
+        resultAttributes &&
+        selectedFeatureAttributes &&
+        resultAttributes[objectIdField] ===
+          selectedFeature.attributes[objectIdField]
       ) {
         this._resetHitTest();
         return;
@@ -895,29 +924,34 @@ class MapCentricViewModel extends declared(AttachmentViewerViewModel) {
 
   // _handleAttachmentDataPromises
   private _handleAttachmentDataPromises(): void {
-    Promise.all(this._attachmentDataPromises).then(promiseResults => {
-      promiseResults.forEach(promiseResult => {
-        const { res, attachmentViewerData } = promiseResult;
-        this._handleAttachmentDataRes(res, attachmentViewerData);
-      });
-      let attachmentViewerData = null;
-      if (this.selectedLayerId) {
-        attachmentViewerData = this.attachmentViewerDataCollection.find(
-          currentAttachmentViewerData => {
-            return (
-              currentAttachmentViewerData.layerData.featureLayer.id ===
-              this.selectedLayerId
-            );
-          }
-        ) as MapCentricData;
-      } else {
-        attachmentViewerData = this.attachmentViewerDataCollection.getItemAt(
-          0
-        ) as MapCentricData;
+    Promise.all(this._attachmentDataPromises).then(
+      attachmentDataPromiseResults => {
+        attachmentDataPromiseResults.forEach(attachmentDataPromiseResult => {
+          const {
+            features,
+            attachmentViewerData
+          } = attachmentDataPromiseResult;
+          this._handleAttachmentDataRes(features, attachmentViewerData);
+        });
+        let attachmentViewerData = null;
+        if (this.selectedLayerId) {
+          attachmentViewerData = this.attachmentViewerDataCollection.find(
+            currentAttachmentViewerData => {
+              return (
+                currentAttachmentViewerData.layerData.featureLayer.id ===
+                this.selectedLayerId
+              );
+            }
+          ) as MapCentricData;
+        } else {
+          attachmentViewerData = this.attachmentViewerDataCollection.getItemAt(
+            0
+          ) as MapCentricData;
+        }
+        this.set("selectedAttachmentViewerData", attachmentViewerData);
+        this._handleFeatureUpdate();
       }
-      this.set("selectedAttachmentViewerData", attachmentViewerData);
-      this._handleFeatureUpdate();
-    });
+    );
   }
 
   //_handleFeatureUpdate
@@ -1119,6 +1153,7 @@ class MapCentricViewModel extends declared(AttachmentViewerViewModel) {
         0
       );
       this.set("selectedAttachmentViewerData.selectedFeature", null);
+      this.set("selectedAttachmentViewerData.featureWidget.graphic", null);
       if (this.get("searchWidget.selectedResult")) {
         this.searchWidget.clear();
       }
@@ -1517,7 +1552,7 @@ class MapCentricViewModel extends declared(AttachmentViewerViewModel) {
   private _processSelectedFeatureIndicator(
     layerView: __esri.FeatureLayerView,
     graphic: __esri.Graphic,
-    queryPromise?: IPromise,
+    queryPromise?: Promise<void | __esri.FeatureSet>,
     mapPoint?: __esri.Point
   ) {
     if (this.mapCentricTooltipEnabled) {

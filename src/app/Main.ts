@@ -75,17 +75,16 @@ class AttachmentViewerApp {
   //----------------------------------
   //  ApplicationBase
   //----------------------------------
+  app: PhotoCentric | MapCentric = null;
   base: ApplicationBase = null;
+  graphicsLayer: __esri.GraphicsLayer = null;
+  handles: Handles = new Handles();
+  layerList: __esri.LayerList = null;
+  layerSwitcher: LayerSwitcher = null;
   searchWidget: Search = null;
-  searchWidgetMobile: Search = null;
+  sketchWidget: __esri.Sketch = null;
   view: __esri.MapView = null;
   widgets: Collection<__esri.Widget> = new Collection();
-  graphicsLayer: __esri.GraphicsLayer = null;
-  sketchWidget: __esri.Sketch = null;
-  app: PhotoCentric | MapCentric = null;
-  handles: Handles = new Handles();
-  layerSwitcher: LayerSwitcher = null;
-  layerList: __esri.LayerList = null;
 
   //--------------------------------------------------------------------------
   //
@@ -112,6 +111,7 @@ class AttachmentViewerApp {
       appMode,
       attachmentLayer,
       attachmentLayers,
+      showOnboardingOnStart,
       downloadEnabled,
       find,
       fullScreenEnabled,
@@ -123,6 +123,7 @@ class AttachmentViewerApp {
       mapCentricTooltipEnabled,
       mapToolsExpanded,
       marker,
+      onboardingIsEnabled,
       onboardingButtonText,
       onboardingImage,
       onlyDisplayFeaturesWithAttachmentsIsEnabled,
@@ -136,6 +137,7 @@ class AttachmentViewerApp {
       zoomEnabled,
       zoomLevel
     } = config;
+
     const { webMapItems } = results;
 
     const validWebMapItems = webMapItems.map(response => {
@@ -187,7 +189,7 @@ class AttachmentViewerApp {
             const selectedLayerId = this._getURLParameter("selectedLayerId");
 
             if (selectedLayerId) {
-              const layer = this.view.map.allLayers.find(layer => {
+              const layer = view.map.allLayers.find(layer => {
                 return layer.id === selectedLayerId;
               }) as __esri.Layer;
 
@@ -209,14 +211,10 @@ class AttachmentViewerApp {
               document.body.clientWidth > 813 &&
               appMode === "photo-centric"
             ) {
-              this.view.padding.bottom = 380;
+              view.padding.bottom = 380;
             }
 
-            const appTitle = title
-              ? title
-              : (view.map.get("portalItem") as __esri.PortalItem).title
-              ? (view.map.get("portalItem") as __esri.PortalItem).title
-              : "Attachment Viewer";
+            const appTitle = this._handleDocTitle(title);
 
             this.view.ui.remove("zoom");
 
@@ -226,34 +224,13 @@ class AttachmentViewerApp {
               searchExpanded,
               mapCentricTooltipEnabled
             );
-
             this._handleZoomControls(zoomEnabled);
-
             this._handleHomeWidget(homeEnabled);
-
             this._handleLegendWidget(legendEnabled);
-
             this._handleLayerListWidget(layerListEnabled);
-
             this._handleFullScreenWidget(fullScreenEnabled);
-
             this._handleSketchWidget(selectFeaturesEnabled);
-
-            if (this.layerList && this.sketchWidget) {
-              const operationalItems = this.layerList.get(
-                "operationalItems"
-              ) as __esri.Collection<__esri.ListItem>;
-              watchUtils.when(this.layerList, "operationalItems.length", () => {
-                const graphicsLayer =
-                  operationalItems &&
-                  operationalItems.find(operationalItem => {
-                    const { layer } = operationalItem;
-                    return layer.id === this.graphicsLayer.id;
-                  });
-                this.layerList.operationalItems.remove(graphicsLayer);
-              });
-            }
-
+            this._removeGraphicsLayerFromLayerList();
             this._addWidgetsToUI(mapToolsExpanded);
 
             const defaultObjectIdParam = parseInt(
@@ -306,6 +283,7 @@ class AttachmentViewerApp {
               attachmentIndex,
               container: document.getElementById("app-container"),
               defaultObjectId,
+              showOnboardingOnStart,
               downloadEnabled,
               docDirection,
               graphicsLayer: this.graphicsLayer,
@@ -316,6 +294,7 @@ class AttachmentViewerApp {
               onboardingButtonText,
               onboardingContent,
               onboardingImage,
+              onboardingIsEnabled,
               onlyDisplayFeaturesWithAttachmentsIsEnabled,
               order,
               searchWidget: this.searchWidget,
@@ -325,9 +304,9 @@ class AttachmentViewerApp {
               socialSharingEnabled,
               title: appTitle,
               view,
-
               zoomLevel: scale
             };
+
             if (appMode === "photo-centric") {
               this.app = new PhotoCentric(appConfig);
               document.body.classList.add("photo-centric-body");
@@ -348,6 +327,20 @@ class AttachmentViewerApp {
         )
       );
     });
+  }
+
+  // _handleDocTitle
+  private _handleDocTitle(title: string): string {
+    const portalItemTitle = this.view.get("map.portalItem.title") as string;
+    const appTitle = title
+      ? title
+      : portalItemTitle
+      ? portalItemTitle
+      : "Attachment Viewer";
+    const titleElement = document.createElement("title");
+    titleElement.appendChild(document.createTextNode(appTitle));
+    document.getElementsByTagName("head")[0].appendChild(titleElement);
+    return appTitle;
   }
 
   // _handleZoomControls
@@ -486,6 +479,24 @@ class AttachmentViewerApp {
           expandTooltip: i18nMapCentric.drawToSelectFeatures
         })
       );
+    }
+  }
+
+  // _removeGrahpicsLayerFromLayerList
+  private _removeGraphicsLayerFromLayerList(): void {
+    if (this.layerList && this.sketchWidget) {
+      const operationalItems = this.layerList.get(
+        "operationalItems"
+      ) as __esri.Collection<__esri.ListItem>;
+      watchUtils.when(this.layerList, "operationalItems.length", () => {
+        const graphicsLayer =
+          operationalItems &&
+          operationalItems.find(operationalItem => {
+            const { layer } = operationalItem;
+            return layer.id === this.graphicsLayer.id;
+          });
+        this.layerList.operationalItems.remove(graphicsLayer);
+      });
     }
   }
 

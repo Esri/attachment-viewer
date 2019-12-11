@@ -135,12 +135,13 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             var share = new Share({
                 view: this.view,
                 shareFeatures: shareFeatures,
-                container: document.createElement("div")
+                container: document.createElement("div"),
+                isDefault: true
             });
             this.set("shareLocationWidget", share);
             this.sharePropIndexesWatcher();
         };
-        // _updateSharePropIndexes
+        // sharePropIndexesWatcher
         AttachmentViewerViewModel.prototype.sharePropIndexesWatcher = function () {
             var _this = this;
             return watchUtils.watch(this, [
@@ -154,10 +155,13 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                 _this.updateSharePropIndexes();
             });
         };
-        // _updateSharePropIndexes
+        // updateSharePropIndexes
         AttachmentViewerViewModel.prototype.updateSharePropIndexes = function () {
             if (!this.selectedAttachmentViewerData) {
                 return;
+            }
+            if (this.shareLocationWidget && this.shareLocationWidget.isDefault) {
+                this.shareLocationWidget.isDefault = false;
             }
             var _a = this
                 .selectedAttachmentViewerData, attachmentIndex = _a.attachmentIndex, objectIdIndex = _a.objectIdIndex, layerFeatureIndex = _a.layerFeatureIndex;

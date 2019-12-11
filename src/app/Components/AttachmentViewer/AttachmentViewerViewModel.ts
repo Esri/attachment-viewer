@@ -245,13 +245,14 @@ class AttachmentViewerViewModel extends declared(Accessor) {
     const share = new Share({
       view: this.view,
       shareFeatures,
-      container: document.createElement("div")
+      container: document.createElement("div"),
+      isDefault: true
     });
     this.set("shareLocationWidget", share);
     this.sharePropIndexesWatcher();
   }
 
-  // _updateSharePropIndexes
+  // sharePropIndexesWatcher
   sharePropIndexesWatcher(): __esri.WatchHandle {
     return watchUtils.watch(
       this,
@@ -269,10 +270,13 @@ class AttachmentViewerViewModel extends declared(Accessor) {
     );
   }
 
-  // _updateSharePropIndexes
+  // updateSharePropIndexes
   updateSharePropIndexes(): void {
     if (!this.selectedAttachmentViewerData) {
       return;
+    }
+    if (this.shareLocationWidget && this.shareLocationWidget.isDefault) {
+      this.shareLocationWidget.isDefault = false;
     }
     const { attachmentIndex, objectIdIndex, layerFeatureIndex } = this
       .selectedAttachmentViewerData as AttachmentViewerData;

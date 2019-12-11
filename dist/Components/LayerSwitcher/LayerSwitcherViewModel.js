@@ -60,6 +60,10 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                 var layerPromises = [];
                 _this.view.map.layers.forEach(function (layer) {
                     layerPromises.push(layer.load().then(function (loadedLayer) {
+                        // DISABLE CLUSTERING
+                        if (loadedLayer && loadedLayer.get("featureReduction")) {
+                            loadedLayer.set("featureReduction", null);
+                        }
                         if (loadedLayer.type === "feature" &&
                             loadedLayer.get("capabilities.data.supportsAttachment") &&
                             loadedLayer.visible) {

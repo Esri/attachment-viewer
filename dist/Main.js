@@ -34,17 +34,16 @@ define(["require", "exports", "ApplicationBase/support/itemUtils", "ApplicationB
             //----------------------------------
             //  ApplicationBase
             //----------------------------------
+            this.app = null;
             this.base = null;
+            this.graphicsLayer = null;
+            this.handles = new Handles();
+            this.layerList = null;
+            this.layerSwitcher = null;
             this.searchWidget = null;
-            this.searchWidgetMobile = null;
+            this.sketchWidget = null;
             this.view = null;
             this.widgets = new Collection();
-            this.graphicsLayer = null;
-            this.sketchWidget = null;
-            this.app = null;
-            this.handles = new Handles();
-            this.layerSwitcher = null;
-            this.layerList = null;
         }
         //--------------------------------------------------------------------------
         //
@@ -62,7 +61,7 @@ define(["require", "exports", "ApplicationBase/support/itemUtils", "ApplicationB
             domHelper_1.setPageLocale(base.locale);
             domHelper_1.setPageDirection(base.direction);
             this.base = base;
-            var addressEnabled = config.addressEnabled, appMode = config.appMode, attachmentLayer = config.attachmentLayer, attachmentLayers = config.attachmentLayers, downloadEnabled = config.downloadEnabled, find = config.find, fullScreenEnabled = config.fullScreenEnabled, homeEnabled = config.homeEnabled, imageDirectionEnabled = config.imageDirectionEnabled, imagePanZoomEnabled = config.imagePanZoomEnabled, layerListEnabled = config.layerListEnabled, legendEnabled = config.legendEnabled, mapCentricTooltipEnabled = config.mapCentricTooltipEnabled, mapToolsExpanded = config.mapToolsExpanded, marker = config.marker, onboardingButtonText = config.onboardingButtonText, onboardingImage = config.onboardingImage, onlyDisplayFeaturesWithAttachmentsIsEnabled = config.onlyDisplayFeaturesWithAttachmentsIsEnabled, order = config.order, searchConfig = config.searchConfig, searchEnabled = config.searchEnabled, searchExpanded = config.searchExpanded, selectFeaturesEnabled = config.selectFeaturesEnabled, socialSharingEnabled = config.socialSharingEnabled, title = config.title, zoomEnabled = config.zoomEnabled, zoomLevel = config.zoomLevel;
+            var addressEnabled = config.addressEnabled, appMode = config.appMode, attachmentLayer = config.attachmentLayer, attachmentLayers = config.attachmentLayers, showOnboardingOnStart = config.showOnboardingOnStart, downloadEnabled = config.downloadEnabled, find = config.find, fullScreenEnabled = config.fullScreenEnabled, homeEnabled = config.homeEnabled, imageDirectionEnabled = config.imageDirectionEnabled, imagePanZoomEnabled = config.imagePanZoomEnabled, layerListEnabled = config.layerListEnabled, legendEnabled = config.legendEnabled, mapCentricTooltipEnabled = config.mapCentricTooltipEnabled, mapToolsExpanded = config.mapToolsExpanded, marker = config.marker, onboardingIsEnabled = config.onboardingIsEnabled, onboardingButtonText = config.onboardingButtonText, onboardingImage = config.onboardingImage, onlyDisplayFeaturesWithAttachmentsIsEnabled = config.onlyDisplayFeaturesWithAttachmentsIsEnabled, order = config.order, searchConfig = config.searchConfig, searchEnabled = config.searchEnabled, searchExpanded = config.searchExpanded, selectFeaturesEnabled = config.selectFeaturesEnabled, socialSharingEnabled = config.socialSharingEnabled, title = config.title, zoomEnabled = config.zoomEnabled, zoomLevel = config.zoomLevel;
             var webMapItems = results.webMapItems;
             var validWebMapItems = webMapItems.map(function (response) {
                 return response.value;
@@ -96,7 +95,7 @@ define(["require", "exports", "ApplicationBase/support/itemUtils", "ApplicationB
                             _this.view = view;
                             var selectedLayerId = _this._getURLParameter("selectedLayerId");
                             if (selectedLayerId) {
-                                var layer = _this.view.map.allLayers.find(function (layer) {
+                                var layer = view.map.allLayers.find(function (layer) {
                                     return layer.id === selectedLayerId;
                                 });
                                 if (!layer || (layer && !layer.visible)) {
@@ -114,13 +113,9 @@ define(["require", "exports", "ApplicationBase/support/itemUtils", "ApplicationB
                             }
                             if (document.body.clientWidth > 813 &&
                                 appMode === "photo-centric") {
-                                _this.view.padding.bottom = 380;
+                                view.padding.bottom = 380;
                             }
-                            var appTitle = title
-                                ? title
-                                : view.map.get("portalItem").title
-                                    ? view.map.get("portalItem").title
-                                    : "Attachment Viewer";
+                            var appTitle = _this._handleDocTitle(title);
                             _this.view.ui.remove("zoom");
                             _this._handleSearchWidget(searchConfig, searchEnabled, searchExpanded, mapCentricTooltipEnabled);
                             _this._handleZoomControls(zoomEnabled);
@@ -129,17 +124,7 @@ define(["require", "exports", "ApplicationBase/support/itemUtils", "ApplicationB
                             _this._handleLayerListWidget(layerListEnabled);
                             _this._handleFullScreenWidget(fullScreenEnabled);
                             _this._handleSketchWidget(selectFeaturesEnabled);
-                            if (_this.layerList && _this.sketchWidget) {
-                                var operationalItems_1 = _this.layerList.get("operationalItems");
-                                watchUtils.when(_this.layerList, "operationalItems.length", function () {
-                                    var graphicsLayer = operationalItems_1 &&
-                                        operationalItems_1.find(function (operationalItem) {
-                                            var layer = operationalItem.layer;
-                                            return layer.id === _this.graphicsLayer.id;
-                                        });
-                                    _this.layerList.operationalItems.remove(graphicsLayer);
-                                });
-                            }
+                            _this._removeGraphicsLayerFromLayerList();
                             _this._addWidgetsToUI(mapToolsExpanded);
                             var defaultObjectIdParam = parseInt(_this._getURLParameter("defaultObjectId"));
                             var defaultObjectId = socialSharingEnabled
@@ -175,6 +160,7 @@ define(["require", "exports", "ApplicationBase/support/itemUtils", "ApplicationB
                                 attachmentIndex: attachmentIndex,
                                 container: document.getElementById("app-container"),
                                 defaultObjectId: defaultObjectId,
+                                showOnboardingOnStart: showOnboardingOnStart,
                                 downloadEnabled: downloadEnabled,
                                 docDirection: docDirection,
                                 graphicsLayer: _this.graphicsLayer,
@@ -185,6 +171,7 @@ define(["require", "exports", "ApplicationBase/support/itemUtils", "ApplicationB
                                 onboardingButtonText: onboardingButtonText,
                                 onboardingContent: onboardingContent,
                                 onboardingImage: onboardingImage,
+                                onboardingIsEnabled: onboardingIsEnabled,
                                 onlyDisplayFeaturesWithAttachmentsIsEnabled: onlyDisplayFeaturesWithAttachmentsIsEnabled,
                                 order: order,
                                 searchWidget: _this.searchWidget,
@@ -216,6 +203,19 @@ define(["require", "exports", "ApplicationBase/support/itemUtils", "ApplicationB
                     });
                 });
             });
+        };
+        // _handleDocTitle
+        AttachmentViewerApp.prototype._handleDocTitle = function (title) {
+            var portalItemTitle = this.view.get("map.portalItem.title");
+            var appTitle = title
+                ? title
+                : portalItemTitle
+                    ? portalItemTitle
+                    : "Attachment Viewer";
+            var titleElement = document.createElement("title");
+            titleElement.appendChild(document.createTextNode(appTitle));
+            document.getElementsByTagName("head")[0].appendChild(titleElement);
+            return appTitle;
         };
         // _handleZoomControls
         AttachmentViewerApp.prototype._handleZoomControls = function (zoomEnabled) {
@@ -326,6 +326,21 @@ define(["require", "exports", "ApplicationBase/support/itemUtils", "ApplicationB
                     group: "top-right",
                     expandTooltip: i18nMapCentric.drawToSelectFeatures
                 }));
+            }
+        };
+        // _removeGrahpicsLayerFromLayerList
+        AttachmentViewerApp.prototype._removeGraphicsLayerFromLayerList = function () {
+            var _this = this;
+            if (this.layerList && this.sketchWidget) {
+                var operationalItems_1 = this.layerList.get("operationalItems");
+                watchUtils.when(this.layerList, "operationalItems.length", function () {
+                    var graphicsLayer = operationalItems_1 &&
+                        operationalItems_1.find(function (operationalItem) {
+                            var layer = operationalItem.layer;
+                            return layer.id === _this.graphicsLayer.id;
+                        });
+                    _this.layerList.operationalItems.remove(graphicsLayer);
+                });
             }
         };
         // _handleLayerListWidget

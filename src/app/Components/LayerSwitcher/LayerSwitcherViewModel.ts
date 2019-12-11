@@ -84,6 +84,11 @@ class LayerSwitcherViewModel extends declared(Accessor) {
         this.view.map.layers.forEach((layer: __esri.Layer) => {
           layerPromises.push(
             layer.load().then(loadedLayer => {
+              // DISABLE CLUSTERING
+              if (loadedLayer && loadedLayer.get("featureReduction")) {
+                loadedLayer.set("featureReduction", null);
+              }
+
               if (
                 loadedLayer.type === "feature" &&
                 loadedLayer.get("capabilities.data.supportsAttachment") &&
