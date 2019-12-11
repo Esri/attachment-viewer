@@ -106,12 +106,16 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             var _this = this;
             this._photoCentricHandles.add([
                 watchUtils.watch(this, "selectedAttachmentViewerData", function () {
-                    if (_this.socialSharingEnabled && _this.defaultObjectId !== null) {
+                    if (_this.socialSharingEnabled &&
+                        _this.defaultObjectId !== null &&
+                        _this.selectedLayerId) {
                         _this._handleSharedFeature();
-                        _this.updateSharePropIndexes();
                     }
                     else {
                         _this._setFeaturePhotoCentric();
+                    }
+                    if (_this.socialSharingEnabled) {
+                        _this.updateSharePropIndexes();
                     }
                     _this._removeFeatureHighlight();
                     _this._highlightFeature();
@@ -121,26 +125,24 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         // _handleShareFeature
         PhotoCentricViewModel.prototype._handleSharedFeature = function () {
             var _this = this;
-            var _a = this, defaultObjectId = _a.defaultObjectId, selectedLayerId = _a.selectedLayerId;
-            if (defaultObjectId && selectedLayerId) {
-                var featureLayer = this.selectedAttachmentViewerData.layerData.featureLayer;
-                featureLayer
-                    .queryFeatures({
-                    outFields: ["*"],
-                    objectIds: [defaultObjectId],
-                    returnGeometry: true
-                })
-                    .then(function (featureSet) {
-                    var graphic = featureSet && featureSet.features[0];
-                    if (!graphic) {
-                        return;
-                    }
-                    _this.set("selectedAttachmentViewerData.selectedFeature", graphic);
-                    _this.updateSelectedFeatureFromClickOrSearch(graphic);
-                });
-                this.set("defaultObjectId", null);
-                this.set("selectedLayerId", null);
-            }
+            var defaultObjectId = this.defaultObjectId;
+            var featureLayer = this.selectedAttachmentViewerData.layerData.featureLayer;
+            featureLayer
+                .queryFeatures({
+                outFields: ["*"],
+                objectIds: [defaultObjectId],
+                returnGeometry: true
+            })
+                .then(function (featureSet) {
+                var graphic = featureSet && featureSet.features[0];
+                if (!graphic) {
+                    return;
+                }
+                _this.set("selectedAttachmentViewerData.selectedFeature", graphic);
+                _this.updateSelectedFeatureFromClickOrSearch(graphic);
+            });
+            this.set("defaultObjectId", null);
+            this.set("selectedLayerId", null);
         };
         // _initializeAppData
         PhotoCentricViewModel.prototype._initializeAppData = function () {
@@ -155,7 +157,9 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             var _this = this;
             featureLayersRes.forEach(function (featureLayerRes) {
                 featureLayerRes.popupEnabled = false;
-                _this._layerViewLoadPromises.push(_this.view.whenLayerView(featureLayerRes).then(function (layerView) {
+                _this._layerViewLoadPromises.push(_this.view
+                    .whenLayerView(featureLayerRes)
+                    .then(function (layerView) {
                     return layerView;
                 }));
             });
@@ -189,6 +193,11 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                 where: "1=1",
                 returnMetadata: true
             })
+                .catch(function (err) {
+                console.error("ATTACHMENT QUERY ERROR: ", err);
+                _this._handleOnlyDisplayFeaturesWithAttachmentsExpression(attachmentViewerData, null);
+                attachmentViewerData.set("attachments", null);
+            })
                 .then(function (attachmentsRes) {
                 _this._handleOnlyDisplayFeaturesWithAttachmentsExpression(attachmentViewerData, attachmentsRes);
                 attachmentViewerData.set("attachments", attachmentsRes);
@@ -205,10 +214,14 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                 })
                     .then(function (objectIds) {
                     var objectIdsLength = objectIds.length;
-                    var attacmentsLength = Object.keys(attachments).map(function (objectId) {
-                        return parseInt(objectId);
-                    }).length;
-                    if (objectIdsLength !== attacmentsLength) {
+                    var attacmentsLength = attachments
+                        ? Object.keys(attachments).map(function (objectId) {
+                            return parseInt(objectId);
+                        }).length
+                        : 0;
+                    var supportsQueryAttachments = featureLayer.get("capabilities.operations.supportsQueryAttachments");
+                    if (objectIdsLength !== attacmentsLength &&
+                        supportsQueryAttachments) {
                         var definitionExpressionForLayer = _this._createUpdatedDefinitionExpressionForLayer(attachmentViewerData);
                         featureLayer.set("definitionExpression", definitionExpressionForLayer);
                     }
@@ -230,9 +243,11 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         };
         // _createAttachmentObjectIdArr
         PhotoCentricViewModel.prototype._createAttachmentObjectIdArr = function (attachmentsRes) {
-            return Object.keys(attachmentsRes).map(function (objectId) {
-                return "'" + objectId + "'";
-            });
+            return attachmentsRes
+                ? Object.keys(attachmentsRes).map(function (objectId) {
+                    return "'" + objectId + "'";
+                })
+                : [];
         };
         // _handleLayerViewPromiseResults
         PhotoCentricViewModel.prototype._handleLayerViewPromiseResults = function (layerViewPromiseResults) {
@@ -350,9 +365,11 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         };
         // _createUpdatedDefinitionExpression
         PhotoCentricViewModel.prototype._createUpdatedDefinitionExpression = function (attachmentViewerData) {
-            var attachmentObjectIds = Object.keys(attachmentViewerData.attachments).map(function (objectId) {
-                return parseInt(objectId);
-            });
+            var attachmentObjectIds = attachmentViewerData && attachmentViewerData.attachments
+                ? Object.keys(attachmentViewerData.attachments).map(function (objectId) {
+                    return parseInt(objectId);
+                })
+                : [];
             return this.onlyDisplayFeaturesWithAttachmentsIsEnabled
                 ? attachmentObjectIds && attachmentObjectIds.length
                     ? attachmentViewerData.defaultLayerExpression
@@ -617,12 +634,24 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         };
         // _handleHitTestRes
         PhotoCentricViewModel.prototype._handleHitTestRes = function (hitTestRes) {
-            this._performingHitTestPhotoCentric = null;
-            this.notifyChange("state");
-            var result = hitTestRes.results[0];
-            if (!result) {
+            var _this = this;
+            var results = hitTestRes && hitTestRes.results;
+            var layerIds = this.attachmentViewerDataCollection
+                .slice()
+                .map(function (attachmentViewerData) {
+                return attachmentViewerData.selectedLayerId;
+            });
+            var filteredResults = results &&
+                results.filter(function (result) {
+                    var id = result.graphic.layer.id;
+                    return (layerIds.indexOf(id) !== -1 ||
+                        (_this.graphicsLayer && _this.graphicsLayer.id === id));
+                });
+            if (!filteredResults || (filteredResults && filteredResults.length === 0)) {
+                this._resetHitTestState();
                 return;
             }
+            var result = filteredResults[0];
             if (this._currentSketchExtentPhotoCentric) {
                 var mapPoint = result && result.mapPoint;
                 var containsPoint = this._currentSketchExtentPhotoCentric.contains(mapPoint);

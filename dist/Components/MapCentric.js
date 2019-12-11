@@ -143,6 +143,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         mobileNavItemSelected: "esri-map-centric__nav-item--selected",
         mobileOnboardingGallery: "esri-map-centric__mobile-onboarding-gallery",
         mobileMedia: "esri-map-centric__mobile-media",
+        mobileNavItemOnboardingDisabled: "esri-map-centric__mobile-nav-item--onboarding-disabled",
         // fullAttachment
         fullMediaContainer: "esri-map-centric__full-media-container",
         expandMediaContainer: "esri-map-centric__expand-media-container",
@@ -208,7 +209,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             //  Private Variables
             //
             //----------------------------------
-            _this._currentMobileScreen = "media";
+            _this._currentMobileScreen = null;
             _this._expandAttachmentNode = null;
             _this._featureContentAvailable = null;
             _this._fullAttachmentContainerIsOpen = false;
@@ -243,6 +244,8 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             _this.currentImageUrl = null;
             // defaultObjectId
             _this.defaultObjectId = null;
+            // showOnboardingOnStart
+            _this.showOnboardingOnStart = true;
             // downloadEnabled
             _this.downloadEnabled = null;
             // docDirection
@@ -267,6 +270,8 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             _this.onboardingButtonText = null;
             // onboardingContent
             _this.onboardingContent = null;
+            // onboardingIsEnabled
+            _this.onboardingIsEnabled = true;
             // onlyDisplayFeaturesWithAttachmentsIsEnabled
             _this.onlyDisplayFeaturesWithAttachmentsIsEnabled = null;
             // order
@@ -298,8 +303,16 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             return _this;
         }
         MapCentric.prototype.postInitialize = function () {
+            if (this.onboardingIsEnabled) {
+                this.own([this._handleOnboarding()]);
+            }
+            else {
+                if (document.body.clientWidth < 813) {
+                    this._currentMobileScreen = "media";
+                    this.scheduleRender();
+                }
+            }
             this.own([
-                this._handleOnboarding(),
                 this._handleAttachmentUrl(),
                 this._galleryScrollTopOnFeatureRemoval(),
                 this._watchAttachmentData(),
@@ -314,15 +327,37 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         MapCentric.prototype._handleOnboarding = function () {
             var _this = this;
             return watchUtils.whenOnce(this, "view", function () {
-                if (localStorage.getItem("firstTimeUseApp")) {
-                    _this._onboardingPanelIsOpen = false;
+                if (_this.showOnboardingOnStart) {
+                    _this._handleOnboardingOnInitialVisit();
                 }
                 else {
-                    _this._onboardingPanelIsOpen = true;
-                    localStorage.setItem("firstTimeUseApp", "" + Date.now());
+                    _this._handleOnboardingOnVisitDisabled();
                 }
                 _this.scheduleRender();
             });
+        };
+        // _handleOnboardingOnInitialVisit
+        MapCentric.prototype._handleOnboardingOnInitialVisit = function () {
+            if (localStorage.getItem("firstTimeUseApp")) {
+                this._onboardingPanelIsOpen = false;
+                if (document.body.clientWidth < 813) {
+                    this._currentMobileScreen = "media";
+                }
+            }
+            else {
+                this._onboardingPanelIsOpen = true;
+                if (document.body.clientWidth < 813) {
+                    this._currentMobileScreen = "description";
+                }
+                localStorage.setItem("firstTimeUseApp", "" + Date.now());
+            }
+        };
+        // _handleOnboardingOnVisitDisabled
+        MapCentric.prototype._handleOnboardingOnVisitDisabled = function () {
+            this._onboardingPanelIsOpen = false;
+            if (document.body.clientWidth < 813) {
+                this._currentMobileScreen = "media";
+            }
         };
         // _handleAttachmentUrl
         MapCentric.prototype._handleAttachmentUrl = function () {
@@ -461,12 +496,15 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         };
         // _renderMobileNavItem
         MapCentric.prototype._renderMobileNavItem = function (navItem) {
-            var _a;
+            var _a, _b;
             var type = navItem.type, iconClass = navItem.iconClass;
             var mobileNavItemSelected = (_a = {},
                 _a[CSS.mobileNavItemSelected] = type === this._currentMobileScreen,
                 _a);
-            return (widget_1.tsx("div", { bind: this, onclick: this._handleNavItem, onkeydown: this._handleNavItem, class: this.classes(CSS.mobileNavItem, mobileNavItemSelected), "data-nav-item": type, role: "button" },
+            var mobileNavItemOnboardingDisabled = (_b = {},
+                _b[CSS.mobileNavItemOnboardingDisabled] = !this.onboardingIsEnabled,
+                _b);
+            return (widget_1.tsx("div", { bind: this, onclick: this._handleNavItem, onkeydown: this._handleNavItem, class: this.classes(CSS.mobileNavItem, mobileNavItemSelected, mobileNavItemOnboardingDisabled), "data-nav-item": type, role: "button" },
                 widget_1.tsx("span", { class: this.classes(iconClass, CSS.icons.flush) })));
         };
         // _renderHeader
@@ -485,7 +523,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                 widget_1.tsx("div", { class: CSS.headerContainer },
                     widget_1.tsx("div", { class: CSS.titleInfoContainer },
                         widget_1.tsx("h1", { class: CSS.headerText }, titleValue)),
-                    clientWidth > 813 ? (widget_1.tsx("div", { bind: this, onclick: this._toggleOnboardingPanel, onkeydown: this._toggleOnboardingPanel, class: CSS.onboardingIcon, title: i18n.viewDetails, tabIndex: 0 },
+                    clientWidth > 813 && this.onboardingIsEnabled ? (widget_1.tsx("div", { bind: this, onclick: this._toggleOnboardingPanel, onkeydown: this._toggleOnboardingPanel, class: CSS.onboardingIcon, title: i18n.viewDetails, tabIndex: 0 },
                         widget_1.tsx("span", { class: this.classes(CSS.icons.descriptionIcon, CSS.icons.flush) }))) : null),
                 widget_1.tsx("div", { class: CSS.shareWidgetContainer }, shareWidget)));
         };
@@ -755,7 +793,9 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             var video = contentType && contentType.indexOf("video") !== -1
                 ? this._renderVideo(currentImageUrl)
                 : null;
-            var pdf = contentType && contentType.indexOf("pdf") !== -1
+            var isIE = navigator.userAgent.indexOf("MSIE") !== -1 ||
+                navigator.appVersion.indexOf("Trident/") > -1;
+            var pdf = contentType && contentType.indexOf("pdf") !== -1 && !isIE
                 ? this._renderPdf(currentImageUrl)
                 : null;
             var image = this.supportedAttachmentTypes.indexOf(contentType) !== -1 &&
@@ -825,7 +865,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         };
         // _renderPdf
         MapCentric.prototype._renderPdf = function (currentImageUrl) {
-            return (widget_1.tsx("embed", { key: buildKey("pdf-" + currentImageUrl), class: CSS.pdf, src: currentImageUrl, type: "application/pdf" }));
+            return (widget_1.tsx("iframe", { class: CSS.pdf, key: buildKey("pdf-" + currentImageUrl), src: currentImageUrl, frameborder: "0" }));
         };
         // _renderAttachmentScrollContainer
         MapCentric.prototype._renderAttachmentScrollContainer = function () {
@@ -948,7 +988,9 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             }
             var featureTotal = this.selectedAttachmentViewerData &&
                 this.selectedAttachmentViewerData.get("featureObjectIds.length");
-            return (widget_1.tsx("div", { class: CSS.featureContent }, this.viewModel.mapCentricState === "waitingForContent" ? (widget_1.tsx("div", { class: CSS.featureContentLoader },
+            var mapCentricState = this.viewModel.mapCentricState;
+            return (widget_1.tsx("div", { class: CSS.featureContent }, mapCentricState === "waitingForContent" ||
+                mapCentricState === "querying" ? (widget_1.tsx("div", { class: CSS.featureContentLoader },
                 widget_1.tsx("div", { class: CSS.loaderGraphic }),
                 widget_1.tsx("div", null,
                     i18n.loading,
@@ -1172,7 +1214,6 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             var node = event.currentTarget;
             var objectId = node["data-object-id"];
             this.viewModel.handleGalleryItem(objectId);
-            this.featureContentPanelIsOpen = true;
             this.scheduleRender();
         };
         // _zoomTo
@@ -1213,6 +1254,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             this.currentImageUrl = null;
             this.set("viewModel.selectedAttachmentViewerData.attachmentIndex", 0);
             this.set("selectedAttachmentViewerData.selectedFeatureAddress", null);
+            this.set("selectedAttachmentViewerData.selectedFeature", null);
             this.viewModel.closeTooltipPopup();
         };
         // _expandAttachment
@@ -1372,7 +1414,9 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         // _generateNavObjects
         MapCentric.prototype._generateNavObjects = function () {
             var iconUi = "icon-ui-";
-            var navData = ["description", "media", "maps"];
+            var navData = this.onboardingIsEnabled
+                ? ["description", "media", "maps"]
+                : ["media", "maps"];
             return navData.map(function (navDataItem) {
                 return {
                     type: navDataItem,
@@ -1417,6 +1461,9 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             decorators_1.aliasOf("viewModel.defaultObjectId"),
             decorators_1.property()
         ], MapCentric.prototype, "defaultObjectId", void 0);
+        __decorate([
+            decorators_1.property()
+        ], MapCentric.prototype, "showOnboardingOnStart", void 0);
         __decorate([
             decorators_1.aliasOf("viewModel.downloadEnabled"),
             decorators_1.property()
@@ -1463,6 +1510,9 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         __decorate([
             decorators_1.property()
         ], MapCentric.prototype, "onboardingContent", void 0);
+        __decorate([
+            decorators_1.property()
+        ], MapCentric.prototype, "onboardingIsEnabled", void 0);
         __decorate([
             decorators_1.aliasOf("viewModel.onlyDisplayFeaturesWithAttachmentsIsEnabled"),
             decorators_1.property()

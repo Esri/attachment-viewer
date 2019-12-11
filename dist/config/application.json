@@ -24,6 +24,8 @@
   "customCSS": null,
   "onboardingImage": null,
   "onboardingButtonText": null,
+  "onboardingIsEnabled": true,
+  "showOnboardingOnStart": true,
   "mapToolsExpanded": true,
   "searchExpanded": true,
   "selectFeaturesEnabled": false,

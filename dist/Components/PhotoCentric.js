@@ -217,6 +217,8 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             _this.currentImageUrl = null;
             // defaultObjectId
             _this.defaultObjectId = null;
+            // showOnboardingOnStart
+            _this.showOnboardingOnStart = true;
             // docDirection
             _this.docDirection = null;
             // downloadEnabled
@@ -267,6 +269,8 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             _this.view = null;
             // zoomLevel
             _this.zoomLevel = null;
+            // onboardingIsEnabled
+            _this.onboardingIsEnabled = true;
             // viewModel
             _this.viewModel = new PhotoCentricViewModel();
             return _this;
@@ -287,7 +291,9 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         // _initOnViewReady
         PhotoCentric.prototype._initOnViewReady = function () {
             var _this = this;
-            this._handleOnboardingPanel();
+            if (this.onboardingIsEnabled) {
+                this._handleOnboardingPanel();
+            }
             this.own([
                 this._handleCurrentAttachment(),
                 this._scrollFeatureContentPanelToTop(),
@@ -305,12 +311,17 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         };
         // _handleOnboardingPanel
         PhotoCentric.prototype._handleOnboardingPanel = function () {
-            if (localStorage.getItem("firstTimeUseApp")) {
-                this._onboardingPanelIsOpen = false;
+            if (this.showOnboardingOnStart) {
+                if (localStorage.getItem("firstTimeUseApp")) {
+                    this._onboardingPanelIsOpen = false;
+                }
+                else {
+                    this._onboardingPanelIsOpen = true;
+                    localStorage.setItem("firstTimeUseApp", "" + Date.now());
+                }
             }
             else {
-                this._onboardingPanelIsOpen = true;
-                localStorage.setItem("firstTimeUseApp", "" + Date.now());
+                this._onboardingPanelIsOpen = false;
             }
             this.scheduleRender();
         };
@@ -398,7 +409,9 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             var onboarding = this._renderOnboarding();
             return (widget_1.tsx("div", { class: CSS.base },
                 !this._imageCarouselIsOpen ? header : null,
-                this._onboardingPanelIsOpen && document.body.clientWidth < 813 ? (widget_1.tsx("div", { key: buildKey("onboarding-node"), class: CSS.onboarding }, onboarding)) : null,
+                this._onboardingPanelIsOpen &&
+                    document.body.clientWidth < 813 &&
+                    this.onboardingIsEnabled ? (widget_1.tsx("div", { key: buildKey("onboarding-node"), class: CSS.onboarding }, onboarding)) : null,
                 homePage));
         };
         PhotoCentric.prototype.destroy = function () {
@@ -434,7 +447,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                 widget_1.tsx("div", { class: CSS.headerContainer },
                     widget_1.tsx("div", { class: CSS.titleInfoContainer },
                         widget_1.tsx("h1", { class: CSS.headerText }, title),
-                        widget_1.tsx("span", { bind: this, onclick: this._toggleOnboardingPanel, onkeydown: this._toggleOnboardingPanel, tabIndex: 0, class: this.classes(CSS.infoButton, CSS.calcite.descriptionIcon, CSS.calcite.flush), title: i18n.viewDetails }))),
+                        this.onboardingIsEnabled ? (widget_1.tsx("span", { bind: this, onclick: this._toggleOnboardingPanel, onkeydown: this._toggleOnboardingPanel, tabIndex: 0, class: this.classes(CSS.infoButton, CSS.calcite.descriptionIcon, CSS.calcite.flush), title: i18n.viewDetails })) : null)),
                 widget_1.tsx("div", { class: CSS.shareWidgetContainer }, shareWidget)));
         };
         // _renderShareWidget
@@ -483,8 +496,8 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             var selectedAttachmentViewerData = this.selectedAttachmentViewerData;
             var featureTotal = selectedAttachmentViewerData &&
                 selectedAttachmentViewerData.get("featureObjectIds.length");
-            var leftButtonLayerSwitcherContainer = this._renderLeftButtonLayerSwitcherContainer(featureTotal);
-            var rightFeatureScrollButton = this._renderRightFeatureScrollButton(featureTotal);
+            var leftButtonLayerSwitcherContainer = this._renderLeftButtonLayerSwitcherContainer();
+            var rightFeatureScrollButton = this._renderRightFeatureScrollButton();
             var paginationNumbers = featureTotal
                 ? this._renderPaginationNumbers(featureTotal)
                 : null;
@@ -494,9 +507,9 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                 rightFeatureScrollButton));
         };
         // _renderLeftButtonLayerSwitcherContainer
-        PhotoCentric.prototype._renderLeftButtonLayerSwitcherContainer = function (featureTotal) {
-            var previousFeatureButton = this._renderPreviousFeatureButton(featureTotal);
-            var nextFeatureButton = this._renderNextFeatureButton(featureTotal);
+        PhotoCentric.prototype._renderLeftButtonLayerSwitcherContainer = function () {
+            var previousFeatureButton = this._renderPreviousFeatureButton();
+            var nextFeatureButton = this._renderNextFeatureButton();
             var layerSwitcherButton = this.get("layerSwitcher.featureLayerCollection.length") > 1
                 ? this._renderLayerSwitcherButton()
                 : null;
@@ -512,46 +525,23 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             }
         };
         // _renderPreviousFeatureButton
-        PhotoCentric.prototype._renderPreviousFeatureButton = function (featureTotal) {
+        PhotoCentric.prototype._renderPreviousFeatureButton = function () {
             var selectedAttachmentViewerData = this.selectedAttachmentViewerData;
-            return (widget_1.tsx("button", { bind: this, onclick: this._previousFeature, onkeydown: this._previousFeature, tabIndex: 0, class: CSS.leftArrowContainer, disabled: this._onboardingPanelIsOpen ||
-                    featureTotal === 1 ||
-                    (selectedAttachmentViewerData &&
-                        selectedAttachmentViewerData.layerFeatures &&
-                        selectedAttachmentViewerData.layerFeatures.length === 0) ||
-                    !selectedAttachmentViewerData
-                    ? true
-                    : false, title: i18n.previousLocation },
+            return (widget_1.tsx("button", { bind: this, onclick: this._previousFeature, onkeydown: this._previousFeature, tabIndex: 0, class: CSS.leftArrowContainer, title: i18n.previousLocation },
                 widget_1.tsx("span", { class: this.classes(CSS.calcite.leftArrow, CSS.calcite.flush) })));
         };
         // _renderNextFeatureButton
-        PhotoCentric.prototype._renderNextFeatureButton = function (featureTotal) {
-            var selectedAttachmentViewerData = this.selectedAttachmentViewerData;
-            return (widget_1.tsx("button", { bind: this, onclick: this._nextFeature, onkeydown: this._nextFeature, tabIndex: 0, class: CSS.leftArrowContainer, disabled: this._onboardingPanelIsOpen ||
-                    featureTotal === 1 ||
-                    (selectedAttachmentViewerData &&
-                        selectedAttachmentViewerData.layerFeatures &&
-                        selectedAttachmentViewerData.layerFeatures.length === 0) ||
-                    !selectedAttachmentViewerData
-                    ? true
-                    : false, title: i18n.nextLocation },
+        PhotoCentric.prototype._renderNextFeatureButton = function () {
+            return (widget_1.tsx("button", { bind: this, onclick: this._nextFeature, onkeydown: this._nextFeature, tabIndex: 0, class: CSS.leftArrowContainer, title: i18n.nextLocation },
                 widget_1.tsx("span", { class: this.classes(CSS.calcite.leftArrow, CSS.calcite.flush) })));
         };
         // _renderRightFeatureScrollButton
-        PhotoCentric.prototype._renderRightFeatureScrollButton = function (featureTotal) {
-            var selectedAttachmentViewerData = this.selectedAttachmentViewerData;
+        PhotoCentric.prototype._renderRightFeatureScrollButton = function () {
             return (widget_1.tsx("button", { bind: this, onclick: this.docDirection === "rtl"
                     ? this._previousFeature
                     : this._nextFeature, onkeydown: this.docDirection === "rtl"
                     ? this._previousFeature
-                    : this._nextFeature, tabIndex: 0, class: CSS.rightArrowContainer, disabled: this._onboardingPanelIsOpen ||
-                    featureTotal === 1 ||
-                    (selectedAttachmentViewerData &&
-                        selectedAttachmentViewerData.layerFeatures &&
-                        selectedAttachmentViewerData.layerFeatures.length === 0) ||
-                    !selectedAttachmentViewerData
-                    ? true
-                    : false, title: this.docDirection === "rtl"
+                    : this._nextFeature, tabIndex: 0, class: CSS.rightArrowContainer, title: this.docDirection === "rtl"
                     ? i18n.previousLocation
                     : i18n.nextLocation },
                 widget_1.tsx("span", { class: this.classes(CSS.calcite.rightArrow, CSS.calcite.flush) })));
@@ -603,13 +593,16 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                 _a[CSS.downloadEnabled] = !this.downloadEnabled,
                 _a);
             var contentTypeCheck = this._validateContentType(attachment);
-            var mediaViewerLoader = this.selectedAttachmentViewerData &&
+            var mediaViewerLoader = attachment &&
+                this.selectedAttachmentViewerData &&
                 !this.imageIsLoaded &&
                 !this.imagePanZoomEnabled
                 ? this._renderMediaViewerLoader()
                 : null;
             var mediaViewerContainer = this._renderMediaViewerContainer(attachment);
-            var onboardingImage = this._onboardingPanelIsOpen && this.onboardingImage
+            var onboardingImage = this._onboardingPanelIsOpen &&
+                this.onboardingImage &&
+                this.onboardingIsEnabled
                 ? this._renderOnboardingImage()
                 : null;
             var zoomSlider = this.imagePanZoomEnabled &&
@@ -617,7 +610,9 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                 this.currentImageUrl &&
                 contentTypeCheck &&
                 this.imagePanZoomEnabled
-                ? this._onboardingPanelIsOpen && this.onboardingImage
+                ? this._onboardingPanelIsOpen &&
+                    this.onboardingImage &&
+                    this.onboardingIsEnabled
                     ? null
                     : this._renderZoomSlider()
                 : null;
@@ -646,7 +641,9 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         PhotoCentric.prototype._renderMediaViewerContainer = function (attachment) {
             var _a, _b;
             var hasOnboardingImage = (_a = {},
-                _a[CSS.hasOnboardingImage] = this._onboardingPanelIsOpen && this.onboardingImage,
+                _a[CSS.hasOnboardingImage] = this._onboardingPanelIsOpen &&
+                    this.onboardingImage &&
+                    this.onboardingIsEnabled,
                 _a);
             var currentImageUrl = this.currentImageUrl;
             var currentImage = !this.imagePanZoomEnabled ||
@@ -685,7 +682,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         // _renderPDF
         PhotoCentric.prototype._renderPDF = function (currentImageUrl) {
             this.set("imageIsLoaded", true);
-            return (widget_1.tsx("embed", { class: CSS.pdf, key: buildKey("pdf-" + currentImageUrl), src: currentImageUrl, type: "application/pdf" }));
+            return (widget_1.tsx("iframe", { class: CSS.pdf, key: buildKey("pdf-" + currentImageUrl), src: currentImageUrl, frameborder: "0" }));
         };
         // _renderCurrentImage
         PhotoCentric.prototype._renderCurrentImage = function () {
@@ -1110,6 +1107,10 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             if (queryingState !== "ready") {
                 return;
             }
+            var preventLocationSwitch = this._preventLocationSwitch();
+            if (preventLocationSwitch) {
+                return;
+            }
             this.viewModel.previousFeature();
             this.set("currentImageUrl", null);
             var featureLayer = this.get("selectedAttachmentViewerData.layerData.featureLayer");
@@ -1129,6 +1130,10 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             if (queryingState !== "ready") {
                 return;
             }
+            var preventLocationSwitch = this._preventLocationSwitch();
+            if (preventLocationSwitch) {
+                return;
+            }
             this.viewModel.nextFeature();
             this.set("currentImageUrl", null);
             var featureLayer = this.get("selectedAttachmentViewerData.layerData.featureLayer");
@@ -1141,6 +1146,18 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             }
             this._handlePdfAttachment();
             this.scheduleRender();
+        };
+        // _preventLocationSwitch
+        PhotoCentric.prototype._preventLocationSwitch = function () {
+            var selectedAttachmentViewerData = this.selectedAttachmentViewerData;
+            var featureTotal = selectedAttachmentViewerData &&
+                selectedAttachmentViewerData.get("featureObjectIds.length");
+            return (this._onboardingPanelIsOpen ||
+                featureTotal === 1 ||
+                (selectedAttachmentViewerData &&
+                    selectedAttachmentViewerData.layerFeatures &&
+                    selectedAttachmentViewerData.layerFeatures.length === 0) ||
+                !selectedAttachmentViewerData);
         };
         PhotoCentric.prototype._zoomInImage = function () {
             if (this._imageViewer._state.zoomValue === 500) {
@@ -1320,6 +1337,9 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         ], PhotoCentric.prototype, "defaultObjectId", void 0);
         __decorate([
             decorators_1.property()
+        ], PhotoCentric.prototype, "showOnboardingOnStart", void 0);
+        __decorate([
+            decorators_1.property()
         ], PhotoCentric.prototype, "docDirection", void 0);
         __decorate([
             decorators_1.aliasOf("viewModel.downloadEnabled"),
@@ -1420,6 +1440,9 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             decorators_1.aliasOf("viewModel.zoomLevel"),
             decorators_1.property()
         ], PhotoCentric.prototype, "zoomLevel", void 0);
+        __decorate([
+            decorators_1.property()
+        ], PhotoCentric.prototype, "onboardingIsEnabled", void 0);
         __decorate([
             widget_1.renderable(["viewModel.state"]),
             decorators_1.property({

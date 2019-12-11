@@ -35,7 +35,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
     var FACEBOOK_ITEM = new ShareItem({
         id: "facebook",
         name: "Facebook",
-        urlTemplate: "https://www.facebook.com/sharer/sharer.php?s=100&p[url]={url}"
+        urlTemplate: "https://www.facebook.com/sharer/sharer.php?s=100&u={url}"
     });
     var TWITTER_ITEM = new ShareItem({
         id: "twitter",

@@ -201,11 +201,24 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         };
         // _handleHitTestRes
         MapCentricViewModel.prototype._handleHitTestRes = function (hitTestRes, mapPoint) {
-            if (!hitTestRes.results.length) {
+            var _this = this;
+            var results = hitTestRes && hitTestRes.results;
+            var layerIds = this.attachmentViewerDataCollection
+                .slice()
+                .map(function (attachmentViewerData) {
+                return attachmentViewerData.selectedLayerId;
+            });
+            var filteredResults = results &&
+                results.filter(function (result) {
+                    var id = result.graphic.layer.id;
+                    return (layerIds.indexOf(id) !== -1 ||
+                        (_this.graphicsLayer && _this.graphicsLayer.id === id));
+                });
+            if (!filteredResults || (filteredResults && filteredResults.length === 0)) {
                 this._resetHitTest();
                 return;
             }
-            var result = hitTestRes.results[0];
+            var result = filteredResults[0];
             var selectedFeature = this.get("selectedAttachmentViewerData.selectedFeature");
             if (result && selectedFeature) {
                 var layerIdFromGraphic = result.graphic && result.graphic.layer && result.graphic.layer.id;
@@ -214,10 +227,10 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                 var selectedAttachmentViewerDataLayerId = this.get("selectedAttachmentViewerData.layerData.featureLayer.id");
                 var objectIdField = this.getObjectIdField();
                 if (layerIdFromGraphic === selectedAttachmentViewerDataLayerId &&
-                    (resultAttributes &&
-                        selectedFeatureAttributes &&
-                        resultAttributes[objectIdField] ===
-                            selectedFeature.attributes[objectIdField])) {
+                    resultAttributes &&
+                    selectedFeatureAttributes &&
+                    resultAttributes[objectIdField] ===
+                        selectedFeature.attributes[objectIdField]) {
                     this._resetHitTest();
                     return;
                 }
@@ -671,10 +684,10 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         // _handleAttachmentDataPromises
         MapCentricViewModel.prototype._handleAttachmentDataPromises = function () {
             var _this = this;
-            Promise.all(this._attachmentDataPromises).then(function (promiseResults) {
-                promiseResults.forEach(function (promiseResult) {
-                    var res = promiseResult.res, attachmentViewerData = promiseResult.attachmentViewerData;
-                    _this._handleAttachmentDataRes(res, attachmentViewerData);
+            Promise.all(this._attachmentDataPromises).then(function (attachmentDataPromiseResults) {
+                attachmentDataPromiseResults.forEach(function (attachmentDataPromiseResult) {
+                    var features = attachmentDataPromiseResult.features, attachmentViewerData = attachmentDataPromiseResult.attachmentViewerData;
+                    _this._handleAttachmentDataRes(features, attachmentViewerData);
                 });
                 var attachmentViewerData = null;
                 if (_this.selectedLayerId) {
@@ -828,6 +841,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                 _this.set("selectedAttachmentViewerData.attachmentIndex", 0);
                 _this.set("selectedAttachmentViewerData.selectedFeatureAttachments.currentIndex", 0);
                 _this.set("selectedAttachmentViewerData.selectedFeature", null);
+                _this.set("selectedAttachmentViewerData.featureWidget.graphic", null);
                 if (_this.get("searchWidget.selectedResult")) {
                     _this.searchWidget.clear();
                 }

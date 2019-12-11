@@ -69,6 +69,7 @@ import LayerSwitcher = require("./LayerSwitcher");
 
 // ImageViewer
 import ImageViewer = require("ImageViewer");
+import { AttachmentsContent } from "esri/popup/content";
 
 //----------------------------------
 //
@@ -305,6 +306,10 @@ class PhotoCentric extends declared(Widget) {
   @property()
   defaultObjectId: number = null;
 
+  // showOnboardingOnStart
+  @property()
+  showOnboardingOnStart = true;
+
   // docDirection
   @property()
   docDirection: string = null;
@@ -432,6 +437,10 @@ class PhotoCentric extends declared(Widget) {
   @property()
   zoomLevel: string = null;
 
+  // onboardingIsEnabled
+  @property()
+  onboardingIsEnabled = true;
+
   // viewModel
   @renderable(["viewModel.state"])
   @property({
@@ -455,7 +464,9 @@ class PhotoCentric extends declared(Widget) {
 
   // _initOnViewReady
   private _initOnViewReady(): void {
-    this._handleOnboardingPanel();
+    if (this.onboardingIsEnabled) {
+      this._handleOnboardingPanel();
+    }
     this.own([
       this._handleCurrentAttachment(),
       this._scrollFeatureContentPanelToTop(),
@@ -474,11 +485,15 @@ class PhotoCentric extends declared(Widget) {
 
   // _handleOnboardingPanel
   private _handleOnboardingPanel(): void {
-    if (localStorage.getItem("firstTimeUseApp")) {
-      this._onboardingPanelIsOpen = false;
+    if (this.showOnboardingOnStart) {
+      if (localStorage.getItem("firstTimeUseApp")) {
+        this._onboardingPanelIsOpen = false;
+      } else {
+        this._onboardingPanelIsOpen = true;
+        localStorage.setItem("firstTimeUseApp", `${Date.now()}`);
+      }
     } else {
-      this._onboardingPanelIsOpen = true;
-      localStorage.setItem("firstTimeUseApp", `${Date.now()}`);
+      this._onboardingPanelIsOpen = false;
     }
     this.scheduleRender();
   }
@@ -594,7 +609,9 @@ class PhotoCentric extends declared(Widget) {
     return (
       <div class={CSS.base}>
         {!this._imageCarouselIsOpen ? header : null}
-        {this._onboardingPanelIsOpen && document.body.clientWidth < 813 ? (
+        {this._onboardingPanelIsOpen &&
+        document.body.clientWidth < 813 &&
+        this.onboardingIsEnabled ? (
           <div key={buildKey("onboarding-node")} class={CSS.onboarding}>
             {onboarding}
           </div>
@@ -644,18 +661,20 @@ class PhotoCentric extends declared(Widget) {
         <div class={CSS.headerContainer}>
           <div class={CSS.titleInfoContainer}>
             <h1 class={CSS.headerText}>{title}</h1>
-            <span
-              bind={this}
-              onclick={this._toggleOnboardingPanel}
-              onkeydown={this._toggleOnboardingPanel}
-              tabIndex={0}
-              class={this.classes(
-                CSS.infoButton,
-                CSS.calcite.descriptionIcon,
-                CSS.calcite.flush
-              )}
-              title={i18n.viewDetails}
-            />
+            {this.onboardingIsEnabled ? (
+              <span
+                bind={this}
+                onclick={this._toggleOnboardingPanel}
+                onkeydown={this._toggleOnboardingPanel}
+                tabIndex={0}
+                class={this.classes(
+                  CSS.infoButton,
+                  CSS.calcite.descriptionIcon,
+                  CSS.calcite.flush
+                )}
+                title={i18n.viewDetails}
+              />
+            ) : null}
           </div>
         </div>
         <div class={CSS.shareWidgetContainer}>{shareWidget}</div>
@@ -756,13 +775,9 @@ class PhotoCentric extends declared(Widget) {
       selectedAttachmentViewerData &&
       (selectedAttachmentViewerData.get("featureObjectIds.length") as number);
 
-    const leftButtonLayerSwitcherContainer = this._renderLeftButtonLayerSwitcherContainer(
-      featureTotal
-    );
+    const leftButtonLayerSwitcherContainer = this._renderLeftButtonLayerSwitcherContainer();
 
-    const rightFeatureScrollButton = this._renderRightFeatureScrollButton(
-      featureTotal
-    );
+    const rightFeatureScrollButton = this._renderRightFeatureScrollButton();
 
     const paginationNumbers = featureTotal
       ? this._renderPaginationNumbers(featureTotal)
@@ -778,11 +793,9 @@ class PhotoCentric extends declared(Widget) {
   }
 
   // _renderLeftButtonLayerSwitcherContainer
-  private _renderLeftButtonLayerSwitcherContainer(featureTotal: number): VNode {
-    const previousFeatureButton = this._renderPreviousFeatureButton(
-      featureTotal
-    );
-    const nextFeatureButton = this._renderNextFeatureButton(featureTotal);
+  private _renderLeftButtonLayerSwitcherContainer(): VNode {
+    const previousFeatureButton = this._renderPreviousFeatureButton();
+    const nextFeatureButton = this._renderNextFeatureButton();
     const layerSwitcherButton =
       this.get("layerSwitcher.featureLayerCollection.length") > 1
         ? this._renderLayerSwitcherButton()
@@ -812,7 +825,7 @@ class PhotoCentric extends declared(Widget) {
   }
 
   // _renderPreviousFeatureButton
-  private _renderPreviousFeatureButton(featureTotal: number): VNode {
+  private _renderPreviousFeatureButton(): VNode {
     const { selectedAttachmentViewerData } = this;
     return (
       <button
@@ -821,16 +834,6 @@ class PhotoCentric extends declared(Widget) {
         onkeydown={this._previousFeature}
         tabIndex={0}
         class={CSS.leftArrowContainer}
-        disabled={
-          this._onboardingPanelIsOpen ||
-          featureTotal === 1 ||
-          (selectedAttachmentViewerData &&
-            selectedAttachmentViewerData.layerFeatures &&
-            selectedAttachmentViewerData.layerFeatures.length === 0) ||
-          !selectedAttachmentViewerData
-            ? true
-            : false
-        }
         title={i18n.previousLocation}
       >
         <span class={this.classes(CSS.calcite.leftArrow, CSS.calcite.flush)} />
@@ -839,8 +842,7 @@ class PhotoCentric extends declared(Widget) {
   }
 
   // _renderNextFeatureButton
-  private _renderNextFeatureButton(featureTotal: number): VNode {
-    const { selectedAttachmentViewerData } = this;
+  private _renderNextFeatureButton(): VNode {
     return (
       <button
         bind={this}
@@ -848,16 +850,6 @@ class PhotoCentric extends declared(Widget) {
         onkeydown={this._nextFeature}
         tabIndex={0}
         class={CSS.leftArrowContainer}
-        disabled={
-          this._onboardingPanelIsOpen ||
-          featureTotal === 1 ||
-          (selectedAttachmentViewerData &&
-            selectedAttachmentViewerData.layerFeatures &&
-            selectedAttachmentViewerData.layerFeatures.length === 0) ||
-          !selectedAttachmentViewerData
-            ? true
-            : false
-        }
         title={i18n.nextLocation}
       >
         <span class={this.classes(CSS.calcite.leftArrow, CSS.calcite.flush)} />
@@ -866,8 +858,7 @@ class PhotoCentric extends declared(Widget) {
   }
 
   // _renderRightFeatureScrollButton
-  private _renderRightFeatureScrollButton(featureTotal: number): VNode {
-    const { selectedAttachmentViewerData } = this;
+  private _renderRightFeatureScrollButton(): VNode {
     return (
       <button
         bind={this}
@@ -883,16 +874,6 @@ class PhotoCentric extends declared(Widget) {
         }
         tabIndex={0}
         class={CSS.rightArrowContainer}
-        disabled={
-          this._onboardingPanelIsOpen ||
-          featureTotal === 1 ||
-          (selectedAttachmentViewerData &&
-            selectedAttachmentViewerData.layerFeatures &&
-            selectedAttachmentViewerData.layerFeatures.length === 0) ||
-          !selectedAttachmentViewerData
-            ? true
-            : false
-        }
         title={
           this.docDirection === "rtl"
             ? i18n.previousLocation
@@ -1014,6 +995,7 @@ class PhotoCentric extends declared(Widget) {
 
     const contentTypeCheck = this._validateContentType(attachment);
     const mediaViewerLoader =
+      attachment &&
       this.selectedAttachmentViewerData &&
       !this.imageIsLoaded &&
       !this.imagePanZoomEnabled
@@ -1023,7 +1005,9 @@ class PhotoCentric extends declared(Widget) {
     const mediaViewerContainer = this._renderMediaViewerContainer(attachment);
 
     const onboardingImage =
-      this._onboardingPanelIsOpen && this.onboardingImage
+      this._onboardingPanelIsOpen &&
+      this.onboardingImage &&
+      this.onboardingIsEnabled
         ? this._renderOnboardingImage()
         : null;
 
@@ -1033,7 +1017,9 @@ class PhotoCentric extends declared(Widget) {
       this.currentImageUrl &&
       contentTypeCheck &&
       this.imagePanZoomEnabled
-        ? this._onboardingPanelIsOpen && this.onboardingImage
+        ? this._onboardingPanelIsOpen &&
+          this.onboardingImage &&
+          this.onboardingIsEnabled
           ? null
           : this._renderZoomSlider()
         : null;
@@ -1097,7 +1083,9 @@ class PhotoCentric extends declared(Widget) {
   ): VNode {
     const hasOnboardingImage = {
       [CSS.hasOnboardingImage]:
-        this._onboardingPanelIsOpen && this.onboardingImage
+        this._onboardingPanelIsOpen &&
+        this.onboardingImage &&
+        this.onboardingIsEnabled
     };
 
     const { currentImageUrl } = this;
@@ -1179,11 +1167,11 @@ class PhotoCentric extends declared(Widget) {
   private _renderPDF(currentImageUrl: string): VNode {
     this.set("imageIsLoaded", true);
     return (
-      <embed
+      <iframe
         class={CSS.pdf}
         key={buildKey(`pdf-${currentImageUrl}`)}
         src={currentImageUrl}
-        type="application/pdf"
+        frameborder="0"
       />
     );
   }
@@ -2086,6 +2074,10 @@ c6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z"
     if (queryingState !== "ready") {
       return;
     }
+    const preventLocationSwitch = this._preventLocationSwitch();
+    if (preventLocationSwitch) {
+      return;
+    }
     this.viewModel.previousFeature();
     this.set("currentImageUrl", null);
     const featureLayer = this.get(
@@ -2096,11 +2088,9 @@ c6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z"
     if (supportsAttachment) {
       this.set("imageIsLoaded", false);
     }
-
     if (this._imageAttachment) {
       this._imageAttachment.src = "";
     }
-
     this._handlePdfAttachment();
     this.scheduleRender();
   }
@@ -2110,6 +2100,10 @@ c6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z"
   private _nextFeature(): void {
     const { queryingState } = this.viewModel;
     if (queryingState !== "ready") {
+      return;
+    }
+    const preventLocationSwitch = this._preventLocationSwitch();
+    if (preventLocationSwitch) {
       return;
     }
     this.viewModel.nextFeature();
@@ -2122,13 +2116,28 @@ c6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z"
     if (supportsAttachment) {
       this.set("imageIsLoaded", false);
     }
-
     if (this._imageAttachment) {
       this._imageAttachment.src = "";
     }
-
     this._handlePdfAttachment();
     this.scheduleRender();
+  }
+
+  // _preventLocationSwitch
+  private _preventLocationSwitch(): boolean {
+    const { selectedAttachmentViewerData } = this;
+
+    const featureTotal =
+      selectedAttachmentViewerData &&
+      (selectedAttachmentViewerData.get("featureObjectIds.length") as number);
+    return (
+      this._onboardingPanelIsOpen ||
+      featureTotal === 1 ||
+      (selectedAttachmentViewerData &&
+        selectedAttachmentViewerData.layerFeatures &&
+        selectedAttachmentViewerData.layerFeatures.length === 0) ||
+      !selectedAttachmentViewerData
+    );
   }
 
   @accessibleHandler()

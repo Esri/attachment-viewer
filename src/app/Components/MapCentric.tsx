@@ -189,6 +189,8 @@ const CSS = {
   mobileNavItemSelected: "esri-map-centric__nav-item--selected",
   mobileOnboardingGallery: "esri-map-centric__mobile-onboarding-gallery",
   mobileMedia: "esri-map-centric__mobile-media",
+  mobileNavItemOnboardingDisabled:
+    "esri-map-centric__mobile-nav-item--onboarding-disabled",
   // fullAttachment
   fullMediaContainer: "esri-map-centric__full-media-container",
   expandMediaContainer: "esri-map-centric__expand-media-container",
@@ -258,7 +260,7 @@ class MapCentric extends declared(Widget) {
   //  Private Variables
   //
   //----------------------------------
-  private _currentMobileScreen: string = "media";
+  private _currentMobileScreen: string = null;
   private _expandAttachmentNode: HTMLElement = null;
   private _featureContentAvailable: boolean = null;
   private _fullAttachmentContainerIsOpen = false;
@@ -322,6 +324,10 @@ class MapCentric extends declared(Widget) {
   @property()
   defaultObjectId: number = null;
 
+  // showOnboardingOnStart
+  @property()
+  showOnboardingOnStart = true;
+
   // downloadEnabled
   @aliasOf("viewModel.downloadEnabled")
   @property()
@@ -379,6 +385,10 @@ class MapCentric extends declared(Widget) {
   // onboardingContent
   @property()
   onboardingContent: any = null;
+
+  // onboardingIsEnabled
+  @property()
+  onboardingIsEnabled = true;
 
   // onlyDisplayFeaturesWithAttachmentsIsEnabled
   @aliasOf("viewModel.onlyDisplayFeaturesWithAttachmentsIsEnabled")
@@ -454,8 +464,15 @@ class MapCentric extends declared(Widget) {
   zoomLevel: string = null;
 
   postInitialize() {
+    if (this.onboardingIsEnabled) {
+      this.own([this._handleOnboarding()]);
+    } else {
+      if (document.body.clientWidth < 813) {
+        this._currentMobileScreen = "media";
+        this.scheduleRender();
+      }
+    }
     this.own([
-      this._handleOnboarding(),
       this._handleAttachmentUrl(),
       this._galleryScrollTopOnFeatureRemoval(),
       this._watchAttachmentData(),
@@ -470,14 +487,37 @@ class MapCentric extends declared(Widget) {
   // _handleOnboarding
   private _handleOnboarding(): __esri.WatchHandle {
     return watchUtils.whenOnce(this, "view", () => {
-      if (localStorage.getItem("firstTimeUseApp")) {
-        this._onboardingPanelIsOpen = false;
+      if (this.showOnboardingOnStart) {
+        this._handleOnboardingOnInitialVisit();
       } else {
-        this._onboardingPanelIsOpen = true;
-        localStorage.setItem("firstTimeUseApp", `${Date.now()}`);
+        this._handleOnboardingOnVisitDisabled();
       }
       this.scheduleRender();
     });
+  }
+
+  // _handleOnboardingOnInitialVisit
+  private _handleOnboardingOnInitialVisit(): void {
+    if (localStorage.getItem("firstTimeUseApp")) {
+      this._onboardingPanelIsOpen = false;
+      if (document.body.clientWidth < 813) {
+        this._currentMobileScreen = "media";
+      }
+    } else {
+      this._onboardingPanelIsOpen = true;
+      if (document.body.clientWidth < 813) {
+        this._currentMobileScreen = "description";
+      }
+      localStorage.setItem("firstTimeUseApp", `${Date.now()}`);
+    }
+  }
+
+  // _handleOnboardingOnVisitDisabled
+  private _handleOnboardingOnVisitDisabled(): void {
+    this._onboardingPanelIsOpen = false;
+    if (document.body.clientWidth < 813) {
+      this._currentMobileScreen = "media";
+    }
   }
 
   // _handleAttachmentUrl
@@ -687,12 +727,19 @@ class MapCentric extends declared(Widget) {
     const mobileNavItemSelected = {
       [CSS.mobileNavItemSelected]: type === this._currentMobileScreen
     };
+    const mobileNavItemOnboardingDisabled = {
+      [CSS.mobileNavItemOnboardingDisabled]: !this.onboardingIsEnabled
+    };
     return (
       <div
         bind={this}
         onclick={this._handleNavItem}
         onkeydown={this._handleNavItem}
-        class={this.classes(CSS.mobileNavItem, mobileNavItemSelected)}
+        class={this.classes(
+          CSS.mobileNavItem,
+          mobileNavItemSelected,
+          mobileNavItemOnboardingDisabled
+        )}
         data-nav-item={type}
         role="button"
       >
@@ -721,7 +768,7 @@ class MapCentric extends declared(Widget) {
           <div class={CSS.titleInfoContainer}>
             <h1 class={CSS.headerText}>{titleValue}</h1>
           </div>
-          {clientWidth > 813 ? (
+          {clientWidth > 813 && this.onboardingIsEnabled ? (
             <div
               bind={this}
               onclick={this._toggleOnboardingPanel}
@@ -1294,8 +1341,12 @@ c0.6,0,1.1,0.5,1.1,1.1v14.8C23.8,16.8,23.3,17.3,22.6,17.3z"
         ? this._renderVideo(currentImageUrl)
         : null;
 
+    const isIE =
+      navigator.userAgent.indexOf("MSIE") !== -1 ||
+      navigator.appVersion.indexOf("Trident/") > -1;
+
     const pdf =
-      contentType && contentType.indexOf("pdf") !== -1
+      contentType && contentType.indexOf("pdf") !== -1 && !isIE
         ? this._renderPdf(currentImageUrl)
         : null;
 
@@ -1428,11 +1479,11 @@ c0.6,0,1.1,0.5,1.1,1.1v14.8C23.8,16.8,23.3,17.3,22.6,17.3z"
   // _renderPdf
   private _renderPdf(currentImageUrl: string): VNode {
     return (
-      <embed
-        key={buildKey(`pdf-${currentImageUrl}`)}
+      <iframe
         class={CSS.pdf}
+        key={buildKey(`pdf-${currentImageUrl}`)}
         src={currentImageUrl}
-        type="application/pdf"
+        frameborder="0"
       />
     );
   }
@@ -1694,10 +1745,11 @@ c0.6,0,1.1,0.5,1.1,1.1v14.8C23.8,16.8,23.3,17.3,22.6,17.3z"
       (this.selectedAttachmentViewerData.get(
         "featureObjectIds.length"
       ) as number);
-
+    const { mapCentricState } = this.viewModel;
     return (
       <div class={CSS.featureContent}>
-        {this.viewModel.mapCentricState === "waitingForContent" ? (
+        {mapCentricState === "waitingForContent" ||
+        mapCentricState === "querying" ? (
           <div class={CSS.featureContentLoader}>
             <div class={CSS.loaderGraphic} />
             <div>{i18n.loading}...</div>
@@ -2130,7 +2182,6 @@ c0.6,0,1.1,0.5,1.1,1.1v14.8C23.8,16.8,23.3,17.3,22.6,17.3z"
     const node = event.currentTarget as HTMLElement;
     const objectId = node["data-object-id"] as number;
     this.viewModel.handleGalleryItem(objectId);
-    this.featureContentPanelIsOpen = true;
     this.scheduleRender();
   }
 
@@ -2185,6 +2236,7 @@ c0.6,0,1.1,0.5,1.1,1.1v14.8C23.8,16.8,23.3,17.3,22.6,17.3z"
     this.currentImageUrl = null;
     this.set("viewModel.selectedAttachmentViewerData.attachmentIndex", 0);
     this.set("selectedAttachmentViewerData.selectedFeatureAddress", null);
+    this.set("selectedAttachmentViewerData.selectedFeature", null);
     this.viewModel.closeTooltipPopup();
   }
 
@@ -2372,7 +2424,9 @@ c0.6,0,1.1,0.5,1.1,1.1v14.8C23.8,16.8,23.3,17.3,22.6,17.3z"
   // _generateNavObjects
   private _generateNavObjects(): NavItem[] {
     const iconUi = "icon-ui-";
-    const navData = ["description", "media", "maps"];
+    const navData = this.onboardingIsEnabled
+      ? ["description", "media", "maps"]
+      : ["media", "maps"];
     return navData.map(navDataItem => {
       return {
         type: navDataItem,

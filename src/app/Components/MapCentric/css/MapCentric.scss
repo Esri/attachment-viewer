@@ -104,6 +104,10 @@ $calcite-blue: #0079c1;
       }
     }
 
+    .esri-map-centric__mobile-nav-item--onboarding-disabled {
+      width: 50%;
+    }
+
     .esri-map-centric__nav-item--selected {
       background-color: #00598e;
     }
@@ -1306,6 +1310,8 @@ html[dir="rtl"] {
     }
 
     .esri-map-centric__mobile-nav {
+      position: relative;
+      z-index: 503;
       height: 10%;
     }
 

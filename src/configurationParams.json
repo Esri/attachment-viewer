@@ -12,15 +12,23 @@
           "defaultContent": true,
           "showOnLoad": true
         },
-        { "type": "appproxies" },
+        {
+          "type": "appproxies"
+        },
         {
           "type": "options",
           "fieldName": "appMode",
           "tooltip": "Choose whether the map or the attachment is prominent in the app window.",
           "label": "App layout: ",
           "options": [
-            { "label": "Attachment", "value": "photo-centric" },
-            { "label": "Map", "value": "map-centric" }
+            {
+              "label": "Attachment",
+              "value": "photo-centric"
+            },
+            {
+              "label": "Map",
+              "value": "map-centric"
+            }
           ]
         },
         {
@@ -40,7 +48,9 @@
               "esriFieldTypeOID"
             ]
           },
-          "layerOptions": { "supportedTypes": ["FeatureLayer"] }
+          "layerOptions": {
+            "supportedTypes": ["FeatureLayer"]
+          }
         },
         {
           "type": "options",
@@ -48,8 +58,14 @@
           "tooltip": "Select the scroll order of the features",
           "label": "Select the scroll order of the features",
           "options": [
-            { "label": "Ascending", "value": "ASC" },
-            { "label": "Descending", "value": "DESC" }
+            {
+              "label": "Ascending",
+              "value": "ASC"
+            },
+            {
+              "label": "Descending",
+              "value": "DESC"
+            }
           ]
         },
         {
@@ -61,7 +77,7 @@
         {
           "type": "conditional",
           "fieldName": "customOnboardingContentEnabled",
-          "label": "Add a custom onboarding panel",
+          "label": "Customize onboarding panel text",
           "condition": false,
           "items": [
             {
@@ -86,8 +102,8 @@
         {
           "type": "string",
           "fieldName": "onboardingImage",
-          "tooltip": "Use this to display an image via URL in the attachment container while the onboarding panel is active",
-          "label": "Enter an image URL to display an image when the onboarding panel is active"
+          "tooltip": "Display an image via URL in the attachment container while the onboarding panel is active in the Attachment layout",
+          "label": "Enter an image URL to display an image when the onboarding panel is active‎ in the Attachment layout"
         },
         {
           "type": "color",
@@ -119,13 +135,21 @@
           "fieldName": "mapToolsExpanded",
           "label": "Map tools open at start"
         },
-        { "type": "boolean", "fieldName": "homeEnabled", "label": "Home" },
+        {
+          "type": "boolean",
+          "fieldName": "homeEnabled",
+          "label": "Home"
+        },
         {
           "type": "boolean",
           "fieldName": "zoomEnabled",
           "label": "Zoom Controls"
         },
-        { "type": "boolean", "fieldName": "legendEnabled", "label": "Legend" },
+        {
+          "type": "boolean",
+          "fieldName": "legendEnabled",
+          "label": "Legend"
+        },
         {
           "type": "boolean",
           "fieldName": "layerListEnabled",

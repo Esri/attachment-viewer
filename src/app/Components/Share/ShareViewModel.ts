@@ -65,7 +65,7 @@ const ShareItemCollection = Collection.ofType<ShareItem>(ShareItem);
 const FACEBOOK_ITEM = new ShareItem({
   id: "facebook",
   name: "Facebook",
-  urlTemplate: "https://www.facebook.com/sharer/sharer.php?s=100&p[url]={url}"
+  urlTemplate: "https://www.facebook.com/sharer/sharer.php?s=100&u={url}"
 });
 const TWITTER_ITEM = new ShareItem({
   id: "twitter",
@@ -109,8 +109,8 @@ class ShareViewModel extends declared(Accessor) {
   //----------------------------------
 
   // Promises for widget state
-  private _shortenPromise: IPromise = null;
-  private _projectionPromise: IPromise = null;
+  private _shortenPromise: Promise<__esri.RequestResponse> = null;
+  private _projectionPromise: Promise<any[]> = null;
 
   //----------------------------------
   //
