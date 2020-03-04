@@ -21,7 +21,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/core/tsSupport/decorateHelper", "dojo/i18n!../nls/common", "esri/core/accessorSupport/decorators", "esri/widgets/Widget", "esri/widgets/Expand/ExpandViewModel", "esri/widgets/support/widget", "./MobileExpand/support/widgetSupport"], function (require, exports, __extends, __decorate, i18n, decorators_1, Widget, ExpandViewModel, widget_1, widgetSupport_1) {
     "use strict";
-    // type ContentSource = string | HTMLElement | Widget | _WidgetBase;
     var CSS = {
         base: "esri-expand esri-widget esri-mobile-expand",
         modeAuto: "esri-expand--auto",
@@ -402,9 +401,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         //  Private Methods
         //
         //--------------------------------------------------------------------------
-        Expand.prototype._toggle = function () {
-            this.toggle();
-        };
+        // Start of render node methods
         Expand.prototype._renderContent = function () {
             var expandCollapseButton = this._renderExpandCollapseButton();
             var expandedBadgeNumberNode = this._renderExpandBadgeNumberNode();
@@ -432,7 +429,6 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             var expanded = this.viewModel.expanded;
             return iconNumber && !expanded ? (widget_1.tsx("span", { key: "expand__icon-number", class: CSS.iconNumber }, iconNumber)) : null;
         };
-        // _renderExpandCollapseIcon
         Expand.prototype._renderExpandCollapseIcon = function () {
             return (widget_1.tsx("svg", { class: CSS.expandCollapseIcon, xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 16 16" },
                 widget_1.tsx("path", { d: "M3 13.714V12.3l4.5-4.5 4.5 4.5v1.414l-4.5-4.5zm4.5-10.5l4.5 4.5V6.3L7.5 1.8 3 6.3v1.414z" })));
@@ -449,6 +445,10 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                 }
                 return null;
             });
+        };
+        // End of render node methods
+        Expand.prototype._toggle = function () {
+            this.toggle();
         };
         __decorate([
             decorators_1.aliasOf("viewModel.autoCollapse")

@@ -12,9 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.​
 
-// dijit
-import _WidgetBase = require("dijit/_WidgetBase");
-
 // dojo
 import * as i18n from "dojo/i18n!../nls/common";
 
@@ -35,17 +32,15 @@ import Widget = require("esri/widgets/Widget");
 // esri.widgets.Expand
 import ExpandViewModel = require("esri/widgets/Expand/ExpandViewModel");
 
-// esri.widgets.support
-// import {  } from "./support/interfaces";
 import {
   accessibleHandler,
   renderable,
   tsx
 } from "esri/widgets/support/widget";
 
-import { isWidget, isWidgetBase } from "./MobileExpand/support/widgetSupport";
+import { isWidget } from "./MobileExpand/support/widgetSupport";
 
-// type ContentSource = string | HTMLElement | Widget | _WidgetBase;
+import { VNode } from "../interfaces/interfaces";
 
 const CSS = {
   base: "esri-expand esri-widget esri-mobile-expand",
@@ -545,12 +540,8 @@ class Expand extends declared(Widget) {
   //
   //--------------------------------------------------------------------------
 
-  @accessibleHandler()
-  private _toggle(): void {
-    this.toggle();
-  }
-
-  private _renderContent() {
+  // Start of render node methods
+  private _renderContent(): VNode {
     const expandCollapseButton = this._renderExpandCollapseButton();
     const expandedBadgeNumberNode = this._renderExpandBadgeNumberNode();
     const components = this._renderComponents();
@@ -565,7 +556,7 @@ class Expand extends declared(Widget) {
     );
   }
 
-  private _renderExpandCollapseButton() {
+  private _renderExpandCollapseButton(): VNode {
     const { expanded } = this.viewModel;
     const expandTooltip = this.expandTooltip || i18n.expand;
     const collapseTooltip = this.collapseTooltip || i18n.collapse;
@@ -590,7 +581,7 @@ class Expand extends declared(Widget) {
     );
   }
 
-  private _renderBadgeNumberNode() {
+  private _renderBadgeNumberNode(): VNode {
     const { iconNumber } = this;
     const { expanded } = this.viewModel;
     return iconNumber && !expanded ? (
@@ -600,8 +591,7 @@ class Expand extends declared(Widget) {
     ) : null;
   }
 
-  // _renderExpandCollapseIcon
-  private _renderExpandCollapseIcon() {
+  private _renderExpandCollapseIcon(): VNode {
     return (
       <svg
         class={CSS.expandCollapseIcon}
@@ -613,7 +603,7 @@ class Expand extends declared(Widget) {
     );
   }
 
-  private _renderExpandBadgeNumberNode() {
+  private _renderExpandBadgeNumberNode(): VNode {
     const { iconNumber } = this;
     const { expanded } = this.viewModel;
     return iconNumber && expanded ? (
@@ -626,7 +616,7 @@ class Expand extends declared(Widget) {
     ) : null;
   }
 
-  private _renderComponents() {
+  private _renderComponents(): VNode {
     return this.content.map((component: Expand) => {
       if (isWidget(component)) {
         return (
@@ -635,6 +625,12 @@ class Expand extends declared(Widget) {
       }
       return null;
     });
+  }
+  // End of render node methods
+
+  @accessibleHandler()
+  private _toggle(): void {
+    this.toggle();
   }
 }
 
