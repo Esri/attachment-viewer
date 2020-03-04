@@ -12,9 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.​
 
-// dijit
-import _WidgetBase = require("dijit/_WidgetBase");
-
 // dojo
 import * as i18n from "dojo/i18n!../nls/common";
 
@@ -35,17 +32,15 @@ import Widget = require("esri/widgets/Widget");
 // esri.widgets.Expand
 import ExpandViewModel = require("esri/widgets/Expand/ExpandViewModel");
 
-// esri.widgets.support
-// import {  } from "./support/interfaces";
 import {
   accessibleHandler,
   renderable,
   tsx
 } from "esri/widgets/support/widget";
 
-import { isWidget, isWidgetBase } from "./MobileExpand/support/widgetSupport";
+import { isWidget } from "./MobileExpand/support/widgetSupport";
 
-// type ContentSource = string | HTMLElement | Widget | _WidgetBase;
+import { VNode } from "../interfaces/interfaces";
 
 const CSS = {
   base: "esri-expand esri-widget esri-mobile-expand",
@@ -70,7 +65,6 @@ const CSS = {
 
   // CUSTOM
   mobileExpandContent: "esri-mobile-expand__content",
-  collapseButton: "esri-mobile-expand__collapse-button",
   expandCollapseIcon: "esri-mobile-expand__expand-collapse-icon icon-ui-flush",
   mobileExpandComponent: "esri-mobile-expand__component"
 };
@@ -546,81 +540,15 @@ class Expand extends declared(Widget) {
   //
   //--------------------------------------------------------------------------
 
-  @accessibleHandler()
-  private _toggle(): void {
-    this.toggle();
-  }
-
-  private _renderContent() {
-    const components = this.content.map((component: Expand) => {
-      if (isWidget(component)) {
-        return (
-          <div class={CSS.mobileExpandComponent}>{component.render()}</div>
-        );
-      }
-
-      return null;
-    });
-    const expanded = this.viewModel.expanded;
-    const expandTooltip = this.expandTooltip || i18n.expand;
-    const collapseTooltip = this.collapseTooltip || i18n.collapse;
-    const title = expanded ? collapseTooltip : expandTooltip;
-    const collapseIconClass = this.collapseIconClass;
-    const expandIconClass = this.expandIconClass;
-    const expandIconClasses = {
-      [CSS.iconExpanded]: expanded,
-      [collapseIconClass]: expanded,
-      [expandIconClass]: !expanded
-    };
-
-    const iconNumber = this.iconNumber;
-
-    const badgeNumberNode =
-      iconNumber && !expanded ? (
-        <span key={"expand__icon-number"} class={CSS.iconNumber}>
-          {iconNumber}
-        </span>
-      ) : null;
-
-    const expandedBadgeNumberNode =
-      iconNumber && expanded ? (
-        <span
-          key={"expand__expand-icon-number"}
-          class={this.classes(CSS.iconNumber, CSS.iconNumberExpanded)}
-        >
-          {iconNumber}
-        </span>
-      ) : null;
-
-    const collapseButton = {
-      [CSS.collapseButton]: expanded
-    };
-
+  // Start of render node methods
+  private _renderContent(): VNode {
+    const expandCollapseButton = this._renderExpandCollapseButton();
+    const expandedBadgeNumberNode = this._renderExpandBadgeNumberNode();
+    const components = this._renderComponents();
     return (
       <div>
-        <div class={this.classes(CSS.panel, collapseButton)}>
-          <div
-            bind={this}
-            onclick={this._toggle}
-            onkeydown={this._toggle}
-            aria-label={title}
-            title={title}
-            role="button"
-            tabindex="0"
-            class={CSS.button}
-          >
-            {badgeNumberNode}
-
-            <svg
-              class={CSS.expandCollapseIcon}
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 16 16"
-            >
-              <path d="M3 13.714V12.3l4.5-4.5 4.5 4.5v1.414l-4.5-4.5zm4.5-10.5l4.5 4.5V6.3L7.5 1.8 3 6.3v1.414z" />
-            </svg>
-
-            <span class={CSS.text}>{title}</span>
-          </div>
+        <div class={CSS.panel}>
+          {expandCollapseButton}
           {expandedBadgeNumberNode}
         </div>
         {components}
@@ -628,9 +556,81 @@ class Expand extends declared(Widget) {
     );
   }
 
-  private _attachToNode(this: HTMLElement, node: HTMLElement): void {
-    const content: HTMLElement = this;
-    node.appendChild(content);
+  private _renderExpandCollapseButton(): VNode {
+    const { expanded } = this.viewModel;
+    const expandTooltip = this.expandTooltip || i18n.expand;
+    const collapseTooltip = this.collapseTooltip || i18n.collapse;
+    const title = expanded ? collapseTooltip : expandTooltip;
+    const badgeNumberNode = this._renderBadgeNumberNode();
+    const expandCollapseIcon = this._renderExpandCollapseIcon();
+    return (
+      <div
+        bind={this}
+        onclick={this._toggle}
+        onkeydown={this._toggle}
+        aria-label={title}
+        title={title}
+        role="button"
+        tabindex="0"
+        class={CSS.button}
+      >
+        {badgeNumberNode}
+        {expandCollapseIcon}
+        <span class={CSS.text}>{title}</span>
+      </div>
+    );
+  }
+
+  private _renderBadgeNumberNode(): VNode {
+    const { iconNumber } = this;
+    const { expanded } = this.viewModel;
+    return iconNumber && !expanded ? (
+      <span key={"expand__icon-number"} class={CSS.iconNumber}>
+        {iconNumber}
+      </span>
+    ) : null;
+  }
+
+  private _renderExpandCollapseIcon(): VNode {
+    return (
+      <svg
+        class={CSS.expandCollapseIcon}
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 16 16"
+      >
+        <path d="M3 13.714V12.3l4.5-4.5 4.5 4.5v1.414l-4.5-4.5zm4.5-10.5l4.5 4.5V6.3L7.5 1.8 3 6.3v1.414z" />
+      </svg>
+    );
+  }
+
+  private _renderExpandBadgeNumberNode(): VNode {
+    const { iconNumber } = this;
+    const { expanded } = this.viewModel;
+    return iconNumber && expanded ? (
+      <span
+        key={"expand__expand-icon-number"}
+        class={this.classes(CSS.iconNumber, CSS.iconNumberExpanded)}
+      >
+        {iconNumber}
+      </span>
+    ) : null;
+  }
+
+  private _renderComponents(): VNode {
+    return this.content.map((component: Expand) => {
+      if (isWidget(component)) {
+        return (
+          <div class={CSS.mobileExpandComponent}>{component.render()}</div>
+        );
+      }
+      return null;
+    });
+  }
+  // End of render node methods
+
+  @accessibleHandler()
+  private _toggle(): void {
+    this.toggle();
   }
 }
 

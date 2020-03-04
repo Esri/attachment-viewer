@@ -1,24 +1,22 @@
 {
   "compilerOptions": {
-    "lib": ["es5", "es6", "dom", "scripthost"],
-    "declaration": false,
-    "noImplicitAny": false,
+    "lib": ["es5", "es2015", "es2015.promise", "dom", "scripthost"],
     "module": "amd",
-    "target": "es5",
-    "moduleResolution": "node",
-    "experimentalDecorators": true,
+    "noImplicitAny": false,
+    "sourceMap": true,
     "jsx": "react",
     "jsxFactory": "tsx",
-    "outDir": "./dist",
+    "target": "es5",
+    "experimentalDecorators": true,
     "preserveConstEnums": true,
     "suppressImplicitAnyIndexErrors": true,
-    "sourceMap": true
+    "outDir": "./dist"
   },
   "include": ["./src/app/*"],
-  "exclude": ["./node_modules", "./tsrules"],
+  "exclude": ["./node_modules", "./tsrules", "./src/app/application-base-js"],
   "files": [
     "./src/app/interfaces/declarations.d.ts",
-    "./node_modules/@esri/application-base-js/index.d.ts",
+    "./src/app/application-base-js/index.d.ts",
     "./node_modules/@types/arcgis-js-api/index.d.ts",
     "./node_modules/dojo-typings/dojo/1.11/loader.d.ts",
     "./node_modules/dojo-typings/dojo/1.11/index.d.ts",
