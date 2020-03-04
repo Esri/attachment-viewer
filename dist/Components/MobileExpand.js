@@ -44,7 +44,6 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         expandMaskExpanded: "esri-expand__mask--expanded",
         // CUSTOM
         mobileExpandContent: "esri-mobile-expand__content",
-        collapseButton: "esri-mobile-expand__collapse-button",
         expandCollapseIcon: "esri-mobile-expand__expand-collapse-icon icon-ui-flush",
         mobileExpandComponent: "esri-mobile-expand__component"
     };
@@ -407,43 +406,49 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             this.toggle();
         };
         Expand.prototype._renderContent = function () {
-            var _a, _b;
-            var components = this.content.map(function (component) {
+            var expandCollapseButton = this._renderExpandCollapseButton();
+            var expandedBadgeNumberNode = this._renderExpandBadgeNumberNode();
+            var components = this._renderComponents();
+            return (widget_1.tsx("div", null,
+                widget_1.tsx("div", { class: CSS.panel },
+                    expandCollapseButton,
+                    expandedBadgeNumberNode),
+                components));
+        };
+        Expand.prototype._renderExpandCollapseButton = function () {
+            var expanded = this.viewModel.expanded;
+            var expandTooltip = this.expandTooltip || i18n.expand;
+            var collapseTooltip = this.collapseTooltip || i18n.collapse;
+            var title = expanded ? collapseTooltip : expandTooltip;
+            var badgeNumberNode = this._renderBadgeNumberNode();
+            var expandCollapseIcon = this._renderExpandCollapseIcon();
+            return (widget_1.tsx("div", { bind: this, onclick: this._toggle, onkeydown: this._toggle, "aria-label": title, title: title, role: "button", tabindex: "0", class: CSS.button },
+                badgeNumberNode,
+                expandCollapseIcon,
+                widget_1.tsx("span", { class: CSS.text }, title)));
+        };
+        Expand.prototype._renderBadgeNumberNode = function () {
+            var iconNumber = this.iconNumber;
+            var expanded = this.viewModel.expanded;
+            return iconNumber && !expanded ? (widget_1.tsx("span", { key: "expand__icon-number", class: CSS.iconNumber }, iconNumber)) : null;
+        };
+        // _renderExpandCollapseIcon
+        Expand.prototype._renderExpandCollapseIcon = function () {
+            return (widget_1.tsx("svg", { class: CSS.expandCollapseIcon, xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 16 16" },
+                widget_1.tsx("path", { d: "M3 13.714V12.3l4.5-4.5 4.5 4.5v1.414l-4.5-4.5zm4.5-10.5l4.5 4.5V6.3L7.5 1.8 3 6.3v1.414z" })));
+        };
+        Expand.prototype._renderExpandBadgeNumberNode = function () {
+            var iconNumber = this.iconNumber;
+            var expanded = this.viewModel.expanded;
+            return iconNumber && expanded ? (widget_1.tsx("span", { key: "expand__expand-icon-number", class: this.classes(CSS.iconNumber, CSS.iconNumberExpanded) }, iconNumber)) : null;
+        };
+        Expand.prototype._renderComponents = function () {
+            return this.content.map(function (component) {
                 if (widgetSupport_1.isWidget(component)) {
                     return (widget_1.tsx("div", { class: CSS.mobileExpandComponent }, component.render()));
                 }
                 return null;
             });
-            var expanded = this.viewModel.expanded;
-            var expandTooltip = this.expandTooltip || i18n.expand;
-            var collapseTooltip = this.collapseTooltip || i18n.collapse;
-            var title = expanded ? collapseTooltip : expandTooltip;
-            var collapseIconClass = this.collapseIconClass;
-            var expandIconClass = this.expandIconClass;
-            var expandIconClasses = (_a = {},
-                _a[CSS.iconExpanded] = expanded,
-                _a[collapseIconClass] = expanded,
-                _a[expandIconClass] = !expanded,
-                _a);
-            var iconNumber = this.iconNumber;
-            var badgeNumberNode = iconNumber && !expanded ? (widget_1.tsx("span", { key: "expand__icon-number", class: CSS.iconNumber }, iconNumber)) : null;
-            var expandedBadgeNumberNode = iconNumber && expanded ? (widget_1.tsx("span", { key: "expand__expand-icon-number", class: this.classes(CSS.iconNumber, CSS.iconNumberExpanded) }, iconNumber)) : null;
-            var collapseButton = (_b = {},
-                _b[CSS.collapseButton] = expanded,
-                _b);
-            return (widget_1.tsx("div", null,
-                widget_1.tsx("div", { class: this.classes(CSS.panel, collapseButton) },
-                    widget_1.tsx("div", { bind: this, onclick: this._toggle, onkeydown: this._toggle, "aria-label": title, title: title, role: "button", tabindex: "0", class: CSS.button },
-                        badgeNumberNode,
-                        widget_1.tsx("svg", { class: CSS.expandCollapseIcon, xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 16 16" },
-                            widget_1.tsx("path", { d: "M3 13.714V12.3l4.5-4.5 4.5 4.5v1.414l-4.5-4.5zm4.5-10.5l4.5 4.5V6.3L7.5 1.8 3 6.3v1.414z" })),
-                        widget_1.tsx("span", { class: CSS.text }, title)),
-                    expandedBadgeNumberNode),
-                components));
-        };
-        Expand.prototype._attachToNode = function (node) {
-            var content = this;
-            node.appendChild(content);
         };
         __decorate([
             decorators_1.aliasOf("viewModel.autoCollapse")

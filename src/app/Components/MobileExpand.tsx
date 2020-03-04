@@ -70,7 +70,6 @@ const CSS = {
 
   // CUSTOM
   mobileExpandContent: "esri-mobile-expand__content",
-  collapseButton: "esri-mobile-expand__collapse-button",
   expandCollapseIcon: "esri-mobile-expand__expand-collapse-icon icon-ui-flush",
   mobileExpandComponent: "esri-mobile-expand__component"
 };
@@ -552,75 +551,13 @@ class Expand extends declared(Widget) {
   }
 
   private _renderContent() {
-    const components = this.content.map((component: Expand) => {
-      if (isWidget(component)) {
-        return (
-          <div class={CSS.mobileExpandComponent}>{component.render()}</div>
-        );
-      }
-
-      return null;
-    });
-    const expanded = this.viewModel.expanded;
-    const expandTooltip = this.expandTooltip || i18n.expand;
-    const collapseTooltip = this.collapseTooltip || i18n.collapse;
-    const title = expanded ? collapseTooltip : expandTooltip;
-    const collapseIconClass = this.collapseIconClass;
-    const expandIconClass = this.expandIconClass;
-    const expandIconClasses = {
-      [CSS.iconExpanded]: expanded,
-      [collapseIconClass]: expanded,
-      [expandIconClass]: !expanded
-    };
-
-    const iconNumber = this.iconNumber;
-
-    const badgeNumberNode =
-      iconNumber && !expanded ? (
-        <span key={"expand__icon-number"} class={CSS.iconNumber}>
-          {iconNumber}
-        </span>
-      ) : null;
-
-    const expandedBadgeNumberNode =
-      iconNumber && expanded ? (
-        <span
-          key={"expand__expand-icon-number"}
-          class={this.classes(CSS.iconNumber, CSS.iconNumberExpanded)}
-        >
-          {iconNumber}
-        </span>
-      ) : null;
-
-    const collapseButton = {
-      [CSS.collapseButton]: expanded
-    };
-
+    const expandCollapseButton = this._renderExpandCollapseButton();
+    const expandedBadgeNumberNode = this._renderExpandBadgeNumberNode();
+    const components = this._renderComponents();
     return (
       <div>
-        <div class={this.classes(CSS.panel, collapseButton)}>
-          <div
-            bind={this}
-            onclick={this._toggle}
-            onkeydown={this._toggle}
-            aria-label={title}
-            title={title}
-            role="button"
-            tabindex="0"
-            class={CSS.button}
-          >
-            {badgeNumberNode}
-
-            <svg
-              class={CSS.expandCollapseIcon}
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 16 16"
-            >
-              <path d="M3 13.714V12.3l4.5-4.5 4.5 4.5v1.414l-4.5-4.5zm4.5-10.5l4.5 4.5V6.3L7.5 1.8 3 6.3v1.414z" />
-            </svg>
-
-            <span class={CSS.text}>{title}</span>
-          </div>
+        <div class={CSS.panel}>
+          {expandCollapseButton}
           {expandedBadgeNumberNode}
         </div>
         {components}
@@ -628,9 +565,76 @@ class Expand extends declared(Widget) {
     );
   }
 
-  private _attachToNode(this: HTMLElement, node: HTMLElement): void {
-    const content: HTMLElement = this;
-    node.appendChild(content);
+  private _renderExpandCollapseButton() {
+    const { expanded } = this.viewModel;
+    const expandTooltip = this.expandTooltip || i18n.expand;
+    const collapseTooltip = this.collapseTooltip || i18n.collapse;
+    const title = expanded ? collapseTooltip : expandTooltip;
+    const badgeNumberNode = this._renderBadgeNumberNode();
+    const expandCollapseIcon = this._renderExpandCollapseIcon();
+    return (
+      <div
+        bind={this}
+        onclick={this._toggle}
+        onkeydown={this._toggle}
+        aria-label={title}
+        title={title}
+        role="button"
+        tabindex="0"
+        class={CSS.button}
+      >
+        {badgeNumberNode}
+        {expandCollapseIcon}
+        <span class={CSS.text}>{title}</span>
+      </div>
+    );
+  }
+
+  private _renderBadgeNumberNode() {
+    const { iconNumber } = this;
+    const { expanded } = this.viewModel;
+    return iconNumber && !expanded ? (
+      <span key={"expand__icon-number"} class={CSS.iconNumber}>
+        {iconNumber}
+      </span>
+    ) : null;
+  }
+
+  // _renderExpandCollapseIcon
+  private _renderExpandCollapseIcon() {
+    return (
+      <svg
+        class={CSS.expandCollapseIcon}
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 16 16"
+      >
+        <path d="M3 13.714V12.3l4.5-4.5 4.5 4.5v1.414l-4.5-4.5zm4.5-10.5l4.5 4.5V6.3L7.5 1.8 3 6.3v1.414z" />
+      </svg>
+    );
+  }
+
+  private _renderExpandBadgeNumberNode() {
+    const { iconNumber } = this;
+    const { expanded } = this.viewModel;
+    return iconNumber && expanded ? (
+      <span
+        key={"expand__expand-icon-number"}
+        class={this.classes(CSS.iconNumber, CSS.iconNumberExpanded)}
+      >
+        {iconNumber}
+      </span>
+    ) : null;
+  }
+
+  private _renderComponents() {
+    return this.content.map((component: Expand) => {
+      if (isWidget(component)) {
+        return (
+          <div class={CSS.mobileExpandComponent}>{component.render()}</div>
+        );
+      }
+      return null;
+    });
   }
 }
 
