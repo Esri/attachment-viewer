@@ -57,6 +57,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         leftArrowContainer: "esri-photo-centric__left-arrow-container",
         rightArrowContainer: "esri-photo-centric__right-arrow-container",
         leftButtonLayerSwitcher: "esri-photo-centric__left-button-layer-switcher",
+        rightButtonLayerSwitcher: "esri-photo-centric__right-button-layer-switcher",
         // Layer Switcher container
         layerSwitcherContainer: "esri-photo-centric__layer-switcher-container",
         // Content containers
@@ -64,9 +65,12 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         mainPage: "esri-photo-centric__main-page",
         mainPageTop: "esri-photo-centric__main-page-top-container",
         mainPageBottom: "esri-photo-centric__main-page-bottom-container",
-        mainPageBottomExpanded: "esri-photo-centric--bottom-container-expanded",
         mainPageMid: "esri-photo-centric__main-page-mid-container",
         rightPanel: "esri-photo-centric__right-panel",
+        midBottomContainer: "esri-photo-centric__mid-bottom-container",
+        // mobile collapse
+        midBottomContainerCollapsed: "esri-photo-centric__mid-bottom-container--map-collapsed",
+        mainPageBottomContainerCollapsed: "esri-photo-centric__main-page-bottom-container--map-collapsed",
         // attachments
         attachmentNumber: "esri-photo-centric__attachment-number",
         mapAttachmentContent: "esri-photo-centric__map-attachment-content",
@@ -97,7 +101,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         slideSymbol: "esri-photo-centric__slide-symbol",
         hideImage: "esri-photo-centric--hide-image",
         // feature content
-        featureTitleZoomContainer: "esri-photo-centric__feature-title-zoom-container",
+        featureTitleContainer: "esri-photo-centric__feature-title-container",
         zoomContainer: "esri-photo-centric__zoom-to-container",
         featureLayerTitle: "esri-photo-centric__feature-layer-title",
         featureInfoContent: "esri-photo-centric__feature-info-content",
@@ -124,6 +128,12 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         downloadIconTextContainer: "esri-photo-centric__download-icon-text-container",
         downloadIcon: "esri-photo-centric__download-icon",
         downloadEnabled: "esri-photo-centric--download-enabled",
+        // minimize
+        minimizedFeatureContentPanel: "esri-photo-centric__minimized-feature-content-panel",
+        restoreFeatureContentPanelButton: "esri-photo-centric__restore-feature-content-panel-button",
+        minimizeZoomToContainer: "esri-photo-centric__minimize-zoom-to-container",
+        minimizeButton: "esri-photo-centric__minimize-button",
+        featureContentPanelMinimized: "esri-photo-centric__feature-content-panel--minimized",
         // mobile
         mobileAttachment: "esri-photo-centric__mobile-attachment",
         mobileFeatureContent: "esri-photo-centric__mobile-feature-content",
@@ -183,7 +193,6 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             //  Private Variables
             //
             //----------------------------------
-            _this._mapAndSearchIsExpanded = true;
             _this._imageAttachment = null;
             _this._imageCarouselIsOpen = null;
             _this._photoViewerContainer = null;
@@ -196,6 +205,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             _this._imageViewer = null;
             _this._imageZoomLoaded = null;
             _this._zoomSliderNode = null;
+            _this._featureContentPanelMinimized = false;
             //----------------------------------
             //
             //  Properties
@@ -213,6 +223,8 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             _this.attachmentLayers = null;
             // attachmentViewerDataCollection
             _this.attachmentViewerDataCollection = null;
+            // photoCentricMobileMapExpanded
+            _this.photoCentricMobileMapExpanded = null;
             // currentImageUrl
             _this.currentImageUrl = null;
             // defaultObjectId
@@ -347,7 +359,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         PhotoCentric.prototype._handlePanZoomForCurrentAttachment = function (attachment) {
             if (this.imagePanZoomEnabled &&
                 this._imageViewer &&
-                document.body.clientWidth > 813) {
+                document.body.clientWidth > 830) {
                 this._imageViewer && this._imageViewer.destroy();
                 this._imageViewer = null;
                 this._imageViewerSet = false;
@@ -410,13 +422,13 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             return (widget_1.tsx("div", { class: CSS.base },
                 !this._imageCarouselIsOpen ? header : null,
                 this._onboardingPanelIsOpen &&
-                    document.body.clientWidth < 813 &&
+                    document.body.clientWidth < 830 &&
                     this.onboardingIsEnabled ? (widget_1.tsx("div", { key: buildKey("onboarding-node"), class: CSS.onboarding }, onboarding)) : null,
                 homePage));
         };
         PhotoCentric.prototype.destroy = function () {
             this._onboardingPanelIsOpen = null;
-            this._mapAndSearchIsExpanded = null;
+            this.photoCentricMobileMapExpanded = null;
             this._imageCarouselIsOpen = null;
             if (this.imagePanZoomEnabled && this._imageViewer) {
                 this._imageViewer.destroy();
@@ -430,7 +442,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         //----------------------------------
         // _renderHeader
         PhotoCentric.prototype._renderHeader = function () {
-            var title = document.body.clientWidth < 813 && this.title.length > 40
+            var title = document.body.clientWidth < 830 && this.title.length > 40
                 ? this.title
                     .split("")
                     .slice(0, 35)
@@ -440,7 +452,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             var shareWidget = this.shareLocationWidget &&
                 layerFeatures &&
                 layerFeatures.length &&
-                document.body.clientWidth > 813
+                document.body.clientWidth > 830
                 ? this._renderShareLocationWidget()
                 : null;
             return (widget_1.tsx("header", { class: CSS.header },
@@ -462,30 +474,47 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             var clientWidth = document.body.clientWidth;
             return (widget_1.tsx("div", { key: buildKey("main-page"), class: CSS.mainPageContainer, role: "main" },
                 widget_1.tsx("div", { class: CSS.mainPage },
-                    this._onboardingPanelIsOpen && clientWidth > 813 ? (widget_1.tsx("div", { class: CSS.onboardingOverlay }, onboarding)) : null,
+                    this._onboardingPanelIsOpen && clientWidth > 830 ? (widget_1.tsx("div", { class: CSS.onboardingOverlay }, onboarding)) : null,
                     content),
                 mediaViewerDesktop));
         };
         // _renderContent
         PhotoCentric.prototype._renderContent = function () {
-            var _a, _b;
+            var _a, _b, _c;
             var mapView = this._renderMapView();
             var pagination = this._renderPagination();
-            var mapCollapsed = (_a = {},
-                _a[CSS.mapCollapsed] = !this._mapAndSearchIsExpanded,
-                _a);
             var expandCollapse = this._renderExpandCollapse();
-            var attachmentsContainer = this._renderAttachmentsContainer();
-            var featureContentExpanded = (_b = {},
-                _b[CSS.mainPageBottom] = this._mapAndSearchIsExpanded,
-                _b[CSS.mainPageBottomExpanded] = !this._mapAndSearchIsExpanded,
+            var featureContentPanel = this._renderFeatureContentPanel();
+            var midBottomContainerCollapsed = (_a = {},
+                _a[CSS.midBottomContainerCollapsed] = !this.photoCentricMobileMapExpanded && document.body.clientWidth < 830,
+                _a);
+            var mainPageBottomContainerCollapsed = (_b = {},
+                _b[CSS.mainPageBottomContainerCollapsed] = !this.photoCentricMobileMapExpanded && document.body.clientWidth < 830,
                 _b);
+            var minimizedFeatureContentPanel = this._featureContentPanelMinimized && document.body.clientWidth > 813
+                ? this._renderMinimizedFeatureContentPanel()
+                : null;
+            var featureContentPanelMinimized = (_c = {},
+                _c[CSS.featureContentPanelMinimized] = this._featureContentPanelMinimized && document.body.clientWidth > 813,
+                _c);
             return (widget_1.tsx("div", { key: buildKey("map-attachment-content"), class: CSS.mapAttachmentContent },
-                widget_1.tsx("div", { class: this.classes(CSS.mainPageTop, mapCollapsed) },
+                widget_1.tsx("div", { class: this.classes(CSS.mainPageTop) },
                     pagination,
-                    this._mapAndSearchIsExpanded ? (widget_1.tsx("div", { key: buildKey("mapview-search"), class: CSS.mapViewAndSearch }, mapView)) : null),
-                widget_1.tsx("div", { class: CSS.mainPageMid }, expandCollapse),
-                widget_1.tsx("div", { key: buildKey("feature-content-panel"), class: this.classes(featureContentExpanded) }, attachmentsContainer)));
+                    widget_1.tsx("div", { key: buildKey("mapview-search"), class: CSS.mapViewAndSearch }, mapView),
+                    minimizedFeatureContentPanel),
+                widget_1.tsx("div", { class: this.classes(CSS.midBottomContainer, midBottomContainerCollapsed, featureContentPanelMinimized) },
+                    widget_1.tsx("div", { class: CSS.mainPageMid }, expandCollapse),
+                    widget_1.tsx("div", { key: buildKey("feature-content-panel"), class: this.classes(CSS.mainPageBottom, mainPageBottomContainerCollapsed) }, featureContentPanel))));
+        };
+        // _renderMinimizedFeatureContentPanel
+        PhotoCentric.prototype._renderMinimizedFeatureContentPanel = function () {
+            var zoomTo = this._renderZoomTo();
+            return (widget_1.tsx("div", { class: CSS.minimizedFeatureContentPanel },
+                widget_1.tsx("button", { bind: this, onclick: this._restoreFeatureContentPanel, class: CSS.restoreFeatureContentPanelButton, title: i18n.restore },
+                    widget_1.tsx("svg", { xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 16 16", width: "16px", height: "16px" },
+                        widget_1.tsx("path", { d: "M16 4V1H0v14h16zM1 2h14v2H1zm14 12H1V5h14z" }),
+                        widget_1.tsx("path", { fill: "none", d: "M0 0h16v16H0z" }))),
+                zoomTo));
         };
         // _renderMapView
         PhotoCentric.prototype._renderMapView = function () {
@@ -497,7 +526,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             var featureTotal = selectedAttachmentViewerData &&
                 selectedAttachmentViewerData.get("featureObjectIds.length");
             var leftButtonLayerSwitcherContainer = this._renderLeftButtonLayerSwitcherContainer();
-            var rightFeatureScrollButton = this._renderRightFeatureScrollButton();
+            var rightFeatureScrollButton = this._renderRightButtonLayerSwitcherContainer();
             var paginationNumbers = featureTotal
                 ? this._renderPaginationNumbers(featureTotal)
                 : null;
@@ -524,34 +553,39 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                     nextFeatureButton));
             }
         };
+        // _renderLeftButtonLayerSwitcherContainer
+        PhotoCentric.prototype._renderRightButtonLayerSwitcherContainer = function () {
+            var previousFeatureButton = this._renderPreviousFeatureButton();
+            var nextFeatureButton = this._renderNextFeatureButton();
+            var layerSwitcherButton = this.get("layerSwitcher.featureLayerCollection.length") > 1 &&
+                this.docDirection === "rtl"
+                ? this._renderLayerSwitcherButton()
+                : null;
+            if (this.docDirection === "ltr") {
+                return (widget_1.tsx("div", { key: buildKey("right-button-layer-switcher"), class: CSS.rightButtonLayerSwitcher },
+                    nextFeatureButton,
+                    layerSwitcherButton));
+            }
+            else {
+                return (widget_1.tsx("div", { key: buildKey("right-button-layer-switcher"), class: CSS.rightButtonLayerSwitcher },
+                    previousFeatureButton,
+                    layerSwitcherButton));
+            }
+        };
         // _renderPreviousFeatureButton
         PhotoCentric.prototype._renderPreviousFeatureButton = function () {
-            var selectedAttachmentViewerData = this.selectedAttachmentViewerData;
-            return (widget_1.tsx("button", { bind: this, onclick: this._previousFeature, onkeydown: this._previousFeature, tabIndex: 0, class: CSS.leftArrowContainer, title: i18n.previousLocation },
-                widget_1.tsx("span", { class: this.classes(CSS.calcite.leftArrow, CSS.calcite.flush) })));
+            return (widget_1.tsx("button", { bind: this, onclick: this._previousFeature, onkeydown: this._previousFeature, tabIndex: 0, class: CSS.leftArrowContainer, title: i18n.previousLocation }, this.docDirection === "ltr" ? (widget_1.tsx("span", { class: this.classes(CSS.calcite.leftArrow, CSS.calcite.flush) })) : (widget_1.tsx("span", { class: this.classes(CSS.calcite.rightArrow, CSS.calcite.flush) }))));
         };
         // _renderNextFeatureButton
         PhotoCentric.prototype._renderNextFeatureButton = function () {
-            return (widget_1.tsx("button", { bind: this, onclick: this._nextFeature, onkeydown: this._nextFeature, tabIndex: 0, class: CSS.leftArrowContainer, title: i18n.nextLocation },
-                widget_1.tsx("span", { class: this.classes(CSS.calcite.leftArrow, CSS.calcite.flush) })));
-        };
-        // _renderRightFeatureScrollButton
-        PhotoCentric.prototype._renderRightFeatureScrollButton = function () {
-            return (widget_1.tsx("button", { bind: this, onclick: this.docDirection === "rtl"
-                    ? this._previousFeature
-                    : this._nextFeature, onkeydown: this.docDirection === "rtl"
-                    ? this._previousFeature
-                    : this._nextFeature, tabIndex: 0, class: CSS.rightArrowContainer, title: this.docDirection === "rtl"
-                    ? i18n.previousLocation
-                    : i18n.nextLocation },
-                widget_1.tsx("span", { class: this.classes(CSS.calcite.rightArrow, CSS.calcite.flush) })));
+            return (widget_1.tsx("button", { bind: this, onclick: this._nextFeature, onkeydown: this._nextFeature, tabIndex: 0, class: CSS.leftArrowContainer, title: i18n.nextLocation }, this.docDirection === "rtl" ? (widget_1.tsx("span", { class: this.classes(CSS.calcite.leftArrow, CSS.calcite.flush) })) : (widget_1.tsx("span", { class: this.classes(CSS.calcite.rightArrow, CSS.calcite.flush) }))));
         };
         // _renderPaginationNumbers
         PhotoCentric.prototype._renderPaginationNumbers = function (featureTotal) {
             var selectedAttachmentViewerData = this.selectedAttachmentViewerData;
             var currentlayerFeatureIndex = selectedAttachmentViewerData &&
                 selectedAttachmentViewerData.objectIdIndex + 1;
-            return (widget_1.tsx("div", { class: CSS.paginationTextContainer }, "" + (document.body.clientWidth > 813 ? i18n.upperCaseLocations + ": " : "") + currentlayerFeatureIndex + " / " + featureTotal));
+            return (widget_1.tsx("div", { class: CSS.paginationTextContainer }, "" + (document.body.clientWidth > 830 ? i18n.upperCaseLocations + ": " : "") + currentlayerFeatureIndex + " / " + featureTotal));
         };
         // _renderLayerSwitcherButton
         PhotoCentric.prototype._renderLayerSwitcherButton = function () {
@@ -560,7 +594,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         // _renderExpandCollapse
         PhotoCentric.prototype._renderExpandCollapse = function () {
             return (widget_1.tsx("div", { bind: this, onclick: this._toggleExpand, onkeydown: this._toggleExpand, tabIndex: 0, class: CSS.expandCollapseContainer },
-                widget_1.tsx("span", { class: this.classes(this._mapAndSearchIsExpanded
+                widget_1.tsx("span", { class: this.classes(this.photoCentricMobileMapExpanded
                         ? CSS.calcite.upArrow
                         : CSS.calcite.downArrow, CSS.calcite.flush) })));
         };
@@ -606,7 +640,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                 ? this._renderOnboardingImage()
                 : null;
             var zoomSlider = this.imagePanZoomEnabled &&
-                document.body.clientWidth > 813 &&
+                document.body.clientWidth > 830 &&
                 this.currentImageUrl &&
                 contentTypeCheck &&
                 this.imagePanZoomEnabled
@@ -778,10 +812,17 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                 ? this.viewModel.getGPSInformation(attachment)
                 : null;
             return imageDirectionValue ? (widget_1.tsx("div", { key: buildKey("gps-image-direction-" + attachment.name + "-" + attachment.size + "-" + attachment.url + "-" + imageDirectionValue), class: CSS.gpsImageDirection },
-                widget_1.tsx("span", { class: CSS.imageDirectionDegrees },
-                    i18n.gpsImageDirection,
-                    ": ", "" + imageDirectionValue,
-                    "\u00B0"),
+                this.docDirection === "ltr" ? (widget_1.tsx("div", { class: CSS.imageDirectionDegrees },
+                    widget_1.tsx("div", null,
+                        i18n.gpsImageDirection,
+                        ": "),
+                    widget_1.tsx("div", null, "" + imageDirectionValue,
+                        "\u00B0"))) : (widget_1.tsx("div", { class: CSS.imageDirectionDegrees },
+                    widget_1.tsx("div", null,
+                        i18n.gpsImageDirection,
+                        ": "),
+                    widget_1.tsx("div", null, "" + imageDirectionValue,
+                        "\u00B0"))),
                 widget_1.tsx("div", { title: i18n.gpsImageDirection + ": " + imageDirectionValue + "\u00B0", class: CSS.imageDirection },
                     widget_1.tsx("svg", { styles: { transform: "rotateZ(" + imageDirectionValue + "deg)" }, class: CSS.photoCentricCamera },
                         widget_1.tsx("g", null,
@@ -789,21 +830,36 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                             widget_1.tsx("path", { d: "M15.2,8.2V7.4v-2c0-0.9-0.7-1.6-1.6-1.6H7.8c-0.9,0-1.6,0.7-1.6,1.6v2v0.8v2.6h9V8.2z" }),
                             widget_1.tsx("path", { d: "M12,1c6.1,0,11,4.9,11,11s-4.9,11-11,11S1,18.1,1,12S5.9,1,12,1 M12,0C5.4,0,0,5.4,0,12s5.4,12,12,12\n\t\tc6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z" })))))) : null;
         };
-        // _renderAttachmentsContainer
-        PhotoCentric.prototype._renderAttachmentsContainer = function () {
+        // _renderFeatureContentPanel
+        PhotoCentric.prototype._renderFeatureContentPanel = function () {
             var attachments = this.get("selectedAttachmentViewerData.selectedFeatureAttachments.attachments");
             var clientWidth = document.body.clientWidth;
-            var attachmentsMobile = attachments && clientWidth < 813
+            var attachmentsMobile = attachments && clientWidth < 830
                 ? this._renderAttachmentsMobile(attachments)
                 : null;
-            var titleZoomToContainer = this._renderTitleZoomToContainer();
+            var titleContainer = this._renderTitleContainer();
             var selectedFeatureAddress = this.get("selectedAttachmentViewerData.selectedFeatureAddress");
             var featureInformation = this._renderFeatureInformation();
+            var minimizeZoomToContainer = document.body.clientWidth > 813
+                ? this._renderMinimizeZoomToContainer()
+                : null;
             return (widget_1.tsx("div", { bind: this, afterCreate: widget_1.storeNode, "data-node-ref": "_featureContentPanel", class: CSS.featureContent },
-                titleZoomToContainer,
+                minimizeZoomToContainer,
+                titleContainer,
                 selectedFeatureAddress ? (widget_1.tsx("h3", { class: CSS.addressText }, selectedFeatureAddress)) : null,
                 widget_1.tsx("div", { class: CSS.attachmentsImageContainer }, attachmentsMobile),
                 featureInformation));
+        };
+        // _renderMinimizeZoomToContainer
+        PhotoCentric.prototype._renderMinimizeZoomToContainer = function () {
+            var layerFeaturesLength = this.get("selectedAttachmentViewerData.layerFeatures.length");
+            var zoomTo = layerFeaturesLength ? this._renderZoomTo() : null;
+            return (widget_1.tsx("div", { key: buildKey("minimize-zoom-to"), class: CSS.minimizeZoomToContainer },
+                widget_1.tsx("button", { bind: this, onclick: this._minimizeFeatureContentPanel, class: CSS.minimizeButton, title: i18n.minimize },
+                    widget_1.tsx("svg", { xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 16 16", width: "16px", height: "16px" },
+                        widget_1.tsx("path", { d: "M13 8v1H3V8z" }),
+                        widget_1.tsx("path", { fill: "none", d: "M0 0h16v16H0z" }))),
+                widget_1.tsx("div", { class: CSS.zoomContainer }, zoomTo)));
         };
         // _renderFeatureInformation
         PhotoCentric.prototype._renderFeatureInformation = function () {
@@ -881,14 +937,15 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         PhotoCentric.prototype._renderFeatureContentLoader = function () {
             return (widget_1.tsx("div", { key: buildKey("feature-content-loader"), class: CSS.widgetLoader }, i18n.loadingImages));
         };
-        // _renderTitleZoomToContainer
-        PhotoCentric.prototype._renderTitleZoomToContainer = function () {
-            var layerFeaturesLength = this.get("selectedAttachmentViewerData.layerFeatures.length");
-            var zoomTo = layerFeaturesLength ? this._renderZoomTo() : null;
-            return (widget_1.tsx("div", { class: CSS.featureTitleZoomContainer },
+        // _renderTitleContainer
+        PhotoCentric.prototype._renderTitleContainer = function () {
+            var featureWidgetTitle = this.get("featureWidget.title");
+            var title = featureWidgetTitle && featureWidgetTitle !== "null"
+                ? featureWidgetTitle
+                : "";
+            return (widget_1.tsx("div", { class: CSS.featureTitleContainer },
                 widget_1.tsx("div", { class: CSS.featureContentTitle },
-                    widget_1.tsx("h2", { class: CSS.featureLayerTitle }, this.get("featureWidget.title"))),
-                widget_1.tsx("div", { class: CSS.zoomContainer }, zoomTo)));
+                    widget_1.tsx("h2", { class: CSS.featureLayerTitle }, title))));
         };
         // _renderFeatureContentInfos
         PhotoCentric.prototype._renderFeatureContentInfos = function () {
@@ -1064,7 +1121,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         };
         // _toggleExpand
         PhotoCentric.prototype._toggleExpand = function () {
-            this._mapAndSearchIsExpanded = !this._mapAndSearchIsExpanded;
+            this.photoCentricMobileMapExpanded = !this.photoCentricMobileMapExpanded;
             this.scheduleRender();
         };
         // _toggleExpand
@@ -1302,6 +1359,16 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                 contentType !== "video/quicktime" &&
                 contentType !== "application/pdf");
         };
+        // _restoreFeatureContentPanel
+        PhotoCentric.prototype._restoreFeatureContentPanel = function () {
+            this._featureContentPanelMinimized = false;
+            this.scheduleRender();
+        };
+        // _minimizeFeatureContentPanel
+        PhotoCentric.prototype._minimizeFeatureContentPanel = function () {
+            this._featureContentPanelMinimized = true;
+            this.scheduleRender();
+        };
         __decorate([
             decorators_1.aliasOf("viewModel.addressEnabled"),
             decorators_1.property()
@@ -1326,6 +1393,9 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             decorators_1.aliasOf("viewModel.attachmentViewerDataCollection"),
             decorators_1.property()
         ], PhotoCentric.prototype, "attachmentViewerDataCollection", void 0);
+        __decorate([
+            decorators_1.property()
+        ], PhotoCentric.prototype, "photoCentricMobileMapExpanded", void 0);
         __decorate([
             decorators_1.aliasOf("viewModel.currentImageUrl"),
             decorators_1.property(),

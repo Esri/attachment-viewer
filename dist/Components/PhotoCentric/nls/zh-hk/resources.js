@@ -29,5 +29,7 @@ define({
   "nextImage": "下一個附件",
   "gpsImageDirection": "GPS 圖片方向",
   "zoomInImage": "放大圖片",
-  "zoomOutImage": "縮小圖片"
+  "zoomOutImage": "縮小圖片",
+  "minimize": "最小化",
+  "restore": "復原"
 });

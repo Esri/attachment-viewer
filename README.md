@@ -33,9 +33,9 @@ Attachment Viewer is a configurable app template that allows you to view photos,
 5. Supported attachment types:
 
    a. images(jpeg, jpg, png, gif)
-   
+
    b. videos (mp4, mov)
-   
+
    c. pdf
 
    Please note: Other attachment types such as `doc` will display in the feature content panel as hyperlinks.
@@ -61,7 +61,7 @@ Configuration options:
 4. Onboarding
 
    a. Content - Provide custom onboarding information to help end-users get a better understanding of what the app is about.
-   
+
    b. Image - Provide an image URL to display an image when the onboarding panel is open.
 
 5. Modify the header background and header text colors.
@@ -73,15 +73,15 @@ Configuration options:
 1. Select from a set of map tools:
 
    a. Home
-   
+
    b. Zoom Controls
-   
+
    c. Legend
-   
+
    d. Layer List
-   
+
    e. Full Screen
-   
+
    f. Search - configure search to work with a feature layer and field in the web map, as search results will pull up feature information and attachments
 
 2. Set the scale for the Zoom to button. Default value: 32000

@@ -29,5 +29,7 @@ define({
   "nextImage": "Pièce jointe suivante",
   "gpsImageDirection": "Direction GPS de l'image",
   "zoomInImage": "Zoom avant sur l’image",
-  "zoomOutImage": "Zoom arrière sur l’image"
+  "zoomOutImage": "Zoom arrière sur l’image",
+  "minimize": "Réduire",
+  "restore": "Restaurer"
 });

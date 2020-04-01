@@ -29,5 +29,7 @@ define({
   "nextImage": "Tệp đính kèm tiếp",
   "gpsImageDirection": "Hướng Hình ảnh Hướng GPS",
   "zoomInImage": "Phóng to hình ảnh",
-  "zoomOutImage": "Thu nhỏ hình ảnh"
+  "zoomOutImage": "Thu nhỏ hình ảnh",
+  "minimize": "Thu nhỏ",
+  "restore": "Khôi phục"
 });

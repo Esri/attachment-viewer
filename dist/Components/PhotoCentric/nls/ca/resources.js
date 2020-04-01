@@ -29,5 +29,7 @@ define({
   "nextImage": "Fitxer adjunt següent",
   "gpsImageDirection": "Direcció de la imatge del GPS",
   "zoomInImage": "Amplia la imatge",
-  "zoomOutImage": "Redueix la imatge"
+  "zoomOutImage": "Redueix la imatge",
+  "minimize": "Minimitza",
+  "restore": "Restaura"
 });

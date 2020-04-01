@@ -142,17 +142,18 @@ class PhotoCentricViewModel extends declared(AttachmentViewerViewModel) {
   // _initSelectedAttachmentViewerDataWatcher
   private _initSelectedAttachmentViewerDataWatcher(): void {
     this._photoCentricHandles.add([
-      watchUtils.watch(this, "selectedAttachmentViewerData", () => {
+      watchUtils.watch(this, "selectedAttachmentViewerData", async () => {
+        const { socialSharingEnabled, defaultObjectId, selectedLayerId } = this;
         if (
-          this.socialSharingEnabled &&
-          this.defaultObjectId !== null &&
-          this.selectedLayerId
+          socialSharingEnabled &&
+          defaultObjectId !== null &&
+          selectedLayerId
         ) {
           this._handleSharedFeature();
         } else {
           this._setFeaturePhotoCentric();
         }
-        if (this.socialSharingEnabled) {
+        if (socialSharingEnabled) {
           this.updateSharePropIndexes();
         }
         this._removeFeatureHighlight();
@@ -1053,7 +1054,12 @@ class PhotoCentricViewModel extends declared(AttachmentViewerViewModel) {
     layerAttachments: __esri.AttachmentInfo[]
   ): void {
     let currentIndex = null;
-    if (this.socialSharingEnabled && this.attachmentIndex !== null) {
+    const attachmentExists = this._checkExistingAttachment();
+    if (
+      this.socialSharingEnabled &&
+      this.attachmentIndex !== null &&
+      attachmentExists
+    ) {
       this.set(
         "selectedAttachmentViewerData.attachmentIndex",
         this.attachmentIndex
@@ -1082,6 +1088,22 @@ class PhotoCentricViewModel extends declared(AttachmentViewerViewModel) {
       "selectedAttachmentViewerData.selectedFeatureAttachments",
       selectedFeatureAttachments
     );
+  }
+
+  // _checkExistingAttachment
+  private _checkExistingAttachment(): boolean {
+    const {
+      attachments,
+      layerData,
+      selectedFeature
+    } = this.selectedAttachmentViewerData;
+    const { attributes } = selectedFeature;
+    const { objectIdField } = layerData.featureLayer;
+    const objectId = attributes[objectIdField];
+    const featureAttachments = attachments[objectId];
+    const currentAttachment =
+      featureAttachments && featureAttachments[this.attachmentIndex];
+    return !!currentAttachment;
   }
 
   // _extractLayerAttachments

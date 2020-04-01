@@ -29,5 +29,7 @@ define({
   "nextImage": "Lampiran selanjutnya",
   "gpsImageDirection": "Arah Gambar GPS",
   "zoomInImage": "Perbesar gambar",
-  "zoomOutImage": "Perkecil gambar"
+  "zoomOutImage": "Perkecil gambar",
+  "minimize": "Perkecil",
+  "restore": "Pulihkan"
 });

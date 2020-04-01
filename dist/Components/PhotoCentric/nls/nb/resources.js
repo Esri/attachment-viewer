@@ -29,5 +29,7 @@ define({
   "nextImage": "Neste vedlegg",
   "gpsImageDirection": "GPS-bilderetning",
   "zoomInImage": "Zoom inn bilde",
-  "zoomOutImage": "Zoom ut bilde"
+  "zoomOutImage": "Zoom ut bilde",
+  "minimize": "Minimer",
+  "restore": "Gjenopprett"
 });

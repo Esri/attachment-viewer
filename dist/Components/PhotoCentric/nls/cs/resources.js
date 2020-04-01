@@ -29,5 +29,7 @@ define({
   "nextImage": "Další příloha",
   "gpsImageDirection": "Směr pořízení snímku",
   "zoomInImage": "Přiblížit snímek",
-  "zoomOutImage": "Oddálit snímek"
+  "zoomOutImage": "Oddálit snímek",
+  "minimize": "Minimalizovat",
+  "restore": "Obnovit"
 });

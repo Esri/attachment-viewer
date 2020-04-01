@@ -69,7 +69,6 @@ import LayerSwitcher = require("./LayerSwitcher");
 
 // ImageViewer
 import ImageViewer = require("ImageViewer");
-import { AttachmentsContent } from "esri/popup/content";
 
 //----------------------------------
 //
@@ -109,6 +108,7 @@ const CSS = {
   leftArrowContainer: "esri-photo-centric__left-arrow-container",
   rightArrowContainer: "esri-photo-centric__right-arrow-container",
   leftButtonLayerSwitcher: "esri-photo-centric__left-button-layer-switcher",
+  rightButtonLayerSwitcher: "esri-photo-centric__right-button-layer-switcher",
   // Layer Switcher container
   layerSwitcherContainer: "esri-photo-centric__layer-switcher-container",
   // Content containers
@@ -116,9 +116,15 @@ const CSS = {
   mainPage: "esri-photo-centric__main-page",
   mainPageTop: "esri-photo-centric__main-page-top-container",
   mainPageBottom: "esri-photo-centric__main-page-bottom-container",
-  mainPageBottomExpanded: "esri-photo-centric--bottom-container-expanded",
   mainPageMid: "esri-photo-centric__main-page-mid-container",
   rightPanel: "esri-photo-centric__right-panel",
+  midBottomContainer: "esri-photo-centric__mid-bottom-container",
+  // mobile collapse
+
+  midBottomContainerCollapsed:
+    "esri-photo-centric__mid-bottom-container--map-collapsed",
+  mainPageBottomContainerCollapsed:
+    "esri-photo-centric__main-page-bottom-container--map-collapsed",
   // attachments
   attachmentNumber: "esri-photo-centric__attachment-number",
   mapAttachmentContent: "esri-photo-centric__map-attachment-content",
@@ -149,7 +155,7 @@ const CSS = {
   slideSymbol: "esri-photo-centric__slide-symbol",
   hideImage: "esri-photo-centric--hide-image",
   // feature content
-  featureTitleZoomContainer: "esri-photo-centric__feature-title-zoom-container",
+  featureTitleContainer: "esri-photo-centric__feature-title-container",
   zoomContainer: "esri-photo-centric__zoom-to-container",
   featureLayerTitle: "esri-photo-centric__feature-layer-title",
   featureInfoContent: "esri-photo-centric__feature-info-content",
@@ -176,6 +182,15 @@ const CSS = {
   downloadIconTextContainer: "esri-photo-centric__download-icon-text-container",
   downloadIcon: "esri-photo-centric__download-icon",
   downloadEnabled: "esri-photo-centric--download-enabled",
+  // minimize
+  minimizedFeatureContentPanel:
+    "esri-photo-centric__minimized-feature-content-panel",
+  restoreFeatureContentPanelButton:
+    "esri-photo-centric__restore-feature-content-panel-button",
+  minimizeZoomToContainer: "esri-photo-centric__minimize-zoom-to-container",
+  minimizeButton: "esri-photo-centric__minimize-button",
+  featureContentPanelMinimized:
+    "esri-photo-centric__feature-content-panel--minimized",
   // mobile
   mobileAttachment: "esri-photo-centric__mobile-attachment",
   mobileFeatureContent: "esri-photo-centric__mobile-feature-content",
@@ -243,7 +258,6 @@ class PhotoCentric extends declared(Widget) {
   //  Private Variables
   //
   //----------------------------------
-  private _mapAndSearchIsExpanded = true;
   private _imageAttachment: HTMLImageElement = null;
   private _imageCarouselIsOpen: boolean = null;
   private _photoViewerContainer: HTMLElement = null;
@@ -256,6 +270,7 @@ class PhotoCentric extends declared(Widget) {
   private _imageViewer: any = null;
   private _imageZoomLoaded: boolean = null;
   private _zoomSliderNode: HTMLInputElement = null;
+  private _featureContentPanelMinimized = false;
 
   //----------------------------------
   //
@@ -294,6 +309,10 @@ class PhotoCentric extends declared(Widget) {
   attachmentViewerDataCollection: __esri.Collection<
     AttachmentViewerData
   > = null;
+
+  // photoCentricMobileMapExpanded
+  @property()
+  photoCentricMobileMapExpanded: boolean = null;
 
   // currentImageUrl
   @aliasOf("viewModel.currentImageUrl")
@@ -535,7 +554,7 @@ class PhotoCentric extends declared(Widget) {
     if (
       this.imagePanZoomEnabled &&
       this._imageViewer &&
-      document.body.clientWidth > 813
+      document.body.clientWidth > 830
     ) {
       this._imageViewer && this._imageViewer.destroy();
       this._imageViewer = null;
@@ -610,7 +629,7 @@ class PhotoCentric extends declared(Widget) {
       <div class={CSS.base}>
         {!this._imageCarouselIsOpen ? header : null}
         {this._onboardingPanelIsOpen &&
-        document.body.clientWidth < 813 &&
+        document.body.clientWidth < 830 &&
         this.onboardingIsEnabled ? (
           <div key={buildKey("onboarding-node")} class={CSS.onboarding}>
             {onboarding}
@@ -623,7 +642,7 @@ class PhotoCentric extends declared(Widget) {
 
   destroy() {
     this._onboardingPanelIsOpen = null;
-    this._mapAndSearchIsExpanded = null;
+    this.photoCentricMobileMapExpanded = null;
     this._imageCarouselIsOpen = null;
     if (this.imagePanZoomEnabled && this._imageViewer) {
       this._imageViewer.destroy();
@@ -640,7 +659,7 @@ class PhotoCentric extends declared(Widget) {
   // _renderHeader
   private _renderHeader(): VNode {
     const title =
-      document.body.clientWidth < 813 && this.title.length > 40
+      document.body.clientWidth < 830 && this.title.length > 40
         ? `${this.title
             .split("")
             .slice(0, 35)
@@ -653,7 +672,7 @@ class PhotoCentric extends declared(Widget) {
       this.shareLocationWidget &&
       layerFeatures &&
       layerFeatures.length &&
-      document.body.clientWidth > 813
+      document.body.clientWidth > 830
         ? this._renderShareLocationWidget()
         : null;
     return (
@@ -706,7 +725,7 @@ class PhotoCentric extends declared(Widget) {
         role="main"
       >
         <div class={CSS.mainPage}>
-          {this._onboardingPanelIsOpen && clientWidth > 813 ? (
+          {this._onboardingPanelIsOpen && clientWidth > 830 ? (
             <div class={CSS.onboardingOverlay}>{onboarding}</div>
           ) : null}
           {content}
@@ -720,38 +739,85 @@ class PhotoCentric extends declared(Widget) {
   private _renderContent(): VNode {
     const mapView = this._renderMapView();
     const pagination = this._renderPagination();
-    const mapCollapsed = {
-      [CSS.mapCollapsed]: !this._mapAndSearchIsExpanded
-    };
     const expandCollapse = this._renderExpandCollapse();
-    const attachmentsContainer = this._renderAttachmentsContainer();
+    const featureContentPanel = this._renderFeatureContentPanel();
 
-    const featureContentExpanded = {
-      [CSS.mainPageBottom]: this._mapAndSearchIsExpanded,
-      [CSS.mainPageBottomExpanded]: !this._mapAndSearchIsExpanded
+    const midBottomContainerCollapsed = {
+      [CSS.midBottomContainerCollapsed]:
+        !this.photoCentricMobileMapExpanded && document.body.clientWidth < 830
     };
 
+    const mainPageBottomContainerCollapsed = {
+      [CSS.mainPageBottomContainerCollapsed]:
+        !this.photoCentricMobileMapExpanded && document.body.clientWidth < 830
+    };
+    const minimizedFeatureContentPanel =
+      this._featureContentPanelMinimized && document.body.clientWidth > 813
+        ? this._renderMinimizedFeatureContentPanel()
+        : null;
+
+    const featureContentPanelMinimized = {
+      [CSS.featureContentPanelMinimized]:
+        this._featureContentPanelMinimized && document.body.clientWidth > 813
+    };
     return (
       <div
         key={buildKey("map-attachment-content")}
         class={CSS.mapAttachmentContent}
       >
-        <div class={this.classes(CSS.mainPageTop, mapCollapsed)}>
+        <div class={this.classes(CSS.mainPageTop)}>
           {pagination}
-          {this._mapAndSearchIsExpanded ? (
-            <div key={buildKey("mapview-search")} class={CSS.mapViewAndSearch}>
-              {mapView}
-            </div>
-          ) : null}
+          <div key={buildKey("mapview-search")} class={CSS.mapViewAndSearch}>
+            {mapView}
+          </div>
+
+          {minimizedFeatureContentPanel}
         </div>
 
-        <div class={CSS.mainPageMid}>{expandCollapse}</div>
         <div
-          key={buildKey("feature-content-panel")}
-          class={this.classes(featureContentExpanded)}
+          class={this.classes(
+            CSS.midBottomContainer,
+            midBottomContainerCollapsed,
+            featureContentPanelMinimized
+          )}
         >
-          {attachmentsContainer}
+          <div class={CSS.mainPageMid}>{expandCollapse}</div>
+          <div
+            key={buildKey("feature-content-panel")}
+            class={this.classes(
+              CSS.mainPageBottom,
+              mainPageBottomContainerCollapsed
+            )}
+          >
+            {featureContentPanel}
+          </div>
         </div>
+      </div>
+    );
+  }
+
+  // _renderMinimizedFeatureContentPanel
+  private _renderMinimizedFeatureContentPanel(): VNode {
+    const zoomTo = this._renderZoomTo();
+    return (
+      <div class={CSS.minimizedFeatureContentPanel}>
+        <button
+          bind={this}
+          onclick={this._restoreFeatureContentPanel}
+          class={CSS.restoreFeatureContentPanelButton}
+          title={i18n.restore}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 16 16"
+            width="16px"
+            height="16px"
+          >
+            <path d="M16 4V1H0v14h16zM1 2h14v2H1zm14 12H1V5h14z" />
+            <path fill="none" d="M0 0h16v16H0z" />
+          </svg>
+        </button>
+        {zoomTo}
       </div>
     );
   }
@@ -777,7 +843,7 @@ class PhotoCentric extends declared(Widget) {
 
     const leftButtonLayerSwitcherContainer = this._renderLeftButtonLayerSwitcherContainer();
 
-    const rightFeatureScrollButton = this._renderRightFeatureScrollButton();
+    const rightFeatureScrollButton = this._renderRightButtonLayerSwitcherContainer();
 
     const paginationNumbers = featureTotal
       ? this._renderPaginationNumbers(featureTotal)
@@ -824,9 +890,41 @@ class PhotoCentric extends declared(Widget) {
     }
   }
 
+  // _renderLeftButtonLayerSwitcherContainer
+  private _renderRightButtonLayerSwitcherContainer(): VNode {
+    const previousFeatureButton = this._renderPreviousFeatureButton();
+    const nextFeatureButton = this._renderNextFeatureButton();
+    const layerSwitcherButton =
+      this.get("layerSwitcher.featureLayerCollection.length") > 1 &&
+      this.docDirection === "rtl"
+        ? this._renderLayerSwitcherButton()
+        : null;
+
+    if (this.docDirection === "ltr") {
+      return (
+        <div
+          key={buildKey("right-button-layer-switcher")}
+          class={CSS.rightButtonLayerSwitcher}
+        >
+          {nextFeatureButton}
+          {layerSwitcherButton}
+        </div>
+      );
+    } else {
+      return (
+        <div
+          key={buildKey("right-button-layer-switcher")}
+          class={CSS.rightButtonLayerSwitcher}
+        >
+          {previousFeatureButton}
+          {layerSwitcherButton}
+        </div>
+      );
+    }
+  }
+
   // _renderPreviousFeatureButton
   private _renderPreviousFeatureButton(): VNode {
-    const { selectedAttachmentViewerData } = this;
     return (
       <button
         bind={this}
@@ -836,7 +934,15 @@ class PhotoCentric extends declared(Widget) {
         class={CSS.leftArrowContainer}
         title={i18n.previousLocation}
       >
-        <span class={this.classes(CSS.calcite.leftArrow, CSS.calcite.flush)} />
+        {this.docDirection === "ltr" ? (
+          <span
+            class={this.classes(CSS.calcite.leftArrow, CSS.calcite.flush)}
+          />
+        ) : (
+          <span
+            class={this.classes(CSS.calcite.rightArrow, CSS.calcite.flush)}
+          />
+        )}
       </button>
     );
   }
@@ -852,35 +958,15 @@ class PhotoCentric extends declared(Widget) {
         class={CSS.leftArrowContainer}
         title={i18n.nextLocation}
       >
-        <span class={this.classes(CSS.calcite.leftArrow, CSS.calcite.flush)} />
-      </button>
-    );
-  }
-
-  // _renderRightFeatureScrollButton
-  private _renderRightFeatureScrollButton(): VNode {
-    return (
-      <button
-        bind={this}
-        onclick={
-          this.docDirection === "rtl"
-            ? this._previousFeature
-            : this._nextFeature
-        }
-        onkeydown={
-          this.docDirection === "rtl"
-            ? this._previousFeature
-            : this._nextFeature
-        }
-        tabIndex={0}
-        class={CSS.rightArrowContainer}
-        title={
-          this.docDirection === "rtl"
-            ? i18n.previousLocation
-            : i18n.nextLocation
-        }
-      >
-        <span class={this.classes(CSS.calcite.rightArrow, CSS.calcite.flush)} />
+        {this.docDirection === "rtl" ? (
+          <span
+            class={this.classes(CSS.calcite.leftArrow, CSS.calcite.flush)}
+          />
+        ) : (
+          <span
+            class={this.classes(CSS.calcite.rightArrow, CSS.calcite.flush)}
+          />
+        )}
       </button>
     );
   }
@@ -893,7 +979,7 @@ class PhotoCentric extends declared(Widget) {
       selectedAttachmentViewerData.objectIdIndex + 1;
     return (
       <div class={CSS.paginationTextContainer}>{`${
-        document.body.clientWidth > 813 ? `${i18n.upperCaseLocations}: ` : ""
+        document.body.clientWidth > 830 ? `${i18n.upperCaseLocations}: ` : ""
       }${currentlayerFeatureIndex} / ${featureTotal}`}</div>
     );
   }
@@ -921,7 +1007,7 @@ class PhotoCentric extends declared(Widget) {
       >
         <span
           class={this.classes(
-            this._mapAndSearchIsExpanded
+            this.photoCentricMobileMapExpanded
               ? CSS.calcite.upArrow
               : CSS.calcite.downArrow,
             CSS.calcite.flush
@@ -1013,7 +1099,7 @@ class PhotoCentric extends declared(Widget) {
 
     const zoomSlider =
       this.imagePanZoomEnabled &&
-      document.body.clientWidth > 813 &&
+      document.body.clientWidth > 830 &&
       this.currentImageUrl &&
       contentTypeCheck &&
       this.imagePanZoomEnabled
@@ -1429,9 +1515,17 @@ class PhotoCentric extends declared(Widget) {
         )}
         class={CSS.gpsImageDirection}
       >
-        <span class={CSS.imageDirectionDegrees}>
-          {i18n.gpsImageDirection}: {`${imageDirectionValue}`}&deg;
-        </span>
+        {this.docDirection === "ltr" ? (
+          <div class={CSS.imageDirectionDegrees}>
+            <div>{i18n.gpsImageDirection}: </div>
+            <div>{`${imageDirectionValue}`}&deg;</div>
+          </div>
+        ) : (
+          <div class={CSS.imageDirectionDegrees}>
+            <div>{i18n.gpsImageDirection}: </div>
+            <div>{`${imageDirectionValue}`}&deg;</div>
+          </div>
+        )}
 
         <div
           title={`${i18n.gpsImageDirection}: ${imageDirectionValue}\u00B0`}
@@ -1458,24 +1552,27 @@ class PhotoCentric extends declared(Widget) {
     ) : null;
   }
 
-  // _renderAttachmentsContainer
-  private _renderAttachmentsContainer(): VNode {
+  // _renderFeatureContentPanel
+  private _renderFeatureContentPanel(): VNode {
     const attachments = this.get(
       "selectedAttachmentViewerData.selectedFeatureAttachments.attachments"
     ) as __esri.Collection<__esri.AttachmentInfo>;
     const { clientWidth } = document.body;
     const attachmentsMobile =
-      attachments && clientWidth < 813
+      attachments && clientWidth < 830
         ? this._renderAttachmentsMobile(attachments)
         : null;
 
-    const titleZoomToContainer = this._renderTitleZoomToContainer();
+    const titleContainer = this._renderTitleContainer();
     const selectedFeatureAddress = this.get(
       "selectedAttachmentViewerData.selectedFeatureAddress"
     );
 
     const featureInformation = this._renderFeatureInformation();
-
+    const minimizeZoomToContainer =
+      document.body.clientWidth > 813
+        ? this._renderMinimizeZoomToContainer()
+        : null;
     return (
       <div
         bind={this}
@@ -1483,13 +1580,45 @@ class PhotoCentric extends declared(Widget) {
         data-node-ref="_featureContentPanel"
         class={CSS.featureContent}
       >
-        {titleZoomToContainer}
-
+        {minimizeZoomToContainer}
+        {titleContainer}
         {selectedFeatureAddress ? (
           <h3 class={CSS.addressText}>{selectedFeatureAddress}</h3>
         ) : null}
         <div class={CSS.attachmentsImageContainer}>{attachmentsMobile}</div>
         {featureInformation}
+      </div>
+    );
+  }
+
+  // _renderMinimizeZoomToContainer
+  private _renderMinimizeZoomToContainer(): VNode {
+    const layerFeaturesLength = this.get(
+      "selectedAttachmentViewerData.layerFeatures.length"
+    );
+    const zoomTo = layerFeaturesLength ? this._renderZoomTo() : null;
+    return (
+      <div
+        key={buildKey("minimize-zoom-to")}
+        class={CSS.minimizeZoomToContainer}
+      >
+        <button
+          bind={this}
+          onclick={this._minimizeFeatureContentPanel}
+          class={CSS.minimizeButton}
+          title={i18n.minimize}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 16 16"
+            width="16px"
+            height="16px"
+          >
+            <path d="M13 8v1H3V8z" />
+            <path fill="none" d="M0 0h16v16H0z" />
+          </svg>
+        </button>
+        <div class={CSS.zoomContainer}>{zoomTo}</div>
       </div>
     );
   }
@@ -1670,20 +1799,18 @@ class PhotoCentric extends declared(Widget) {
     );
   }
 
-  // _renderTitleZoomToContainer
-  private _renderTitleZoomToContainer(): VNode {
-    const layerFeaturesLength = this.get(
-      "selectedAttachmentViewerData.layerFeatures.length"
-    );
-    const zoomTo = layerFeaturesLength ? this._renderZoomTo() : null;
+  // _renderTitleContainer
+  private _renderTitleContainer(): VNode {
+    const featureWidgetTitle = this.get("featureWidget.title");
+    const title =
+      featureWidgetTitle && featureWidgetTitle !== "null"
+        ? featureWidgetTitle
+        : "";
     return (
-      <div class={CSS.featureTitleZoomContainer}>
+      <div class={CSS.featureTitleContainer}>
         <div class={CSS.featureContentTitle}>
-          <h2 class={CSS.featureLayerTitle}>
-            {this.get("featureWidget.title")}
-          </h2>
+          <h2 class={CSS.featureLayerTitle}>{title}</h2>
         </div>
-        <div class={CSS.zoomContainer}>{zoomTo}</div>
       </div>
     );
   }
@@ -2023,7 +2150,7 @@ c6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z"
   // _toggleExpand
   @accessibleHandler()
   private _toggleExpand(): void {
-    this._mapAndSearchIsExpanded = !this._mapAndSearchIsExpanded;
+    this.photoCentricMobileMapExpanded = !this.photoCentricMobileMapExpanded;
     this.scheduleRender();
   }
 
@@ -2328,6 +2455,18 @@ c6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z"
       contentType !== "video/quicktime" &&
       contentType !== "application/pdf"
     );
+  }
+
+  // _restoreFeatureContentPanel
+  private _restoreFeatureContentPanel(): void {
+    this._featureContentPanelMinimized = false;
+    this.scheduleRender();
+  }
+
+  // _minimizeFeatureContentPanel
+  private _minimizeFeatureContentPanel(): void {
+    this._featureContentPanelMinimized = true;
+    this.scheduleRender();
   }
 }
 

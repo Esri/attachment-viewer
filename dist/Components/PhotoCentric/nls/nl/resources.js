@@ -29,5 +29,7 @@ define({
   "nextImage": "Volgende bijlage",
   "gpsImageDirection": "GPS-beeldrichting",
   "zoomInImage": "Inzoomen afbeelding",
-  "zoomOutImage": "Uitzoomen afbeelding"
+  "zoomOutImage": "Uitzoomen afbeelding",
+  "minimize": "Minimaliseren",
+  "restore": "Herstellen"
 });

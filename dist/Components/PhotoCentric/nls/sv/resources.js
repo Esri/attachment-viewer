@@ -29,5 +29,7 @@ define({
   "nextImage": "Nästa bilaga",
   "gpsImageDirection": "GPS-bildriktning",
   "zoomInImage": "Zooma in bild",
-  "zoomOutImage": "Zooma ut bild"
+  "zoomOutImage": "Zooma ut bild",
+  "minimize": "Minimera",
+  "restore": "Återställ"
 });

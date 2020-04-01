@@ -29,5 +29,7 @@ define({
   "nextImage": "Επόμενο συνημμένο",
   "gpsImageDirection": "Κατεύθυνση εικόνας GPS",
   "zoomInImage": "Μεγέθυνση εικόνας",
-  "zoomOutImage": "Σμίκρυνση εικόνας"
+  "zoomOutImage": "Σμίκρυνση εικόνας",
+  "minimize": "Ελαχιστοποίηση",
+  "restore": "Επαναφορά"
 });

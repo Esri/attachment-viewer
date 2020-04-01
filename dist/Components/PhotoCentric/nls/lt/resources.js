@@ -29,5 +29,7 @@ define({
   "nextImage": "Kitas priedas",
   "gpsImageDirection": "GPS vaizdo kryptis",
   "zoomInImage": "Didinti vaizdą",
-  "zoomOutImage": "Mažinti vaizdą"
+  "zoomOutImage": "Mažinti vaizdą",
+  "minimize": "Sumažinti",
+  "restore": "Grąžinti"
 });

@@ -1578,34 +1578,85 @@ c0.6,0,1.1,0.5,1.1,1.1v14.8C23.8,16.8,23.3,17.3,22.6,17.3z"
       ? this.viewModel.getGPSInformation(attachment)
       : null;
     return imageDirectionValue ? (
-      <div key={buildKey("gps-image-direction")} class={CSS.gpsImageDirection}>
-        {this._fullAttachmentContainerIsOpen ? (
-          <span class={CSS.imageDirectionDegrees}>
-            {i18n.gpsImageDirection}: {`${imageDirectionValue}`}&deg;
-          </span>
-        ) : null}
+      this.docDirection === "ltr" ? (
         <div
-          title={`${i18n.gpsImageDirection}: ${imageDirectionValue}\u00B0`}
-          class={CSS.imageDirection}
+          key={buildKey("gps-image-direction")}
+          class={CSS.gpsImageDirection}
         >
-          <svg
-            styles={{ transform: `rotateZ(${imageDirectionValue}deg)` }}
-            class={CSS.mapCentricCamera}
+          {this._fullAttachmentContainerIsOpen ? (
+            <span class={CSS.imageDirectionDegrees}>
+              {i18n.gpsImageDirection}: {`${imageDirectionValue}`}&deg;
+            </span>
+          ) : null}
+          <div
+            title={`${i18n.gpsImageDirection}: ${imageDirectionValue}\u00B0`}
+            class={CSS.imageDirection}
           >
-            <g>
-              <path
-                d="M19.1,10.8h-0.3h-0.3h-1.3v2h-1v-0.7v-0.3h-11l0,0h-1v1.1v5.8v0h16v-1.9v-3.9v-1.1
-		C20.2,11.3,19.7,10.8,19.1,10.8z"
-              />
-              <path d="M15.2,8.2V7.4v-2c0-0.9-0.7-1.6-1.6-1.6H7.8c-0.9,0-1.6,0.7-1.6,1.6v2v0.8v2.6h9V8.2z" />
-              <path
-                d="M12,1c6.1,0,11,4.9,11,11s-4.9,11-11,11S1,18.1,1,12S5.9,1,12,1 M12,0C5.4,0,0,5.4,0,12s5.4,12,12,12
-		c6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z"
-              />
-            </g>
-          </svg>
+            <svg
+              styles={{ transform: `rotateZ(${imageDirectionValue}deg)` }}
+              class={CSS.mapCentricCamera}
+            >
+              <g>
+                <path
+                  d="M19.1,10.8h-0.3h-0.3h-1.3v2h-1v-0.7v-0.3h-11l0,0h-1v1.1v5.8v0h16v-1.9v-3.9v-1.1
+C20.2,11.3,19.7,10.8,19.1,10.8z"
+                />
+                <path d="M15.2,8.2V7.4v-2c0-0.9-0.7-1.6-1.6-1.6H7.8c-0.9,0-1.6,0.7-1.6,1.6v2v0.8v2.6h9V8.2z" />
+                <path
+                  d="M12,1c6.1,0,11,4.9,11,11s-4.9,11-11,11S1,18.1,1,12S5.9,1,12,1 M12,0C5.4,0,0,5.4,0,12s5.4,12,12,12
+c6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z"
+                />
+              </g>
+            </svg>
+          </div>
         </div>
-      </div>
+      ) : (
+        <div
+          key={buildKey("gps-image-direction")}
+          class={CSS.gpsImageDirection}
+        >
+          <div
+            title={`${i18n.gpsImageDirection}: ${imageDirectionValue}\u00B0`}
+            class={CSS.imageDirection}
+          >
+            <svg
+              styles={{ transform: `rotateZ(${imageDirectionValue}deg)` }}
+              class={CSS.mapCentricCamera}
+            >
+              <g>
+                <path
+                  d="M19.1,10.8h-0.3h-0.3h-1.3v2h-1v-0.7v-0.3h-11l0,0h-1v1.1v5.8v0h16v-1.9v-3.9v-1.1
+		C20.2,11.3,19.7,10.8,19.1,10.8z"
+                />
+                <path d="M15.2,8.2V7.4v-2c0-0.9-0.7-1.6-1.6-1.6H7.8c-0.9,0-1.6,0.7-1.6,1.6v2v0.8v2.6h9V8.2z" />
+                <path
+                  d="M12,1c6.1,0,11,4.9,11,11s-4.9,11-11,11S1,18.1,1,12S5.9,1,12,1 M12,0C5.4,0,0,5.4,0,12s5.4,12,12,12
+		c6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z"
+                />
+              </g>
+            </svg>
+          </div>
+          {this._fullAttachmentContainerIsOpen ? (
+            this.docDirection === "ltr" ? (
+              <div
+                key={buildKey("map-centric-gps-image-direction")}
+                class={CSS.imageDirectionDegrees}
+              >
+                <div>{i18n.gpsImageDirection}: </div>
+                <div>{`${imageDirectionValue}`}&deg;</div>
+              </div>
+            ) : (
+              <div
+                key={buildKey("map-centric-gps-image-direction")}
+                class={CSS.imageDirectionDegrees}
+              >
+                <div>{i18n.gpsImageDirection}: </div>
+                <div>{`${imageDirectionValue}`}&deg;</div>
+              </div>
+            )
+          ) : null}
+        </div>
+      )
     ) : null;
   }
 
@@ -1796,15 +1847,18 @@ c0.6,0,1.1,0.5,1.1,1.1v14.8C23.8,16.8,23.3,17.3,22.6,17.3z"
       "selectedAttachmentViewerData.selectedFeature.attributes"
     );
     const objectId = attributes && attributes[objectIdField];
+    const featureWidgetTitle = this.get("viewModel.featureWidget.title");
+    const title =
+      featureWidgetTitle && featureWidgetTitle !== "null"
+        ? featureWidgetTitle
+        : "";
     return (
       <div class={CSS.featureTitleZoomContainer}>
         <div
           key={buildKey(`feature-content-title-${layerId}-${objectId}`)}
           class={CSS.featureContentTitle}
         >
-          <h2 class={CSS.featureLayerTitle}>
-            {this.get("viewModel.featureWidget.title")}
-          </h2>
+          <h2 class={CSS.featureLayerTitle}>{title}</h2>
         </div>
         <div class={CSS.featureZoomToContainer}>{zoomTo}</div>
       </div>

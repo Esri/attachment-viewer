@@ -29,5 +29,7 @@ define({
   "nextImage": "Järgmine manus",
   "gpsImageDirection": "GPS-i pildisuund",
   "zoomInImage": "Suurenda pilti",
-  "zoomOutImage": "Vähenda pilti"
+  "zoomOutImage": "Vähenda pilti",
+  "minimize": "Minimeeri",
+  "restore": "Taasta"
 });

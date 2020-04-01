@@ -29,5 +29,7 @@ define({
   "nextImage": "Nākamais pielikums",
   "gpsImageDirection": "GPS attēla virziens",
   "zoomInImage": "Tuvināt attēlu",
-  "zoomOutImage": "Attālināt attēlu"
+  "zoomOutImage": "Attālināt attēlu",
+  "minimize": "Minimizēt",
+  "restore": "Atjaunot"
 });

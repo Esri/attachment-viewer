@@ -29,5 +29,7 @@ define({
   "nextImage": "Atașarea următoare",
   "gpsImageDirection": "Direcția imaginii GPS",
   "zoomInImage": "Mărire imagine",
-  "zoomOutImage": "Micșoare imagine"
+  "zoomOutImage": "Micșoare imagine",
+  "minimize": "Minimizare",
+  "restore": "Restaurare"
 });

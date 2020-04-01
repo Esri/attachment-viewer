@@ -29,5 +29,7 @@ define({
   "nextImage": "Sonraki ek",
   "gpsImageDirection": "GPS Görüntü Yönü",
   "zoomInImage": "Görüntüyü yakınlaştır",
-  "zoomOutImage": "Görüntüyü uzaklaştır"
+  "zoomOutImage": "Görüntüyü uzaklaştır",
+  "minimize": "Simge Durumuna Küçült",
+  "restore": "Geri Yükle"
 });

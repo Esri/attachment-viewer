@@ -29,5 +29,7 @@ define({
   "nextImage": "次の添付ファイル",
   "gpsImageDirection": "GPS 画像の方向",
   "zoomInImage": "画像を拡大",
-  "zoomOutImage": "画像を縮小"
+  "zoomOutImage": "画像を縮小",
+  "minimize": "最小化",
+  "restore": "復元"
 });

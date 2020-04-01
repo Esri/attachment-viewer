@@ -259,7 +259,7 @@ class LayerSwitcher extends declared(Widget) {
   }
 
   @accessibleHandler()
-  private _setLayer(event: Event): void {
+  private async _setLayer(event: Event): Promise<void> {
     if (
       this.mapCentricViewModel &&
       this.mapCentricViewModel.featureContentPanelIsOpen
@@ -268,6 +268,10 @@ class LayerSwitcher extends declared(Widget) {
     }
     const node = event.currentTarget as HTMLElement;
     const featureLayer = node["data-layer-item"] as __esri.FeatureLayer;
+    const extent = await featureLayer.queryExtent();
+    if (extent) {
+      await this.view.goTo(extent);
+    }
     this.viewModel.setLayer(featureLayer);
     this._dropDownIsOpen = false;
     this.scheduleRender();

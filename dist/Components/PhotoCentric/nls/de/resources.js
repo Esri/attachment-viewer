@@ -29,5 +29,7 @@ define({
   "nextImage": "Nächste Anlage",
   "gpsImageDirection": "GPS-Bildrichtung",
   "zoomInImage": "Bild vergrößern",
-  "zoomOutImage": "Bild verkleinern"
+  "zoomOutImage": "Bild verkleinern",
+  "minimize": "Minimieren",
+  "restore": "Wiederherstellen"
 });

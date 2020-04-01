@@ -29,5 +29,7 @@ define({
   "nextImage": "المُرفق التالي",
   "gpsImageDirection": "اتجاه صورة GPS",
   "zoomInImage": "تكبير الصورة",
-  "zoomOutImage": "تصغير الصورة"
+  "zoomOutImage": "تصغير الصورة",
+  "minimize": "تصغير",
+  "restore": "استعادة"
 });
