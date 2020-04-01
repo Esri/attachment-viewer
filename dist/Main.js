@@ -61,7 +61,7 @@ define(["require", "exports", "ApplicationBase/support/itemUtils", "ApplicationB
             domHelper_1.setPageLocale(base.locale);
             domHelper_1.setPageDirection(base.direction);
             this.base = base;
-            var addressEnabled = config.addressEnabled, appMode = config.appMode, attachmentLayer = config.attachmentLayer, attachmentLayers = config.attachmentLayers, showOnboardingOnStart = config.showOnboardingOnStart, downloadEnabled = config.downloadEnabled, find = config.find, fullScreenEnabled = config.fullScreenEnabled, homeEnabled = config.homeEnabled, imageDirectionEnabled = config.imageDirectionEnabled, imagePanZoomEnabled = config.imagePanZoomEnabled, layerListEnabled = config.layerListEnabled, legendEnabled = config.legendEnabled, mapCentricTooltipEnabled = config.mapCentricTooltipEnabled, mapToolsExpanded = config.mapToolsExpanded, marker = config.marker, onboardingIsEnabled = config.onboardingIsEnabled, onboardingButtonText = config.onboardingButtonText, onboardingImage = config.onboardingImage, onlyDisplayFeaturesWithAttachmentsIsEnabled = config.onlyDisplayFeaturesWithAttachmentsIsEnabled, order = config.order, searchConfig = config.searchConfig, searchEnabled = config.searchEnabled, searchExpanded = config.searchExpanded, selectFeaturesEnabled = config.selectFeaturesEnabled, socialSharingEnabled = config.socialSharingEnabled, title = config.title, zoomEnabled = config.zoomEnabled, zoomLevel = config.zoomLevel;
+            var addressEnabled = config.addressEnabled, appMode = config.appMode, attachmentLayer = config.attachmentLayer, attachmentLayers = config.attachmentLayers, showOnboardingOnStart = config.showOnboardingOnStart, downloadEnabled = config.downloadEnabled, find = config.find, fullScreenEnabled = config.fullScreenEnabled, homeEnabled = config.homeEnabled, imageDirectionEnabled = config.imageDirectionEnabled, imagePanZoomEnabled = config.imagePanZoomEnabled, layerListEnabled = config.layerListEnabled, legendEnabled = config.legendEnabled, mapCentricTooltipEnabled = config.mapCentricTooltipEnabled, photoCentricMobileMapExpanded = config.photoCentricMobileMapExpanded, mapToolsExpanded = config.mapToolsExpanded, marker = config.marker, onboardingIsEnabled = config.onboardingIsEnabled, onboardingButtonText = config.onboardingButtonText, onboardingImage = config.onboardingImage, onlyDisplayFeaturesWithAttachmentsIsEnabled = config.onlyDisplayFeaturesWithAttachmentsIsEnabled, order = config.order, searchConfig = config.searchConfig, searchEnabled = config.searchEnabled, searchExpanded = config.searchExpanded, selectFeaturesEnabled = config.selectFeaturesEnabled, socialSharingEnabled = config.socialSharingEnabled, title = config.title, zoomEnabled = config.zoomEnabled, zoomLevel = config.zoomLevel;
             var webMapItems = results.webMapItems;
             var validWebMapItems = webMapItems.map(function (response) {
                 return response.value;
@@ -88,9 +88,9 @@ define(["require", "exports", "ApplicationBase/support/itemUtils", "ApplicationB
                 var container = {
                     container: viewNode
                 };
-                var viewProperties = __assign({}, defaultViewProperties, container);
+                var viewProperties = __assign(__assign({}, defaultViewProperties), container);
                 itemUtils_1.createMapFromItem({ item: item, appProxies: appProxies }).then(function (map) {
-                    return itemUtils_1.createView(__assign({}, viewProperties, { map: map })).then(function (view) {
+                    return itemUtils_1.createView(__assign(__assign({}, viewProperties), { map: map })).then(function (view) {
                         return itemUtils_1.findQuery(find, view).then(function () {
                             _this.view = view;
                             var selectedLayerId = _this._getURLParameter("selectedLayerId");
@@ -111,13 +111,16 @@ define(["require", "exports", "ApplicationBase/support/itemUtils", "ApplicationB
                                     return;
                                 }
                             }
-                            if (document.body.clientWidth > 813 &&
+                            if (document.body.clientWidth > 830 &&
                                 appMode === "photo-centric") {
                                 view.padding.bottom = 380;
                             }
                             var appTitle = _this._handleDocTitle(title);
+                            var docDirection = document
+                                .querySelector("html")
+                                .getAttribute("dir");
                             _this.view.ui.remove("zoom");
-                            _this._handleSearchWidget(searchConfig, searchEnabled, searchExpanded, mapCentricTooltipEnabled);
+                            _this._handleSearchWidget(searchConfig, searchEnabled, searchExpanded, mapCentricTooltipEnabled, docDirection);
                             _this._handleZoomControls(zoomEnabled);
                             _this._handleHomeWidget(homeEnabled);
                             _this._handleLegendWidget(legendEnabled);
@@ -125,7 +128,7 @@ define(["require", "exports", "ApplicationBase/support/itemUtils", "ApplicationB
                             _this._handleFullScreenWidget(fullScreenEnabled);
                             _this._handleSketchWidget(selectFeaturesEnabled);
                             _this._removeGraphicsLayerFromLayerList();
-                            _this._addWidgetsToUI(mapToolsExpanded);
+                            _this._addWidgetsToUI(mapToolsExpanded, docDirection);
                             var defaultObjectIdParam = parseInt(_this._getURLParameter("defaultObjectId"));
                             var defaultObjectId = socialSharingEnabled
                                 ? isNaN(defaultObjectIdParam)
@@ -146,9 +149,6 @@ define(["require", "exports", "ApplicationBase/support/itemUtils", "ApplicationB
                                 appMode: appMode
                             });
                             var scale = isNaN(zoomLevel) ? parseInt(zoomLevel) : zoomLevel;
-                            var docDirection = document
-                                .querySelector("html")
-                                .getAttribute("dir");
                             var isIE11 = navigator.userAgent.indexOf("MSIE") !== -1 ||
                                 navigator.appVersion.indexOf("Trident/") > -1;
                             var imagePanZoomValue = isIE11 ? false : imagePanZoomEnabled;
@@ -184,7 +184,7 @@ define(["require", "exports", "ApplicationBase/support/itemUtils", "ApplicationB
                                 zoomLevel: scale
                             };
                             if (appMode === "photo-centric") {
-                                _this.app = new PhotoCentric(appConfig);
+                                _this.app = new PhotoCentric(__assign(__assign({}, appConfig), { photoCentricMobileMapExpanded: photoCentricMobileMapExpanded }));
                                 document.body.classList.add("photo-centric-body");
                             }
                             else if (appMode === "map-centric") {
@@ -236,7 +236,7 @@ define(["require", "exports", "ApplicationBase/support/itemUtils", "ApplicationB
             }
         };
         // _handleSearchWidget
-        AttachmentViewerApp.prototype._handleSearchWidget = function (searchConfig, searchEnabled, searchExpanded, mapCentricTooltipEnabled) {
+        AttachmentViewerApp.prototype._handleSearchWidget = function (searchConfig, searchEnabled, searchExpanded, mapCentricTooltipEnabled, docDirection) {
             var _this = this;
             if (!searchEnabled) {
                 return;
@@ -285,7 +285,8 @@ define(["require", "exports", "ApplicationBase/support/itemUtils", "ApplicationB
                 expanded: searchExpanded,
                 expandTooltip: i18n.search
             });
-            this.view.ui.add(expand, "top-left");
+            var widgetPos = docDirection === "rtl" ? "top-right" : "top-left";
+            this.view.ui.add(expand, widgetPos);
         };
         // _handleLegendWidget
         AttachmentViewerApp.prototype._handleLegendWidget = function (legendEnabled) {
@@ -395,7 +396,8 @@ define(["require", "exports", "ApplicationBase/support/itemUtils", "ApplicationB
             });
         };
         // _addWidgetsToUI
-        AttachmentViewerApp.prototype._addWidgetsToUI = function (mapToolsExpanded) {
+        AttachmentViewerApp.prototype._addWidgetsToUI = function (mapToolsExpanded, docDirection) {
+            var widgetPos = docDirection === "rtl" ? "top-left" : "top-right";
             if (this.widgets.length > 1) {
                 var content_1 = [];
                 this.widgets.forEach(function (widget) {
@@ -409,10 +411,10 @@ define(["require", "exports", "ApplicationBase/support/itemUtils", "ApplicationB
                     expandTooltip: i18n.moreTools,
                     expanded: mapToolsExpanded
                 });
-                this.view.ui.add(mobileExpand, "top-right");
+                this.view.ui.add(mobileExpand, widgetPos);
             }
             else if (this.widgets.length === 1) {
-                this.view.ui.add(this.widgets.getItemAt(0), "top-right");
+                this.view.ui.add(this.widgets.getItemAt(0), widgetPos);
             }
         };
         // _getURLParameter

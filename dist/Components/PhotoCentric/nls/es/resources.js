@@ -29,5 +29,7 @@ define({
   "nextImage": "Siguiente adjunto",
   "gpsImageDirection": "Dirección de imagen GPS",
   "zoomInImage": "Acercar imagen",
-  "zoomOutImage": "Alejar imagen"
+  "zoomOutImage": "Alejar imagen",
+  "minimize": "Minimizar",
+  "restore": "Restaurar"
 });

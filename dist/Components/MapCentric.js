@@ -905,7 +905,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             var imageDirectionValue = this.imageDirectionEnabled
                 ? this.viewModel.getGPSInformation(attachment)
                 : null;
-            return imageDirectionValue ? (widget_1.tsx("div", { key: buildKey("gps-image-direction"), class: CSS.gpsImageDirection },
+            return imageDirectionValue ? (this.docDirection === "ltr" ? (widget_1.tsx("div", { key: buildKey("gps-image-direction"), class: CSS.gpsImageDirection },
                 this._fullAttachmentContainerIsOpen ? (widget_1.tsx("span", { class: CSS.imageDirectionDegrees },
                     i18n.gpsImageDirection,
                     ": ", "" + imageDirectionValue,
@@ -913,9 +913,26 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                 widget_1.tsx("div", { title: i18n.gpsImageDirection + ": " + imageDirectionValue + "\u00B0", class: CSS.imageDirection },
                     widget_1.tsx("svg", { styles: { transform: "rotateZ(" + imageDirectionValue + "deg)" }, class: CSS.mapCentricCamera },
                         widget_1.tsx("g", null,
+                            widget_1.tsx("path", { d: "M19.1,10.8h-0.3h-0.3h-1.3v2h-1v-0.7v-0.3h-11l0,0h-1v1.1v5.8v0h16v-1.9v-3.9v-1.1\nC20.2,11.3,19.7,10.8,19.1,10.8z" }),
+                            widget_1.tsx("path", { d: "M15.2,8.2V7.4v-2c0-0.9-0.7-1.6-1.6-1.6H7.8c-0.9,0-1.6,0.7-1.6,1.6v2v0.8v2.6h9V8.2z" }),
+                            widget_1.tsx("path", { d: "M12,1c6.1,0,11,4.9,11,11s-4.9,11-11,11S1,18.1,1,12S5.9,1,12,1 M12,0C5.4,0,0,5.4,0,12s5.4,12,12,12\nc6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z" })))))) : (widget_1.tsx("div", { key: buildKey("gps-image-direction"), class: CSS.gpsImageDirection },
+                widget_1.tsx("div", { title: i18n.gpsImageDirection + ": " + imageDirectionValue + "\u00B0", class: CSS.imageDirection },
+                    widget_1.tsx("svg", { styles: { transform: "rotateZ(" + imageDirectionValue + "deg)" }, class: CSS.mapCentricCamera },
+                        widget_1.tsx("g", null,
                             widget_1.tsx("path", { d: "M19.1,10.8h-0.3h-0.3h-1.3v2h-1v-0.7v-0.3h-11l0,0h-1v1.1v5.8v0h16v-1.9v-3.9v-1.1\n\t\tC20.2,11.3,19.7,10.8,19.1,10.8z" }),
                             widget_1.tsx("path", { d: "M15.2,8.2V7.4v-2c0-0.9-0.7-1.6-1.6-1.6H7.8c-0.9,0-1.6,0.7-1.6,1.6v2v0.8v2.6h9V8.2z" }),
-                            widget_1.tsx("path", { d: "M12,1c6.1,0,11,4.9,11,11s-4.9,11-11,11S1,18.1,1,12S5.9,1,12,1 M12,0C5.4,0,0,5.4,0,12s5.4,12,12,12\n\t\tc6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z" })))))) : null;
+                            widget_1.tsx("path", { d: "M12,1c6.1,0,11,4.9,11,11s-4.9,11-11,11S1,18.1,1,12S5.9,1,12,1 M12,0C5.4,0,0,5.4,0,12s5.4,12,12,12\n\t\tc6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z" })))),
+                this._fullAttachmentContainerIsOpen ? (this.docDirection === "ltr" ? (widget_1.tsx("div", { key: buildKey("map-centric-gps-image-direction"), class: CSS.imageDirectionDegrees },
+                    widget_1.tsx("div", null,
+                        i18n.gpsImageDirection,
+                        ": "),
+                    widget_1.tsx("div", null, "" + imageDirectionValue,
+                        "\u00B0"))) : (widget_1.tsx("div", { key: buildKey("map-centric-gps-image-direction"), class: CSS.imageDirectionDegrees },
+                    widget_1.tsx("div", null,
+                        i18n.gpsImageDirection,
+                        ": "),
+                    widget_1.tsx("div", null, "" + imageDirectionValue,
+                        "\u00B0")))) : null))) : null;
         };
         // _renderDownload
         MapCentric.prototype._renderDownload = function () {
@@ -1016,9 +1033,13 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             var objectIdField = this.get("selectedAttachmentViewerData.layerData.featureLayer.objectIdField");
             var attributes = this.get("selectedAttachmentViewerData.selectedFeature.attributes");
             var objectId = attributes && attributes[objectIdField];
+            var featureWidgetTitle = this.get("viewModel.featureWidget.title");
+            var title = featureWidgetTitle && featureWidgetTitle !== "null"
+                ? featureWidgetTitle
+                : "";
             return (widget_1.tsx("div", { class: CSS.featureTitleZoomContainer },
                 widget_1.tsx("div", { key: buildKey("feature-content-title-" + layerId + "-" + objectId), class: CSS.featureContentTitle },
-                    widget_1.tsx("h2", { class: CSS.featureLayerTitle }, this.get("viewModel.featureWidget.title"))),
+                    widget_1.tsx("h2", { class: CSS.featureLayerTitle }, title)),
                 widget_1.tsx("div", { class: CSS.featureZoomToContainer }, zoomTo)));
         };
         // _renderZoomTo

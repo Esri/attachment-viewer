@@ -29,5 +29,7 @@ define({
   "nextImage": "Következő csatolmány",
   "gpsImageDirection": "GPS képirány",
   "zoomInImage": "Kép nagyítása",
-  "zoomOutImage": "Kép kicsinyítése"
+  "zoomOutImage": "Kép kicsinyítése",
+  "minimize": "Minimális méret",
+  "restore": "Visszaállítás"
 });

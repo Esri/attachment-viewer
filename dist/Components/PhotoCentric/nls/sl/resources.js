@@ -29,5 +29,7 @@ define({
   "nextImage": "Naslednja priloga",
   "gpsImageDirection": "Smer slike GPS",
   "zoomInImage": "Povečanje slike",
-  "zoomOutImage": "Pomanjšanje slike"
+  "zoomOutImage": "Pomanjšanje slike",
+  "minimize": "Minimiziraj",
+  "restore": "Obnovi"
 });

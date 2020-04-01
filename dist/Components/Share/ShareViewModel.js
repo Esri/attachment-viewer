@@ -20,10 +20,11 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -54,7 +55,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/core/tsSupport/decorateHelper", "esri/core/Accessor", "esri/core/Collection", "esri/core/accessorSupport/decorators", "esri/geometry/Point", "esri/request", "esri/geometry/projection", "esri/geometry/SpatialReference", "./ShareItem", "./ShareFeatures", "esri/core/watchUtils", "esri/core/Handles"], function (require, exports, __extends, __decorate, Accessor, Collection, decorators_1, Point, esriRequest, projection, SpatialReference, ShareItem, ShareFeatures, watchUtils, Handles) {
+define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/core/tsSupport/decorateHelper", "esri/core/Accessor", "esri/core/Collection", "esri/core/Handles", "esri/core/watchUtils", "esri/core/accessorSupport/decorators", "esri/geometry/Point", "esri/geometry/projection", "esri/geometry/SpatialReference", "esri/request", "./ShareItem", "./ShareFeatures"], function (require, exports, __extends, __decorate, Accessor, Collection, Handles, watchUtils, decorators_1, Point, projection, SpatialReference, esriRequest, ShareItem, ShareFeatures) {
     "use strict";
     //----------------------------------
     //
@@ -88,17 +89,14 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         function ShareViewModel() {
             var _this = _super !== null && _super.apply(this, arguments) || this;
             _this._handles = new Handles();
-            // To keep track of widget state
-            _this._shortening = false;
-            _this._projecting = false;
             //----------------------------------
             //
             //  Private Variables
             //
             //----------------------------------
             // Promises for widget state
-            _this._shortenPromise = null;
-            _this._projectionPromise = null;
+            _this._shortening = false;
+            _this._projecting = false;
             //----------------------------------
             //
             //  Properties
@@ -181,9 +179,9 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             get: function () {
                 var ready = this.get("view.ready");
                 return ready
-                    ? this._projectionPromise
+                    ? this._projecting
                         ? "projecting"
-                        : this._shortenPromise
+                        : this._shortening
                             ? "shortening"
                             : "ready"
                     : this.view
@@ -222,10 +220,12 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         //----------------------------------
         ShareViewModel.prototype.generateUrl = function () {
             return __awaiter(this, void 0, void 0, function () {
-                var url, shortenLink, shortenedUrl;
+                var url, shortenLink, shortenedUrl, shortenLink, href, shortenedUrl;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
-                        case 0: return [4 /*yield*/, this._generateShareUrl()];
+                        case 0:
+                            if (!!this.isDefault) return [3 /*break*/, 4];
+                            return [4 /*yield*/, this._generateShareUrl()];
                         case 1:
                             url = _a.sent();
                             shortenLink = this.shareFeatures.shortenLink;
@@ -238,6 +238,18 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                         case 3:
                             this._set("shareUrl", url);
                             return [2 /*return*/, url];
+                        case 4:
+                            shortenLink = this.shareFeatures.shortenLink;
+                            href = window.location.href;
+                            if (!shortenLink) return [3 /*break*/, 6];
+                            return [4 /*yield*/, this._shorten(href)];
+                        case 5:
+                            shortenedUrl = _a.sent();
+                            this._set("shareUrl", shortenedUrl);
+                            return [2 /*return*/, shortenedUrl];
+                        case 6:
+                            this._set("shareUrl", href);
+                            return [2 /*return*/, href];
                     }
                 });
             });
@@ -284,22 +296,24 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                             if (isWGS84 || isWebMercator) {
                                 return [2 /*return*/, point];
                             }
+                            this._projecting = true;
+                            this.notifyChange("state");
+                            return [4 /*yield*/, projection.load()];
+                        case 1:
+                            _b.sent();
                             // Check if client side projection is not supported
                             if (!projection.isSupported()) {
                                 point_1 = new Point({
                                     x: null,
                                     y: null
                                 });
+                                this._projecting = false;
+                                this.notifyChange("state");
                                 return [2 /*return*/, point_1];
                             }
                             outputSpatialReference = new SpatialReference({
                                 wkid: 4326
                             });
-                            this._projecting = true;
-                            this.notifyChange("state");
-                            return [4 /*yield*/, projection.load()];
-                        case 1:
-                            _b.sent();
                             projectedPoint = projection.project(point, outputSpatialReference);
                             this._projecting = false;
                             this.notifyChange("state");
@@ -370,18 +384,20 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         };
         ShareViewModel.prototype._shorten = function (url) {
             return __awaiter(this, void 0, void 0, function () {
-                var request, shortUrl;
+                var requestOptions, request, shortUrl;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
+                            requestOptions = {
+                                callbackParamName: "callback",
+                                query: {
+                                    longUrl: url,
+                                    f: "json"
+                                }
+                            };
                             this._shortening = true;
                             this.notifyChange("state");
-                            return [4 /*yield*/, esriRequest(SHORTEN_API, {
-                                    query: {
-                                        longUrl: url,
-                                        f: "json"
-                                    }
-                                })];
+                            return [4 /*yield*/, esriRequest(SHORTEN_API, requestOptions)];
                         case 1:
                             request = _a.sent();
                             this._shortening = false;

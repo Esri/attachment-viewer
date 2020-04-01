@@ -26,6 +26,7 @@
   "onboardingButtonText": null,
   "onboardingIsEnabled": true,
   "showOnboardingOnStart": true,
+  "photoCentricMobileMapExpanded": true,
   "mapToolsExpanded": true,
   "searchExpanded": true,
   "selectFeaturesEnabled": false,

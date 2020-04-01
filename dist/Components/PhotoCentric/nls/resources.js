@@ -30,7 +30,9 @@ define({
     nextImage: "Next attachment",
     gpsImageDirection: "GPS Image Direction",
     zoomInImage: "Zoom in image",
-    zoomOutImage: "Zoom out image"
+    zoomOutImage: "Zoom out image",
+    minimize: "Minimize",
+    restore: "Restore"
   },
   ar: 1,
   bs: 1,

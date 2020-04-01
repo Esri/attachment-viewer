@@ -121,6 +121,7 @@ class AttachmentViewerApp {
       layerListEnabled,
       legendEnabled,
       mapCentricTooltipEnabled,
+      photoCentricMobileMapExpanded,
       mapToolsExpanded,
       marker,
       onboardingIsEnabled,
@@ -208,7 +209,7 @@ class AttachmentViewerApp {
             }
 
             if (
-              document.body.clientWidth > 813 &&
+              document.body.clientWidth > 830 &&
               appMode === "photo-centric"
             ) {
               view.padding.bottom = 380;
@@ -216,13 +217,18 @@ class AttachmentViewerApp {
 
             const appTitle = this._handleDocTitle(title);
 
+            const docDirection = document
+              .querySelector("html")
+              .getAttribute("dir");
+
             this.view.ui.remove("zoom");
 
             this._handleSearchWidget(
               searchConfig,
               searchEnabled,
               searchExpanded,
-              mapCentricTooltipEnabled
+              mapCentricTooltipEnabled,
+              docDirection
             );
             this._handleZoomControls(zoomEnabled);
             this._handleHomeWidget(homeEnabled);
@@ -231,7 +237,7 @@ class AttachmentViewerApp {
             this._handleFullScreenWidget(fullScreenEnabled);
             this._handleSketchWidget(selectFeaturesEnabled);
             this._removeGraphicsLayerFromLayerList();
-            this._addWidgetsToUI(mapToolsExpanded);
+            this._addWidgetsToUI(mapToolsExpanded, docDirection);
 
             const defaultObjectIdParam = parseInt(
               this._getURLParameter("defaultObjectId")
@@ -265,10 +271,6 @@ class AttachmentViewerApp {
             });
 
             const scale = isNaN(zoomLevel) ? parseInt(zoomLevel) : zoomLevel;
-
-            const docDirection = document
-              .querySelector("html")
-              .getAttribute("dir");
 
             const isIE11 =
               navigator.userAgent.indexOf("MSIE") !== -1 ||
@@ -308,7 +310,10 @@ class AttachmentViewerApp {
             };
 
             if (appMode === "photo-centric") {
-              this.app = new PhotoCentric(appConfig);
+              this.app = new PhotoCentric({
+                ...appConfig,
+                photoCentricMobileMapExpanded
+              });
               document.body.classList.add("photo-centric-body");
             } else if (appMode === "map-centric") {
               this.app = new MapCentric(appConfig);
@@ -369,7 +374,8 @@ class AttachmentViewerApp {
     searchConfig: any,
     searchEnabled: boolean,
     searchExpanded: boolean,
-    mapCentricTooltipEnabled: boolean
+    mapCentricTooltipEnabled: boolean,
+    docDirection: string
   ): void {
     if (!searchEnabled) {
       return;
@@ -429,8 +435,8 @@ class AttachmentViewerApp {
       expanded: searchExpanded,
       expandTooltip: i18n.search
     });
-
-    this.view.ui.add(expand, "top-left");
+    const widgetPos = docDirection === "rtl" ? "top-right" : "top-left";
+    this.view.ui.add(expand, widgetPos);
   }
 
   // _handleLegendWidget
@@ -571,7 +577,11 @@ class AttachmentViewerApp {
   }
 
   // _addWidgetsToUI
-  private _addWidgetsToUI(mapToolsExpanded: boolean): void {
+  private _addWidgetsToUI(
+    mapToolsExpanded: boolean,
+    docDirection: string
+  ): void {
+    const widgetPos = docDirection === "rtl" ? "top-left" : "top-right";
     if (this.widgets.length > 1) {
       const content = [];
       this.widgets.forEach(widget => {
@@ -585,9 +595,9 @@ class AttachmentViewerApp {
         expandTooltip: i18n.moreTools,
         expanded: mapToolsExpanded
       });
-      this.view.ui.add(mobileExpand, "top-right");
+      this.view.ui.add(mobileExpand, widgetPos);
     } else if (this.widgets.length === 1) {
-      this.view.ui.add(this.widgets.getItemAt(0), "top-right");
+      this.view.ui.add(this.widgets.getItemAt(0), widgetPos);
     }
   }
 

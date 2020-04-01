@@ -29,5 +29,7 @@ define({
   "nextImage": "Seuraava liite",
   "gpsImageDirection": "GPS-kuvan suunta",
   "zoomInImage": "Lähennä kuvaan",
-  "zoomOutImage": "Loitonna kuvasta"
+  "zoomOutImage": "Loitonna kuvasta",
+  "minimize": "Pienennä",
+  "restore": "Palauta"
 });

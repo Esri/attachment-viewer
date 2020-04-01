@@ -29,5 +29,7 @@ define({
   "nextImage": "Наступне прикріплення",
   "gpsImageDirection": "Напрямок знімку GPS",
   "zoomInImage": "Збільшити масштаб зображення",
-  "zoomOutImage": "Зменшити масштаб зображення"
+  "zoomOutImage": "Зменшити масштаб зображення",
+  "minimize": "Зменшити",
+  "restore": "Відновити"
 });

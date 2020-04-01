@@ -1138,6 +1138,10 @@ $calcite-blue: #0079c1;
 
         .esri-map-centric__image-direction-degrees {
           margin-right: 5px;
+
+          div {
+            display: inline-block;
+          }
         }
       }
 
@@ -1233,6 +1237,41 @@ html[dir="rtl"] {
   .esri-layer-switcher__select-layer-dropdown-title {
     padding-left: 0;
     padding-right: 1%;
+  }
+
+  .esri-map-centric
+    .esri-map-centric__full-media-container
+    .esri-map-centric__close-feature-content {
+    right: unset;
+    left: 0.5%;
+  }
+
+  .esri-map-centric .esri-map-centric__download-icon-container {
+    right: unset;
+    left: 0;
+  }
+
+  .esri-layer-switcher__arrow-button-container {
+    right: unset;
+    left: 0;
+  }
+
+  .esri-map-centric .esri-map-centric__expand-media-container {
+    left: unset;
+    right: 1%;
+  }
+
+  .esri-map-centric .esri-map-centric__multiple-attachments-icon {
+    right: unset;
+    left: 3%;
+    svg {
+      transform: scale(-1, 1);
+    }
+  }
+
+  .esri-map-centric .esri-map-centric__gps-image-direction {
+    left: unset;
+    right: 2%;
   }
 }
 

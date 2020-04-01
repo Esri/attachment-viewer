@@ -29,5 +29,7 @@ define({
   "nextImage": "הקובץ המצורף הבא",
   "gpsImageDirection": "כיוון תמונת GPS",
   "zoomInImage": "הגדל תמונה",
-  "zoomOutImage": "הקטן תמונה"
+  "zoomOutImage": "הקטן תמונה",
+  "minimize": "מזער",
+  "restore": "שחזר"
 });

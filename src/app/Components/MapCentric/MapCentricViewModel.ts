@@ -22,7 +22,6 @@ import {
 // esri.core
 import Handles = require("esri/core/Handles");
 import Collection = require("esri/core/Collection");
-import promiseUtils = require("esri/core/promiseUtils");
 import watchUtils = require("esri/core/watchUtils");
 
 // esri.widgets.Feature
@@ -1178,7 +1177,10 @@ class MapCentricViewModel extends declared(AttachmentViewerViewModel) {
   // _handleLayerSwitch
   private _handleLayerSwitch(): void {
     this._mapCentricHandles.add(
-      watchUtils.watch(this, "selectedAttachmentViewerData", () => {
+      watchUtils.watch(this, "selectedAttachmentViewerData", async () => {
+        if (this.socialSharingEnabled) {
+          this.updateSharePropIndexes();
+        }
         this._resetViewExtentOnDataChange();
       })
     );
@@ -1226,8 +1228,27 @@ class MapCentricViewModel extends declared(AttachmentViewerViewModel) {
       this.selectedAttachmentViewerData.layerData.featureLayer.id
     );
 
-    const attachmentIndex = this.attachmentIndex ? this.attachmentIndex : 0;
+    const attachmentExists = this._checkExistingAttachment();
+
+    const attachmentIndex =
+      this.attachmentIndex && attachmentExists ? this.attachmentIndex : 0;
     this.set("selectedAttachmentViewerData.attachmentIndex", attachmentIndex);
+  }
+
+  // _checkExistingAttachment
+  private _checkExistingAttachment(): boolean {
+    const {
+      attachments,
+      layerData,
+      selectedFeature
+    } = this.selectedAttachmentViewerData;
+    const { attributes } = selectedFeature;
+    const { objectIdField } = layerData.featureLayer;
+    const objectId = attributes[objectIdField];
+    const featureAttachments = attachments[objectId];
+    const currentAttachment =
+      featureAttachments && featureAttachments[this.attachmentIndex];
+    return !!currentAttachment;
   }
 
   // _handleFeatureWidget
