@@ -1,4 +1,4 @@
-// Copyright 2019 Esri
+// Copyright 2020 Esri
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -518,10 +518,7 @@ define(["require", "exports", "tslib", "esri/core/accessorSupport/decorators", "
         MapCentric.prototype._renderHeader = function () {
             var _a, _b, _c, _d, _e, _f, _g;
             var title = document.body.clientWidth < 830 && this.title.length > 40
-                ? this.title
-                    .split("")
-                    .slice(0, 35)
-                    .join("") + "..."
+                ? this.title.split("").slice(0, 35).join("") + "..."
                 : this.title;
             var shareWidget = this.socialSharingEnabled &&
                 this.shareLocationWidget &&
@@ -1370,10 +1367,7 @@ define(["require", "exports", "tslib", "esri/core/accessorSupport/decorators", "
             var featureTitle = title ? "" + title : null;
             return featureTitle
                 ? title.length >= 30
-                    ? title
-                        .split("")
-                        .slice(0, 25)
-                        .join("") + "..."
+                    ? title.split("").slice(0, 25).join("") + "..."
                     : title
                 : null;
         };

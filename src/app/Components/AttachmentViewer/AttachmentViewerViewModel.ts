@@ -1,4 +1,4 @@
-// Copyright 2019 Esri
+// Copyright 2020 Esri
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -437,10 +437,7 @@ class AttachmentViewerViewModel extends Accessor {
       });
     } else {
       const dataUrl = canvas.toDataURL();
-      const mimeString = dataUrl
-        .split(",")[0]
-        .split(":")[1]
-        .split(";")[0];
+      const mimeString = dataUrl.split(",")[0].split(":")[1].split(";")[0];
 
       canvas.toBlob(blob => {
         window.navigator.msSaveOrOpenBlob(blob, fileName);

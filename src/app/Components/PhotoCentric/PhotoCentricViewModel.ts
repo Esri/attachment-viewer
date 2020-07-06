@@ -1,4 +1,4 @@
-// Copyright 2019 Esri
+// Copyright 2020 Esri
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -9,7 +9,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.​
 
-// esri.core.accessorSupport
+// esri.core.accessorSupport2020
 import { subclass, property } from "esri/core/accessorSupport/decorators";
 
 // esri.core
