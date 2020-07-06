@@ -1,4 +1,4 @@
-// Copyright 2019 Esri
+// Copyright 2020 Esri
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -699,10 +699,7 @@ class PhotoCentric extends Widget {
   private _renderHeader(): VNode {
     const title =
       document.body.clientWidth < 830 && this.title.length > 40
-        ? `${this.title
-            .split("")
-            .slice(0, 35)
-            .join("")}...`
+        ? `${this.title.split("").slice(0, 35).join("")}...`
         : this.title;
     const layerFeatures = this.get(
       "selectedAttachmentViewerData.layerFeatures"

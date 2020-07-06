@@ -1,4 +1,4 @@
-// Copyright 2019 Esri
+// Copyright 2020 Esri
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -780,10 +780,7 @@ class MapCentric extends Widget {
   private _renderHeader(): VNode {
     const title =
       document.body.clientWidth < 830 && this.title.length > 40
-        ? `${this.title
-            .split("")
-            .slice(0, 35)
-            .join("")}...`
+        ? `${this.title.split("").slice(0, 35).join("")}...`
         : this.title;
     const shareWidget =
       this.socialSharingEnabled &&
@@ -2431,10 +2428,7 @@ c6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z"
     const featureTitle = title ? `${title}` : null;
     return featureTitle
       ? title.length >= 30
-        ? `${title
-            .split("")
-            .slice(0, 25)
-            .join("")}...`
+        ? `${title.split("").slice(0, 25).join("")}...`
         : title
       : null;
   }
