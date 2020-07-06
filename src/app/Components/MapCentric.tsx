@@ -1,6 +1,3 @@
-/// <amd-dependency path="esri/core/tsSupport/declareExtendsHelper" name="__extends" />
-/// <amd-dependency path="esri/core/tsSupport/decorateHelper" name="__decorate" />
-
 // Copyright 2019 Esri
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,13 +12,12 @@
 // esri.core
 import {
   subclass,
-  declared,
   property,
   aliasOf
 } from "esri/core/accessorSupport/decorators";
 import watchUtils = require("esri/core/watchUtils");
 
-//esri.widgets
+// esri.widgets
 import {
   accessibleHandler,
   renderable,
@@ -31,16 +27,12 @@ import {
 import Widget = require("esri/widgets/Widget");
 
 // nls
-import * as i18n from "dojo/i18n!./MapCentric/nls/resources";
-import * as i18nCommon from "dojo/i18n!../nls/common";
+import i18n from "dojo/i18n!./MapCentric/nls/resources";
+import i18nCommon from "dojo/i18n!../nls/common";
 
 // utils
 import { autoLink } from "./utils/urlUtils";
 import { attachToNode } from "./utils/utils";
-import {
-  getOrientationStyles,
-  getOrientationStylesImageThumbnail
-} from "./utils/imageUtils";
 
 // AppData
 import MapCentricData = require("./MapCentric/MapCentricData");
@@ -61,11 +53,11 @@ import ImageViewer = require("ImageViewer");
 // interfaces
 import { VNode, NavItem, AttachmentData } from "../interfaces/interfaces";
 
-//----------------------------------
+// ----------------------------------
 //
 //  CSS Classes
 //
-//----------------------------------
+// ----------------------------------
 
 const CSS = {
   // general
@@ -205,6 +197,7 @@ const CSS = {
   pdf: "esri-map-centric__pdf",
   pdfSVG: "esri-map-centric__pdf-svg",
   pdfName: "esri-map-centric__pdf-name",
+  logo: "esri-map-centric__logo",
   // video
   videoParentContainer: "esri-map-centric__video-parent-container",
   // image
@@ -251,15 +244,15 @@ function buildKey(element: string, index?: number): string {
 }
 
 @subclass("MapCentric")
-class MapCentric extends declared(Widget) {
+class MapCentric extends Widget {
   constructor(value?: any) {
-    super();
+    super(value);
   }
-  //----------------------------------
+  // ----------------------------------
   //
   //  Private Variables
   //
-  //----------------------------------
+  // ----------------------------------
   private _currentMobileScreen: string = null;
   private _expandAttachmentNode: HTMLElement = null;
   private _featureContentAvailable: boolean = null;
@@ -275,16 +268,21 @@ class MapCentric extends declared(Widget) {
   private _triggerScrollElement: HTMLElement = null;
   private _zoomSliderNode: HTMLInputElement = null;
 
-  //----------------------------------
+  // ----------------------------------
   //
   //  Properties
   //
-  //----------------------------------
+  // ----------------------------------
+
+  @property()
+  @renderable()
+  applySharedTheme: boolean = null;
 
   // addressEnabled
   @aliasOf("viewModel.addressEnabled")
   @property()
-  addressEnabled: string = null;
+  @renderable()
+  addressEnabled: boolean = null;
 
   // appMode
   @aliasOf("viewModel.appMode")
@@ -305,7 +303,8 @@ class MapCentric extends declared(Widget) {
   // attachmentLayers
   @aliasOf("viewModel.attachmentLayers")
   @property()
-  attachmentLayers: string = null;
+  @renderable()
+  attachmentLayers: any = null;
 
   // attachmentViewerDataCollection
   @aliasOf("viewModel.attachmentViewerDataCollection")
@@ -331,6 +330,7 @@ class MapCentric extends declared(Widget) {
   // downloadEnabled
   @aliasOf("viewModel.downloadEnabled")
   @property()
+  @renderable()
   downloadEnabled: boolean = null;
 
   // docDirection
@@ -349,7 +349,6 @@ class MapCentric extends declared(Widget) {
   graphicsLayer: __esri.GraphicsLayer = null;
 
   // imageDirectionEnabled
-  @aliasOf("viewModel.imageDirectionEnabled")
   @renderable()
   @property()
   imageDirectionEnabled: boolean = null;
@@ -361,6 +360,7 @@ class MapCentric extends declared(Widget) {
 
   // imagePanZoomEnabled
   @property()
+  @renderable()
   imagePanZoomEnabled: boolean = null;
 
   // layerSwitcher
@@ -388,6 +388,7 @@ class MapCentric extends declared(Widget) {
 
   // onboardingIsEnabled
   @property()
+  @renderable()
   onboardingIsEnabled = true;
 
   // onlyDisplayFeaturesWithAttachmentsIsEnabled
@@ -398,7 +399,12 @@ class MapCentric extends declared(Widget) {
   // order
   @aliasOf("viewModel.order")
   @property()
+  @renderable()
   order: string = null;
+
+  // sharedTheme
+  @property()
+  sharedTheme: any = null;
 
   // searchWidget
   @aliasOf("viewModel.searchWidget")
@@ -434,6 +440,7 @@ class MapCentric extends declared(Widget) {
   // socialSharingEnabled
   @aliasOf("viewModel.socialSharingEnabled")
   @property()
+  @renderable()
   socialSharingEnabled: boolean = null;
 
   // supportedAttachmentTypes
@@ -444,12 +451,18 @@ class MapCentric extends declared(Widget) {
   // title
   @aliasOf("viewModel.title")
   @property()
+  @renderable()
   title: string = null;
 
   // view
   @aliasOf("viewModel.view")
   @property()
   view: __esri.MapView = null;
+
+  // withinConfigurationExperience
+  @aliasOf("viewModel.withinConfigurationExperience")
+  @property()
+  withinConfigurationExperience: boolean = null;
 
   // viewModel
   @renderable(["viewModel.state", "viewModel.mapCentricState"])
@@ -462,6 +475,10 @@ class MapCentric extends declared(Widget) {
   @aliasOf("viewModel.zoomLevel")
   @property()
   zoomLevel: string = null;
+
+  @aliasOf("viewModel.highlightedFeature")
+  @property()
+  highlightedFeature = null;
 
   postInitialize() {
     if (this.onboardingIsEnabled) {
@@ -482,6 +499,17 @@ class MapCentric extends declared(Widget) {
     if (this.addressEnabled) {
       this.own([this._watchSelectedFeatureAddress()]);
     }
+
+    this.own(
+      watchUtils.whenFalse(this, "imagePanZoomEnabled", () => {
+        if (this._imageViewer) {
+          this._imageViewer.destroy();
+          this._imageViewer = null;
+          this._imageViewerSet = false;
+          this._imageZoomLoaded = false;
+        }
+      })
+    );
   }
 
   // _handleOnboarding
@@ -608,17 +636,17 @@ class MapCentric extends declared(Widget) {
     );
   }
 
-  //----------------------------------
+  // ----------------------------------
   //
   //  END OF WATCH UTILITY METHODS
   //
-  //----------------------------------
+  // ----------------------------------
 
-  //----------------------------------
+  // ----------------------------------
   //
   //  START OF RENDER METHODS
   //
-  //----------------------------------
+  // ----------------------------------
 
   render(): VNode {
     const header = this._renderHeader();
@@ -750,38 +778,69 @@ class MapCentric extends declared(Widget) {
 
   // _renderHeader
   private _renderHeader(): VNode {
-    const { clientWidth } = document.body;
-    const { title, shareLocationWidget } = this;
-    const titleLength = title && this.title.length;
-    const titleValue =
-      clientWidth < 813 && titleLength > 40
-        ? `${title
+    const title =
+      document.body.clientWidth < 830 && this.title.length > 40
+        ? `${this.title
             .split("")
             .slice(0, 35)
             .join("")}...`
-        : title;
+        : this.title;
     const shareWidget =
-      shareLocationWidget && clientWidth > 813 && this._renderShareWidget();
+      this.socialSharingEnabled &&
+      this.shareLocationWidget &&
+      document.body.clientWidth > 830
+        ? this._renderShareWidget()
+        : null;
+
+    const sharedTheme = this.applySharedTheme
+      ? {
+          background: this.sharedTheme?.background,
+          color: this.sharedTheme?.text,
+          paddingLeft: "10px"
+        }
+      : {
+          background: "",
+          color: "",
+          paddingLeft: "15px"
+        };
     return (
-      <header class={CSS.header}>
+      <header styles={sharedTheme} class={CSS.header}>
         <div class={CSS.headerContainer}>
-          <div class={CSS.titleInfoContainer}>
-            <h1 class={CSS.headerText}>{titleValue}</h1>
-          </div>
-          {clientWidth > 813 && this.onboardingIsEnabled ? (
-            <div
-              bind={this}
-              onclick={this._toggleOnboardingPanel}
-              onkeydown={this._toggleOnboardingPanel}
-              class={CSS.onboardingIcon}
-              title={i18n.viewDetails}
-              tabIndex={0}
-            >
-              <span
-                class={this.classes(CSS.icons.descriptionIcon, CSS.icons.flush)}
-              />
-            </div>
+          {this?.applySharedTheme ? (
+            this.sharedTheme?.logoLink ? (
+              <a
+                class="esri-attachment-viewer__logo-link"
+                href={this.sharedTheme.logoLink}
+                target="_blank"
+              >
+                {this.sharedTheme?.logo ? (
+                  <img class={CSS.logo} src={this.sharedTheme?.logo} alt="" />
+                ) : null}
+              </a>
+            ) : this.sharedTheme?.logo ? (
+              <img class={CSS.logo} src={this.sharedTheme?.logo} alt="" />
+            ) : null
           ) : null}
+          <div class={CSS.titleInfoContainer}>
+            <h1 class={CSS.headerText}>{title}</h1>
+            {this.onboardingIsEnabled && document.body.clientWidth > 830 ? (
+              <div
+                bind={this}
+                onclick={this._toggleOnboardingPanel}
+                onkeydown={this._toggleOnboardingPanel}
+                class={CSS.onboardingIcon}
+                title={i18n.viewDetails}
+                tabIndex={0}
+              >
+                <span
+                  class={this.classes(
+                    CSS.icons.descriptionIcon,
+                    CSS.icons.flush
+                  )}
+                />
+              </div>
+            ) : null}
+          </div>
         </div>
         <div class={CSS.shareWidgetContainer}>{shareWidget}</div>
       </header>
@@ -795,6 +854,7 @@ class MapCentric extends declared(Widget) {
         class={CSS.shareLocationWidget}
         bind={this.shareLocationWidget.container}
         afterCreate={attachToNode}
+        afterUpdate={attachToNode}
       />
     );
   }
@@ -849,8 +909,8 @@ class MapCentric extends declared(Widget) {
           </div>
         ) : null}
         <div
-          bind={this.layerSwitcher.container}
-          afterCreate={attachToNode}
+          bind={this.layerSwitcher?.container}
+          afterCreate={this.layerSwitcher ? attachToNode : null}
           class={CSS.layerSwitcherContainer}
         />
       </div>
@@ -1079,10 +1139,6 @@ c0.6,0,1.1,0.5,1.1,1.1v14.8C23.8,16.8,23.3,17.3,22.6,17.3z"
   private _renderThumbnailContainer(attachments: any): VNode {
     const attachment = attachments[0];
     const contentType = attachment && attachment.contentType;
-    const imageStyles =
-      this.imageIsLoaded && attachment && attachment.orientationInfo
-        ? getOrientationStylesImageThumbnail(attachment.orientationInfo)
-        : {};
     const imageAttachmentTypes = [
       "image/jpeg",
       "image/jpg",
@@ -1140,7 +1196,6 @@ c0.6,0,1.1,0.5,1.1,1.1v14.8C23.8,16.8,23.3,17.3,22.6,17.3z"
         ) : isImage ? (
           <img
             bind={this}
-            styles={imageStyles}
             class={CSS.imageThumbnail}
             src={attachmentUrl}
             afterCreate={this._fadeInImage}
@@ -1311,7 +1366,7 @@ c0.6,0,1.1,0.5,1.1,1.1v14.8C23.8,16.8,23.3,17.3,22.6,17.3z"
         {attachmentLoader}
         {mediaViewerContainer}
         {imageDirection}
-        {this._fullAttachmentContainerIsOpen ? null : attachmentScroll}
+        {/* {this._fullAttachmentContainerIsOpen ? null : attachmentScroll} */}
         {this._renderAttachmentScrollContainer()}
       </div>
     );
@@ -1424,22 +1479,6 @@ c0.6,0,1.1,0.5,1.1,1.1v14.8C23.8,16.8,23.3,17.3,22.6,17.3z"
 
   // _renderCurrentImage
   private _renderCurrentImage(): VNode {
-    const attachment = this.viewModel.getCurrentAttachment();
-
-    const orientationInfo = attachment && attachment.get("orientationInfo");
-    const name = attachment ? attachment.name : null;
-    const container = this._fullAttachmentContainerIsOpen
-      ? this._mediaViewerContainerFullAttachment
-      : this._mediaViewerContainer;
-    const imageStyles =
-      orientationInfo && container && this.imageIsLoaded
-        ? getOrientationStyles(orientationInfo, container, this.appMode)
-        : {
-            transform: "none",
-            height: "initial",
-            maxHeight: "100%"
-          };
-
     const fadeImage = {
       [CSS.fadeImage]: !this.imageIsLoaded
     };
@@ -1448,7 +1487,6 @@ c0.6,0,1.1,0.5,1.1,1.1v14.8C23.8,16.8,23.3,17.3,22.6,17.3z"
         bind={this}
         key={buildKey(`image-desktop-${this.currentImageUrl}`)}
         class={this.classes(CSS.imageDesktop, fadeImage)}
-        styles={imageStyles}
         src={this.currentImageUrl}
         afterCreate={this._fadeInImage}
         afterUpdate={this._fadeInImage}
@@ -1808,7 +1846,7 @@ c6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z"
         ) : (
           <div class={CSS.featureContentContainer}>
             {featureContentHeader}
-            {address}
+            {this.addressEnabled ? address : null}
             {(fieldsInfoText && fieldsInfoText.length > 0) ||
             (mediaInfoContent && mediaInfoContent.length > 0) ||
             this._featureContentAvailable ? (
@@ -2193,22 +2231,22 @@ c6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z"
     return (
       <div
         bind={this.view.container}
-        afterCreate={attachToNode}
         class={CSS.mapView}
+        afterCreate={attachToNode}
       />
     );
   }
 
-  //----------------------------------
+  // ----------------------------------
   //
   //  END OF RENDER NODE METHODS
   //
-  //----------------------------------
-  //----------------------------------
+  // ----------------------------------
+  // ----------------------------------
   //
   //  START OF ACCESSIBLE HANDLERS
   //
-  //----------------------------------
+  // ----------------------------------
 
   // _toggleOnboardingPanel
   @accessibleHandler()
@@ -2346,11 +2384,11 @@ c6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z"
     this.scheduleRender();
   }
 
-  //----------------------------------
+  // ----------------------------------
   //
   //  END OF ACCESSIBLE HANDLERS
   //
-  //----------------------------------
+  // ----------------------------------
 
   // _triggerScrollQuery
   private _triggerScrollQuery(): void {
@@ -2432,6 +2470,8 @@ c6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z"
         if (this._imageViewer) {
           this._imageViewer.destroy();
           this._imageViewer = null;
+          this._imageViewerSet = false;
+          this._imageZoomLoaded = false;
         }
         this._imageViewer = new ImageViewer(
           this._mediaViewerContainerFullAttachment,
@@ -2448,14 +2488,6 @@ c6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z"
 
       if (this._imageViewerSet && !this._imageZoomLoaded && contentTypeCheck) {
         this._imageViewer.load(this.currentImageUrl);
-        const rotation =
-          attachment && (attachment.get("orientationInfo.rotation") as number);
-        if (rotation) {
-          const ivImageElement = document.querySelector(
-            ".iv-image"
-          ) as HTMLImageElement;
-          ivImageElement.style.transform = `rotate(${rotation}deg)`;
-        }
         this._imageZoomLoaded = true;
         this.scheduleRender();
       }

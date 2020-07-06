@@ -24,13 +24,6 @@ module.exports = function(grunt) {
       options: {
         outputStyle: "compressed"
       },
-      // dist: {
-      //   files: [{
-      //     expand: true,
-      //     src: ['src/app/Main.scss', '**/**/**/**/*.scss', "!node_modules/**"],
-      //     ext: ".css"
-      //   }]
-      // }
       dist: {
         files: {
           "dist/styles/Main.css": "src/styles/Main.scss",
@@ -43,7 +36,9 @@ module.exports = function(grunt) {
           "dist/Components/MapCentric/css/MapCentric.css":
             "src/app/Components/MapCentric/css/MapCentric.scss",
           "dist/Components/MobileExpand/css/MobileExpand.css":
-            "src/app/Components/MobileExpand/css/MobileExpand.scss"
+            "src/app/Components/MobileExpand/css/MobileExpand.scss",
+          "dist/Components/Unsupported/css/UnsupportedBrowser.css":
+            "src/app/Components/Unsupported/css/UnsupportedBrowser.scss"
         }
       }
     },
@@ -62,6 +57,7 @@ module.exports = function(grunt) {
           "dist/Components/Share/css/Share.css",
           "dist/Components/MapCentric/css/MapCentric.css",
           "dist/Components/MobileExpand/css/MobileExpand.css",
+          "dist/Components/Unsupported/css/UnsupportedBrowser.css",
           "!node_modules/**"
         ]
       }
@@ -74,7 +70,8 @@ module.exports = function(grunt) {
           "src/app/Components/LayerSwitcher/css/LayerSwitcher.scss",
           "src/app/Components/Share/css/Share.scss",
           "src/app/Components/MapCentric/css/MapCentric.scss",
-          "src/app/Components/MobileExpand/css/MobileExpand.scss"
+          "src/app/Components/MobileExpand/css/MobileExpand.scss",
+          "src/app/Components/Unsupported/css/UnsupportedBrowser.scss"
         ],
         tasks: ["styles"]
       }

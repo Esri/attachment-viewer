@@ -1,6 +1,3 @@
-/// <amd-dependency path="esri/core/tsSupport/declareExtendsHelper" name="__extends" />
-/// <amd-dependency path="esri/core/tsSupport/decorateHelper" name="__decorate" />
-
 // Copyright 2019 Esri
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,11 +10,7 @@
 // limitations under the License.​
 
 // esri.core.accessorSupport
-import {
-  subclass,
-  declared,
-  property
-} from "esri/core/accessorSupport/decorators";
+import { subclass, property } from "esri/core/accessorSupport/decorators";
 
 // esri.core
 import Handles = require("esri/core/Handles");
@@ -57,32 +50,32 @@ type MapCentricState =
   | "waitingForContent";
 
 @subclass("MapCentricViewModel")
-class MapCentricViewModel extends declared(AttachmentViewerViewModel) {
-  //----------------------------------
+class MapCentricViewModel extends AttachmentViewerViewModel {
+  // ----------------------------------
   //
   //  Variables
   //
-  //----------------------------------
-  private _highlightedFeatureMapCentric: any = null;
+  // ----------------------------------
+
   private _mapCentricHandles = new Handles();
   private _performingHitTestMapCentric: Promise<__esri.HitTestResult> = null;
-  private _layerViewPromises: Promise<MapCentricLayerViewPromise>[] = [];
-  private _objectIdPromises: Promise<MapCentricOIDPromise>[] = [];
-  private _attachmentDataPromises: Promise<
-    MapCentricAttachmentDataPromise
-  >[] = [];
-  private _queriedAttachmentsPromises: Promise<
-    MapCentricAttachmentsPromise
-  >[] = [];
+  private _layerViewPromises: Array<Promise<MapCentricLayerViewPromise>> = [];
+  private _objectIdPromises: Array<Promise<MapCentricOIDPromise>> = [];
+  private _attachmentDataPromises: Array<
+    Promise<MapCentricAttachmentDataPromise>
+  > = [];
+  private _queriedAttachmentsPromises: Array<
+    Promise<MapCentricAttachmentsPromise>
+  > = [];
   private _settingUpAttachments = false;
   private _openToolTipPromise: Promise<void | __esri.FeatureSet> = null;
   private _galleryItemPromise: Promise<void> = null;
 
-  //----------------------------------
+  // ----------------------------------
   //
   //  state - readOnly
   //
-  //----------------------------------
+  // ----------------------------------
   @property({
     dependsOn: ["view.ready", "featureWidget.viewModel.waitingForContent"],
     readOnly: true
@@ -102,11 +95,11 @@ class MapCentricViewModel extends declared(AttachmentViewerViewModel) {
       : "disabled";
   }
 
-  //----------------------------------
+  // ----------------------------------
   //
   // Properties
   //
-  //----------------------------------
+  // ----------------------------------
 
   // attachmentLayer
   @property()
@@ -148,17 +141,32 @@ class MapCentricViewModel extends declared(AttachmentViewerViewModel) {
   @property()
   selectedLayerId: string = null;
 
-  //----------------------------------
+  // highlightedFeature
+  @property()
+  highlightedFeature: any = null;
+
+  // ----------------------------------
   //
   //  Lifecycle Methods
   //
-  //----------------------------------
+  // ----------------------------------
 
   initialize() {
+    this._mapCentricHandles?.add([
+      watchUtils.watch(this, "appMode", () => {
+        this._removeFeatureHighlight();
+      }),
+      watchUtils.watch(this, "selectFeaturesEnabled", () => {
+        this._initSketchWatchers();
+      }),
+      watchUtils.whenFalse(this, "selectFeaturesEnabled", () => {
+        this._queryAllLayerData();
+      })
+    ]);
+
     this._initLayers();
     this._initSocialShare();
-    this._initSketch();
-    this._mapCentricHandles.add([
+    this._mapCentricHandles?.add([
       this._initQueryFeaturesOnStationaryWatcher(),
       this._initFeatureContentCloseWatcher(),
       this._initLayerSwitchWatcher(),
@@ -167,20 +175,20 @@ class MapCentricViewModel extends declared(AttachmentViewerViewModel) {
   }
 
   destroy() {
-    this._mapCentricHandles.removeAll();
-    this._mapCentricHandles.destroy();
+    this._mapCentricHandles?.removeAll();
+    this._mapCentricHandles?.destroy();
     this._mapCentricHandles = null;
   }
 
-  //----------------------------------
+  // ----------------------------------
   //
   //  Private Methods
   //
-  //----------------------------------
+  // ----------------------------------
   // _initLayers
   private _initLayers(): void {
     const layerInitKey = "layer-init-key";
-    this._mapCentricHandles.add(
+    this._mapCentricHandles?.add(
       this._handleLayerInitialization(layerInitKey),
       layerInitKey
     );
@@ -189,10 +197,11 @@ class MapCentricViewModel extends declared(AttachmentViewerViewModel) {
   // _handleLayerInitialization
   private _handleLayerInitialization(layerInitKey: string): __esri.WatchHandle {
     return watchUtils.whenOnce(this, "view.ready", () => {
-      this._mapCentricHandles.remove(layerInitKey);
+      this.view.padding.bottom = 0;
+      this._mapCentricHandles?.remove(layerInitKey);
       this._handleFeatureClickEvent();
       const featureLayerCollection = "feature-layer-collection";
-      this._mapCentricHandles.add(
+      this._mapCentricHandles?.add(
         this._watchFeatureLayerCollection(featureLayerCollection),
         featureLayerCollection
       );
@@ -206,7 +215,7 @@ class MapCentricViewModel extends declared(AttachmentViewerViewModel) {
       this,
       "layerSwitcher.featureLayerCollection.length",
       () => {
-        this._mapCentricHandles.remove(featureLayerCollection);
+        this._mapCentricHandles?.remove(featureLayerCollection);
         this.layerSwitcher.featureLayerCollection.forEach(featureLayer => {
           return this._handleLayerFromCollection(featureLayer);
         });
@@ -253,6 +262,9 @@ class MapCentricViewModel extends declared(AttachmentViewerViewModel) {
       this.set("view.popup.autoOpenEnabled", false);
     }
     return this.view.on("click", (event: __esri.MapViewClickEvent) => {
+      if (this.appMode === "photo-centric") {
+        return;
+      }
       if (this.state !== "ready") {
         return;
       }
@@ -420,7 +432,7 @@ class MapCentricViewModel extends declared(AttachmentViewerViewModel) {
 
   // _updateAddress
   private _updateAddress(graphic: __esri.Graphic): void {
-    if (this.addressEnabled && graphic && graphic.geometry) {
+    if (graphic && graphic.geometry) {
       this.set("selectedAttachmentViewerData.selectedFeatureAddress", null);
       this.getAddress(graphic.geometry);
     }
@@ -563,50 +575,43 @@ class MapCentricViewModel extends declared(AttachmentViewerViewModel) {
     featureLayer: __esri.FeatureLayer,
     attachmentViewerData: MapCentricData
   ): void {
-    const { attachmentLayer } = this;
-    const attachmentLayers = JSON.parse(this.attachmentLayers);
-    if (attachmentLayers && attachmentLayers.length > 0) {
-      attachmentLayers.forEach(currentAttachmentLayer => {
+    const { attachmentLayers } = this;
+    const layers = attachmentLayers?.layers;
+
+    if (layers && layers.length > 0) {
+      layers.forEach(currentAttachmentLayer => {
         const sortField =
           currentAttachmentLayer.fields &&
           currentAttachmentLayer.fields.length > 0 &&
           currentAttachmentLayer.fields[0];
         if (currentAttachmentLayer.id === featureLayer.id && sortField) {
           attachmentViewerData.sortField = sortField;
+        } else {
+          attachmentViewerData.sortField =
+            attachmentViewerData.layerData.featureLayer.objectIdField;
         }
       });
     } else {
-      if (
-        attachmentLayer &&
-        attachmentLayer.id === featureLayer.id &&
-        attachmentLayer &&
-        attachmentLayer.fields &&
-        attachmentLayer.fields.length > 0 &&
-        attachmentLayer.fields[0] &&
-        attachmentLayer.fields[0].fields &&
-        attachmentLayer.fields[0].fields.length > 0 &&
-        attachmentLayer.fields[0].fields[0]
-      ) {
-        attachmentViewerData.sortField = this.attachmentLayer.fields[0].fields[0];
-      }
+      attachmentViewerData.sortField =
+        attachmentViewerData.layerData.featureLayer.objectIdField;
     }
   }
 
   // _initSocialShare
   private _initSocialShare(): void {
     const setupSocialShare = "setup-social-share";
-    this._mapCentricHandles.add(
+    this._mapCentricHandles?.add(
       watchUtils.whenOnce(this, "selectedAttachmentViewerData", () => {
-        this._mapCentricHandles.remove(setupSocialShare);
-        if (this.socialSharingEnabled) {
-          this._setupSocialSharing();
-        }
+        this._mapCentricHandles?.remove(setupSocialShare);
+        // if (this.socialSharingEnabled) {
+        this._setupSocialSharing();
+        // }
 
         if (this.mapCentricTooltipEnabled) {
           const { popup } = this.view;
           popup.defaultPopupTemplateEnabled = true;
           popup.dockOptions.buttonEnabled = false;
-          popup.featureNavigationEnabled = false;
+          popup.visibleElements.featureNavigation = false;
           popup.collapseEnabled = false;
           popup.highlightEnabled = true;
           popup.actions.removeAll();
@@ -616,23 +621,11 @@ class MapCentricViewModel extends declared(AttachmentViewerViewModel) {
     );
   }
 
-  // _initSketch
-  private _initSketch(): void {
-    const selectFeauresEnabledKey = "select-features-enabled";
-    this._mapCentricHandles.add(
-      watchUtils.whenOnce(this, "selectFeaturesEnabled", () => {
-        this._initSketchWatchers(selectFeauresEnabledKey);
-      }),
-      selectFeauresEnabledKey
-    );
-  }
-
   // Feature selection methods
   // _initSketchWatchers
-  private _initSketchWatchers(selectFeauresEnabledKey: string): void {
-    this._mapCentricHandles.remove(selectFeauresEnabledKey);
+  private _initSketchWatchers(): void {
     const sketchWidgetInitKey = "sketch-widget-init";
-    this._mapCentricHandles.add(
+    this._mapCentricHandles?.add(
       watchUtils.when(this, "sketchWidget", () => {
         this._handleSketchWidgetLoad(sketchWidgetInitKey);
       }),
@@ -642,7 +635,7 @@ class MapCentricViewModel extends declared(AttachmentViewerViewModel) {
 
   // _handleSketchWidgetLoad
   private _handleSketchWidgetLoad(sketchWidgetInitKey: string): void {
-    this._mapCentricHandles.remove(sketchWidgetInitKey);
+    this._mapCentricHandles?.remove(sketchWidgetInitKey);
     this._watchSketchCreateAndUpdate(this.sketchWidget, this.graphicsLayer);
     this._watchSketchDelete(this.sketchWidget);
   }
@@ -652,20 +645,34 @@ class MapCentricViewModel extends declared(AttachmentViewerViewModel) {
     sketchWidget: __esri.Sketch,
     graphicsLayer: __esri.GraphicsLayer
   ): void {
-    this._mapCentricHandles.add([
-      sketchWidget.on("create", (sketchEvent: __esri.SketchCreateEvent) => {
-        this._handleSketchEvent(sketchEvent, graphicsLayer);
-      }),
-      sketchWidget.on("update", (sketchEvent: __esri.SketchUpdateEvent) => {
-        this._handleSketchEvent(sketchEvent, graphicsLayer);
-      })
-    ]);
+    const createUpdateKey = "create-update-key";
+    this._mapCentricHandles?.remove(createUpdateKey);
+    this._mapCentricHandles?.add(
+      [
+        sketchWidget.on("create", (sketchEvent: __esri.SketchCreateEvent) => {
+          if (this.appMode === "photo-centric") {
+            return;
+          }
+          this._handleSketchEvent(sketchEvent, graphicsLayer);
+        }),
+        sketchWidget.on("update", (sketchEvent: __esri.SketchUpdateEvent) => {
+          if (this.appMode === "photo-centric") {
+            return;
+          }
+          this._handleSketchEvent(sketchEvent, graphicsLayer);
+        })
+      ],
+      createUpdateKey
+    );
   }
 
   // _watchSketchDelete
   private _watchSketchDelete(sketchWidget: __esri.Sketch): void {
-    this._mapCentricHandles.add(
+    this._mapCentricHandles?.add(
       sketchWidget.on("delete", () => {
+        if (this.appMode === "photo-centric") {
+          return;
+        }
         this.set("mapCentricSketchQueryExtent", null);
         this._queryAllLayerData();
         this.attachmentViewerDataCollection.forEach(attachmentViewerData => {
@@ -739,9 +746,9 @@ class MapCentricViewModel extends declared(AttachmentViewerViewModel) {
     if (this.view && !this.view.stationary) {
       const mapCentricStationaryWhenTrue = "map-centric-stationary-when-true";
       if (this._mapCentricHandles.has(mapCentricStationaryWhenTrue)) {
-        this._mapCentricHandles.remove(mapCentricStationaryWhenTrue);
+        this._mapCentricHandles?.remove(mapCentricStationaryWhenTrue);
       }
-      this._mapCentricHandles.add(
+      this._mapCentricHandles?.add(
         watchUtils.whenTrueOnce(this.view, "stationary", () => {
           this._queryAllLayerData();
         }),
@@ -750,9 +757,9 @@ class MapCentricViewModel extends declared(AttachmentViewerViewModel) {
     } else {
       const mapCentricStationaryWhenFalse = "map-centric-stationary-when-false";
       if (this._mapCentricHandles.has(mapCentricStationaryWhenFalse)) {
-        this._mapCentricHandles.remove(mapCentricStationaryWhenFalse);
+        this._mapCentricHandles?.remove(mapCentricStationaryWhenFalse);
       }
-      this._mapCentricHandles.add(
+      this._mapCentricHandles?.add(
         watchUtils.whenFalseOnce(this.view, "interacting", () => {
           this._queryAllLayerData();
         }),
@@ -794,13 +801,12 @@ class MapCentricViewModel extends declared(AttachmentViewerViewModel) {
           );
         }
 
-        const sortField = attachmentViewerData.get("sortField");
+        const sortField = attachmentViewerData.sortField;
         const order = this.order ? this.order : "ASC";
 
         const sortFieldValue = sortField
           ? [`${sortField} ${order}`]
           : [`${objectIdField} ${order}`];
-
         const featureLayer = attachmentViewerData.get(
           "layerData.featureLayer"
         ) as __esri.FeatureLayer;
@@ -812,30 +818,17 @@ class MapCentricViewModel extends declared(AttachmentViewerViewModel) {
               })
             : [];
 
-        const where = this.onlyDisplayFeaturesWithAttachmentsIsEnabled
-          ? attachmentObjectIds && attachmentObjectIds.length
-            ? attachmentViewerData.defaultLayerExpression
-              ? attachmentViewerData.defaultLayerExpression
-              : "1=1"
-            : "1=0"
-          : attachmentViewerData.defaultLayerExpression
-          ? attachmentViewerData.defaultLayerExpression
-          : "1=1";
-
         const queryConfig = {
           geometry,
           outSpatialReference,
-          orderByFields: sortFieldValue,
-          where
+          orderByFields: sortFieldValue
         };
-
         const query = this.onlyDisplayFeaturesWithAttachmentsIsEnabled
           ? new Query({
               ...queryConfig,
               objectIds: [...attachmentObjectIds]
             })
           : new Query(queryConfig);
-
         const objectIdPromise = featureLayer
           .queryObjectIds(query)
           .then(objectIds => {
@@ -930,7 +923,8 @@ class MapCentricViewModel extends declared(AttachmentViewerViewModel) {
             features,
             attachmentViewerData
           } = attachmentDataPromiseResult;
-          this._handleAttachmentDataRes(features, attachmentViewerData);
+          const mapCentricData = attachmentViewerData as MapCentricData;
+          this._handleAttachmentDataRes(features, mapCentricData);
         });
         let attachmentViewerData = null;
         if (this.selectedLayerId) {
@@ -953,7 +947,7 @@ class MapCentricViewModel extends declared(AttachmentViewerViewModel) {
     );
   }
 
-  //_handleFeatureUpdate
+  // _handleFeatureUpdate
   private _handleFeatureUpdate(): void {
     if (this.defaultObjectId) {
       this._handleDefaultObjectId();
@@ -975,10 +969,7 @@ class MapCentricViewModel extends declared(AttachmentViewerViewModel) {
       selectedResult.feature.layer &&
       selectedResult.feature.layer.id
     ) {
-      if (this._highlightedFeatureMapCentric) {
-        this._highlightedFeatureMapCentric.remove();
-        this._highlightedFeatureMapCentric = null;
-      }
+      this._removeFeatureHighlight();
 
       this._updateAttachmentViewerDataOnSearch(selectedResult);
       this.set("selectedAttachmentViewerData.attachmentIndex", 0);
@@ -1028,12 +1019,12 @@ class MapCentricViewModel extends declared(AttachmentViewerViewModel) {
   // _handleDefaultObjectId
   private _handleDefaultObjectId(): void {
     const handleDefaultObjectIdKey = "handle-default-object-id-key";
-    this._mapCentricHandles.add(
+    this._mapCentricHandles?.add(
       watchUtils.when(
         this,
         "selectedAttachmentViewerData.layerData.featureLayer",
         () => {
-          this._mapCentricHandles.remove(handleDefaultObjectIdKey);
+          this._mapCentricHandles?.remove(handleDefaultObjectIdKey);
           if (!this.defaultObjectId) {
             return;
           }
@@ -1078,13 +1069,11 @@ class MapCentricViewModel extends declared(AttachmentViewerViewModel) {
                 const layerView = this.get(
                   "selectedAttachmentViewerData.layerData.layerView"
                 ) as __esri.FeatureLayerView;
-                if (this._highlightedFeatureMapCentric) {
-                  this._highlightedFeatureMapCentric.remove();
-                  this._highlightedFeatureMapCentric = null;
+                if (this.highlightedFeature.feature) {
+                  this.highlightedFeature.feature.remove();
+                  this.highlightedFeature.feature = null;
                 }
-                this._highlightedFeatureMapCentric = layerView.highlight(
-                  feature
-                );
+                this.highlightedFeature.feature = layerView.highlight(feature);
               }
 
               if (!feature) {
@@ -1176,7 +1165,7 @@ class MapCentricViewModel extends declared(AttachmentViewerViewModel) {
 
   // _handleLayerSwitch
   private _handleLayerSwitch(): void {
-    this._mapCentricHandles.add(
+    this._mapCentricHandles?.add(
       watchUtils.watch(this, "selectedAttachmentViewerData", async () => {
         if (this.socialSharingEnabled) {
           this.updateSharePropIndexes();
@@ -1245,7 +1234,7 @@ class MapCentricViewModel extends declared(AttachmentViewerViewModel) {
     const { attributes } = selectedFeature;
     const { objectIdField } = layerData.featureLayer;
     const objectId = attributes[objectIdField];
-    const featureAttachments = attachments[objectId];
+    const featureAttachments = attachments?.[objectId];
     const currentAttachment =
       featureAttachments && featureAttachments[this.attachmentIndex];
     return !!currentAttachment;
@@ -1263,7 +1252,7 @@ class MapCentricViewModel extends declared(AttachmentViewerViewModel) {
     }
     this.featureWidget.set("visibleElements.title", false);
     const featureWidgetKey = "feature-widget";
-    this._mapCentricHandles.add(
+    this._mapCentricHandles?.add(
       watchUtils.when(this, "featureWidget", () => {
         if (this.socialSharingEnabled) {
           this.updateSharePropIndexes();
@@ -1311,7 +1300,7 @@ class MapCentricViewModel extends declared(AttachmentViewerViewModel) {
 
   // _handleFeatureWidgetContent
   private _handleFeatureWidgetContent(featureWidgetContentKey: string): void {
-    this._mapCentricHandles.remove(featureWidgetContentKey);
+    this._mapCentricHandles?.remove(featureWidgetContentKey);
     this.setFeatureInfo(this.featureWidget);
     this._setFeatureAttachments();
   }
@@ -1398,17 +1387,24 @@ class MapCentricViewModel extends declared(AttachmentViewerViewModel) {
     this.setupShare();
   }
 
-  //----------------------------------
+  private _removeFeatureHighlight(): void {
+    if (this.highlightedFeature.feature) {
+      this.highlightedFeature.feature.remove();
+      this.highlightedFeature.feature = null;
+    }
+  }
+
+  // ----------------------------------
   //
   //  End of Private Methods
   //
-  //----------------------------------
+  // ----------------------------------
 
-  //----------------------------------
+  // ----------------------------------
   //
   //  Public Methods
   //
-  //----------------------------------
+  // ----------------------------------
 
   // updateSelectedFeatureMapCentric
   updateSelectedFeatureMapCentric(graphic: __esri.Graphic) {
@@ -1561,10 +1557,7 @@ class MapCentricViewModel extends declared(AttachmentViewerViewModel) {
           this.view.popup.close();
         }
       } else {
-        if (this._highlightedFeatureMapCentric) {
-          this._highlightedFeatureMapCentric.remove();
-          this._highlightedFeatureMapCentric = null;
-        }
+        this._removeFeatureHighlight();
       }
     }
   }
@@ -1594,11 +1587,8 @@ class MapCentricViewModel extends declared(AttachmentViewerViewModel) {
         : config;
       this.view.popup.open(popupConfigToOpen);
     } else {
-      if (this._highlightedFeatureMapCentric) {
-        this._highlightedFeatureMapCentric.remove();
-        this._highlightedFeatureMapCentric = null;
-      }
-      this._highlightedFeatureMapCentric = layerView.highlight(graphic);
+      this._removeFeatureHighlight();
+      this.highlightedFeature.feature = layerView.highlight(graphic);
     }
   }
 

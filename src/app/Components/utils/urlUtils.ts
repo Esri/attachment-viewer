@@ -1,4 +1,4 @@
-import * as i18n from "dojo/i18n!../../nls/common";
+import i18n from "dojo/i18n!../../nls/common";
 
 type uriItem = {
   appName?: string;

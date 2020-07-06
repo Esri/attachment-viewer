@@ -1,13 +1,15 @@
-define(["require", "exports", "dojo/i18n!../../nls/common"], function (require, exports, i18n) {
+define(["require", "exports", "tslib", "dojo/i18n!../../nls/common"], function (require, exports, tslib_1, common_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.replace = exports.autoLink = void 0;
+    common_1 = tslib_1.__importDefault(common_1);
     // https://en.wikipedia.org/wiki/Uniform_Resource_Identifier#Examples
     var uriItems = [
         {
             id: "http",
             pattern: /^\s*(https?:\/\/([^\s]+))\s*$/i,
             target: "_blank",
-            label: i18n.view
+            label: common_1.default.view
         }
     ];
     function autoLink(value) {

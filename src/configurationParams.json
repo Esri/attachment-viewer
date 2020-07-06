@@ -1,265 +1,150 @@
 {
-  "configurationSettings": [
-    {
-      "category": "General",
-      "fields": [
-        {
-          "type": "itembrowser",
-          "fieldName": "webmap",
-          "label": "Select",
-          "itemTypes": ["Web Map"],
-          "conditions": ["4x", "attachments"],
-          "defaultContent": true,
-          "showOnLoad": true
+  "map": {
+    "conditions": ["attachments"]
+  },
+  "about": {
+    "appComprehension": {
+      "appComprehension": {
+        "title": {
+          "express": true,
+          "defaultValue": ""
         },
-        {
-          "type": "appproxies"
-        },
-        {
-          "type": "options",
-          "fieldName": "appMode",
-          "tooltip": "Choose whether the map or the attachment is prominent in the app window.",
-          "label": "App layout: ",
-          "options": [
-            {
-              "label": "Attachment",
-              "value": "photo-centric"
-            },
-            {
-              "label": "Map",
-              "value": "map-centric"
-            }
-          ]
-        },
-        {
-          "type": "multilayerandfieldselector",
-          "fieldName": "attachmentLayers",
-          "label": "Order layer features by specifying a layer and a field to sort by",
-          "tooltip": "Order layer features by specifying a layer and a field to sort by",
-          "fieldOptions": {
-            "multipleSelection": false,
-            "supportedTypes": [
-              "esriFieldTypeSmallInteger",
-              "esriFieldTypeInteger",
-              "esriFieldTypeSingle",
-              "esriFieldTypeDouble",
-              "esriFieldTypeString",
-              "esriFieldTypeDate",
-              "esriFieldTypeOID"
-            ]
+        "onboarding": {
+          "defaultValue": true,
+          "express": true,
+          "showOnboardingOnStart": {
+            "defaultValue": true
           },
-          "layerOptions": {
-            "supportedTypes": ["FeatureLayer"]
+          "onboardingButtonText": {
+            "defaultValue": "Okay"
+          },
+          "onboardingImage": {
+            "defaultValue": ""
+          },
+          "customOnboarding": {
+            "defaultValue": false,
+            "express": true,
+            "customOnboardingHTML": {
+              "defaultValue": "<h2><span style='color:#0079c1'>Welcome!</span></h2><p>View a location&rsquo;s attachments:</p><p>In addition to browsing through location details and attachments, use the following methods to explore the map:</p><ul><li>Select a feature on the map</li><li>If a search box is available, search for a specific feature</li></ul>"
+            }
           }
-        },
-        {
-          "type": "options",
-          "fieldName": "order",
-          "tooltip": "Select the scroll order of the features",
-          "label": "Select the scroll order of the features",
-          "options": [
-            {
-              "label": "Ascending",
-              "value": "ASC"
-            },
-            {
-              "label": "Descending",
-              "value": "DESC"
-            }
-          ]
-        },
-        {
-          "type": "string",
-          "fieldName": "title",
-          "tooltip": "Use this to title your app.",
-          "label": "Title of your application"
-        },
-        {
-          "type": "conditional",
-          "fieldName": "customOnboardingContentEnabled",
-          "label": "Customize onboarding panel text",
-          "condition": false,
-          "items": [
-            {
-              "type": "paragraph",
-              "value": "These are advanced settings that work best together. Define the structure of the onboarding panel via the html editor and then style it via the CSS input.  For more information on the HTML that can be used, see this topic <a href='https://doc.arcgis.com/en/arcgis-online/reference/supported-html.htm' target='_blank' rel='noopener'>format help</a> for more information."
-            },
-            {
-              "label": "Onboarding HTML",
-              "tooltip": "Use this to provide custom onboarding content",
-              "type": "string",
-              "fieldName": "customOnboardingHTML",
-              "stringFieldOption": "richtext"
-            }
-          ]
-        },
-        {
-          "type": "string",
-          "fieldName": "onboardingButtonText",
-          "tooltip": "Use this to update the button text on the onboarding panel",
-          "label": "Onboarding button text"
-        },
-        {
-          "type": "string",
-          "fieldName": "onboardingImage",
-          "tooltip": "Display an image via URL in the attachment container while the onboarding panel is active in the Attachment layout",
-          "label": "Enter an image URL to display an image when the onboarding panel is active‎ in the Attachment layout"
-        },
-        {
-          "type": "color",
-          "label": "Choose a header background color",
-          "fieldName": "headerBackground",
-          "transparency": true,
-          "noColor": true
-        },
-        {
-          "type": "color",
-          "label": "Choose a header text color",
-          "fieldName": "headerColor",
-          "transparency": true,
-          "noColor": true
-        },
-        {
-          "label": "Custom CSS",
-          "tooltip": "Use this to style different elements of the app",
-          "type": "string",
-          "fieldName": "customCSS"
         }
-      ]
+      }
     },
-    {
-      "category": "Options",
-      "fields": [
-        {
-          "type": "boolean",
-          "fieldName": "mapToolsExpanded",
-          "label": "Map tools open at start"
+    "featureComprehension": {
+      "featureComphrehension": {
+        "mapCentricTooltip": {
+          "defaultValue": false
         },
-        {
-          "type": "boolean",
-          "fieldName": "homeEnabled",
-          "label": "Home"
+        "address": {
+          "defaultValue": false
         },
-        {
-          "type": "boolean",
-          "fieldName": "zoomEnabled",
-          "label": "Zoom Controls"
+        "legend": {
+          "defaultValue": false,
+          "express": true
         },
-        {
-          "type": "boolean",
-          "fieldName": "legendEnabled",
-          "label": "Legend"
+        "imageDirection": {
+          "defaultValue": false
         },
-        {
-          "type": "boolean",
-          "fieldName": "layerListEnabled",
-          "label": "Layer List"
+        "order": {
+          "defaultValue": "ASC"
         },
-        {
-          "type": "boolean",
-          "fieldName": "fullScreenEnabled",
-          "label": "Full Screen"
-        },
-        {
-          "type": "boolean",
-          "fieldName": "downloadEnabled",
-          "label": "Enable image downloads"
-        },
-        {
-          "type": "boolean",
-          "fieldName": "socialSharingEnabled",
-          "label": "Enable social sharing"
-        },
-        {
-          "type": "boolean",
-          "fieldName": "addressEnabled",
-          "label": "Display the selected feature's address, if any"
-        },
-        {
-          "type": "scaleList",
-          "fieldName": "zoomLevel",
-          "label": "Select a scale for the Zoom To option"
-        },
-        {
-          "type": "boolean",
-          "fieldName": "selectFeaturesEnabled",
-          "label": "Enable feature selection"
-        },
-        {
-          "type": "boolean",
-          "fieldName": "onlyDisplayFeaturesWithAttachmentsIsEnabled",
-          "label": "Only display features that have attachments"
-        },
-        {
-          "type": "boolean",
-          "fieldName": "imageDirectionEnabled",
-          "label": "Display image direction icon, if available"
-        },
-        {
-          "type": "conditional",
-          "fieldName": "imagePanZoomEnabled",
-          "label": "Enable image pan/zoom",
-          "condition": false,
-          "items": [
-            {
-              "type": "paragraph",
-              "value": "Please note: Image pan/zoom tool is not available on IE11."
-            }
-          ]
-        },
-        {
-          "type": "boolean",
-          "fieldName": "mapCentricTooltipEnabled",
-          "label": "Enable feature label (Please note: This option only affects the the map focused layout.)"
+        "attachmentLayers": {
+          "express": false,
+          "config": {
+            "layerSelectionMode": "multiple",
+            "supportedLayerTypes": "*",
+            "supportedGeometryTypes": "*",
+            "supportsFieldSelection": true,
+            "fieldSelectionMode": "single",
+            "supportedFieldTypes": "*"
+          }
         }
-      ]
-    },
-    {
-      "category": "Search",
-      "fields": [
-        {
-          "type": "conditional",
-          "fieldName": "searchEnabled",
-          "label": "Search",
-          "condition": false,
-          "items": [
-            {
-              "type": "search",
-              "fieldName": "searchConfig",
-              "label": "Configure search options"
-            },
-            {
-              "type": "boolean",
-              "fieldName": "searchExpanded",
-              "label": "Search open at start"
-            }
-          ]
-        }
-      ]
+      }
     }
-  ],
-  "values": {
-    "downloadEnabled": false,
-    "socialSharingEnabled": true,
-    "homeEnabled": true,
-    "zoomEnabled": true,
-    "legendEnabled": false,
-    "layerListEnabled": false,
-    "fullScreenEnabled": false,
-    "customOnboardingContentEnabled": false,
-    "searchEnabled": true,
-    "zoomLevel": "32000",
-    "order": "ASC",
-    "addressEnabled": false,
-    "searchExpanded": true,
-    "mapToolsExpanded": true,
-    "mapCentricTooltipEnabled": false,
-    "headerBackground": "#0079c1",
-    "headerColor": "#ffffff",
-    "appMode": "photo-centric",
-    "selectFeaturesEnabled": false,
-    "onlyDisplayFeaturesWithAttachmentsIsEnabled": false,
-    "imageDirectionEnabled": false,
-    "imagePanZoomEnabled": false
+  },
+  "themeLayout": {
+    "layout": {
+      "appLayout": {
+        "defaultValue": "photo-centric",
+        "express": true
+      },
+      "mapToolsExpanded": {
+        "defaultValue": true,
+        "express": false
+      }
+    },
+    "theme": {
+      "applySharedTheme": {
+        "express": true,
+        "defaultValue": true
+      },
+      "headerColor": {
+        "defaultValue": "#ffffff",
+        "express": true
+      },
+      "headerBackground": {
+        "defaultValue": "#0079c1",
+        "express": true
+      },
+      "customCSS": {
+        "defaultValue": ""
+      }
+    }
+  },
+  "interactivity": {
+    "exploreNavigate": {
+      "explore": {
+        "home": {
+          "defaultValue": true
+        },
+        "mapZoom": {
+          "defaultValue": true
+        },
+        "fullScreen": {
+          "defaultValue": false
+        },
+        "zoomLevel": {
+          "defaultValue": 10000
+        },
+        "imagePanZoom": {
+          "defaultValue": true
+        }
+      }
+    },
+    "modify": {
+      "modify": {
+        "onlyDisplayFeaturesWithAttachments": {
+          "defaultValue": false
+        },
+        "layerList": {
+          "defaultValue": false
+        },
+        "selectFeatures": {
+          "defaultValue": false
+        }
+      }
+    },
+    "share": {
+      "share": {
+        "share": {
+          "defaultValue": true
+        },
+        "download": {
+          "defaultValue": false
+        }
+      }
+    },
+    "search": {
+      "defaultValue": true,
+      "express": true,
+      "searchOpenAtStart": {
+        "defaultValue": false,
+        "express": true
+      },
+      "searchConfiguration": {
+        "express": true
+      }
+    }
   }
 }

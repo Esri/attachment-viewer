@@ -1,27 +1,16 @@
-/// <amd-dependency path="esri/core/tsSupport/declareExtendsHelper" name="__extends" />
-/// <amd-dependency path="esri/core/tsSupport/decorateHelper" name="__decorate" />
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/core/tsSupport/decorateHelper", "dojo/i18n!../nls/common", "esri/core/accessorSupport/decorators", "esri/widgets/Widget", "esri/widgets/Expand/ExpandViewModel", "esri/widgets/support/widget", "./MobileExpand/support/widgetSupport"], function (require, exports, __extends, __decorate, i18n, decorators_1, Widget, ExpandViewModel, widget_1, widgetSupport_1) {
+// Copyright 2019 Esri
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//   http://www.apache.org/licenses/LICENSE-2.0
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.​
+define(["require", "exports", "tslib", "dojo/i18n!../nls/common", "esri/core/accessorSupport/decorators", "esri/widgets/Widget", "esri/widgets/Expand/ExpandViewModel", "esri/widgets/support/widget", "./MobileExpand/support/widgetSupport", "esri/core/Collection"], function (require, exports, tslib_1, common_1, decorators_1, Widget, ExpandViewModel, widget_1, widgetSupport_1, Collection) {
     "use strict";
-    // type ContentSource = string | HTMLElement | Widget | _WidgetBase;
+    common_1 = tslib_1.__importDefault(common_1);
     var CSS = {
         base: "esri-expand esri-widget esri-mobile-expand",
         modeAuto: "esri-expand--auto",
@@ -49,12 +38,12 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         mobileExpandComponent: "esri-mobile-expand__component"
     };
     var Expand = /** @class */ (function (_super) {
-        __extends(Expand, _super);
-        //--------------------------------------------------------------------------
+        tslib_1.__extends(Expand, _super);
+        // --------------------------------------------------------------------------
         //
         //  Lifecycle
         //
-        //--------------------------------------------------------------------------
+        // --------------------------------------------------------------------------
         /**
          * @constructor
          * @alias module:esri/widgets/Expand
@@ -63,15 +52,15 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
          *                                that may be passed into the constructor.
          */
         function Expand(params) {
-            var _this = _super.call(this) || this;
-            //--------------------------------------------------------------------------
+            var _this = _super.call(this, params) || this;
+            // --------------------------------------------------------------------------
             //
             //  Properties
             //
-            //--------------------------------------------------------------------------
-            //----------------------------------
+            // --------------------------------------------------------------------------
+            // ----------------------------------
             //  autoCollapse
-            //----------------------------------
+            // ----------------------------------
             /**
              * Automatically collapses the expand widget instance when the view's
              * {@link module:esri/views/View#viewpoint viewpoint} updates.
@@ -82,9 +71,9 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
              * @default false
              */
             _this.autoCollapse = null;
-            //----------------------------------
+            // ----------------------------------
             //  collapseIconClass
-            //----------------------------------
+            // ----------------------------------
             /**
              * Icon font used to style the Expand button.
              *
@@ -109,9 +98,9 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             //   }
             //   this._override("collapseIconClass", value);
             // }
-            //----------------------------------
+            // ----------------------------------
             //  collapseTooltip
-            //----------------------------------
+            // ----------------------------------
             /**
              * Tooltip to display to indicate Expand widget can be collapsed.
              *
@@ -121,9 +110,9 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
              * @default "Collapse" (English locale)
              */
             _this.collapseTooltip = "";
-            //----------------------------------
+            // ----------------------------------
             //  content
-            //----------------------------------
+            // ----------------------------------
             /**
              * The content to display within the expanded Expand widget.
              *
@@ -176,10 +165,10 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
              * @instance
              * @type {Node | string | module:esri/widgets/Widget}
              */
-            _this.content = [];
-            //----------------------------------
+            _this.content = new Collection();
+            // ----------------------------------
             //  expanded
-            //----------------------------------
+            // ----------------------------------
             /**
              * Indicates whether the widget is currently expanded or not.
              *
@@ -189,9 +178,9 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
              * @default false
              */
             _this.expanded = null;
-            //----------------------------------
+            // ----------------------------------
             //  expandIconClass
-            //----------------------------------
+            // ----------------------------------
             /**
              * Icon font used to style the Expand button.
              * Will automatically use the [content's](#content) iconClass if it has one.
@@ -216,9 +205,9 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             //   }
             //   this._override("expandIconClass", value);
             // }
-            //----------------------------------
+            // ----------------------------------
             //  expandTooltip
-            //----------------------------------
+            // ----------------------------------
             /**
              * Tooltip to display to indicate Expand widget can be expanded.
              *
@@ -230,9 +219,9 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             _this.expandTooltip = "";
             _this.expandIconClass = null;
             _this.collapseIconClass = null;
-            //----------------------------------
+            // ----------------------------------
             //  group
-            //----------------------------------
+            // ----------------------------------
             /**
              * This value associates two or more Expand widget instances with each other, allowing one
              * instance to auto collapse when another instance in the same group is expanded. For auto collapsing
@@ -265,9 +254,9 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
              * view.ui.add([expand1, expand2], "bottom-right");
              */
             _this.group = null;
-            //----------------------------------
+            // ----------------------------------
             //  iconNumber
-            //----------------------------------
+            // ----------------------------------
             /**
              * A number to display at the corner of the widget to indicate the number of, for example, open issues or unread notices.
              *
@@ -278,9 +267,9 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
              * @type {number}
              */
             _this.iconNumber = 0;
-            //----------------------------------
+            // ----------------------------------
             //  mode
-            //----------------------------------
+            // ----------------------------------
             /**
              * The mode in which the widget displays. These modes are listed below.
              *
@@ -297,9 +286,9 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
              * @type {string}
              */
             _this.mode = "auto";
-            //----------------------------------
+            // ----------------------------------
             //  view
-            //----------------------------------
+            // ----------------------------------
             /**
              * A reference to the {@link module:esri/views/MapView} or {@link module:esri/views/SceneView}. Set this to link the widget to a specific view.
              *
@@ -308,9 +297,9 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
              * @type {(module:esri/views/MapView | module:esri/views/SceneView)}
              */
             _this.view = null;
-            //----------------------------------
+            // ----------------------------------
             //  viewModel
-            //----------------------------------
+            // ----------------------------------
             /**
              * The view model for this widget. This is a class that contains all the logic
              * (properties and methods) that controls this widget's behavior. See the
@@ -325,11 +314,11 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             _this.viewModel = new ExpandViewModel();
             return _this;
         }
-        //--------------------------------------------------------------------------
+        // --------------------------------------------------------------------------
         //
         //  Public Methods
         //
-        //--------------------------------------------------------------------------
+        // --------------------------------------------------------------------------
         /**
          * Expand the widget.
          *
@@ -355,11 +344,11 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             this.viewModel.expanded = !this.viewModel.expanded;
         };
         Expand.prototype.render = function () {
-            var _a, _b, _c, _d, _e;
+            var _a, _b, _c, _d, _e, _f;
             var expanded = this.viewModel.expanded;
             var mode = this.mode;
-            var expandTooltip = this.expandTooltip || i18n.expand;
-            var collapseTooltip = this.collapseTooltip || i18n.collapse;
+            var expandTooltip = this.expandTooltip || common_1.default.expand;
+            var collapseTooltip = this.collapseTooltip || common_1.default.collapse;
             var title = expanded ? collapseTooltip : expandTooltip;
             var collapseIconClass = this.collapseIconClass;
             var expandIconClass = this.expandIconClass;
@@ -386,37 +375,43 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                 _e[CSS.modeFloating] = mode === "floating",
                 _e);
             var content = this._renderContent();
-            return (widget_1.tsx("div", { class: this.classes(CSS.base, baseClasses) },
-                widget_1.tsx("div", { bind: this, onclick: this._toggle, class: this.classes(CSS.expandMask, maskClasses) }),
-                widget_1.tsx("div", { class: this.classes(CSS.container, containerExpanded) },
-                    widget_1.tsx("div", { class: CSS.panel },
-                        !expanded ? (widget_1.tsx("div", { bind: this, onclick: this._toggle, onkeydown: this._toggle, "aria-label": title, title: title, role: "button", tabindex: "0", class: CSS.button },
-                            badgeNumberNode,
-                            widget_1.tsx("svg", { class: CSS.expandCollapseIcon, xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 16 16" },
-                                widget_1.tsx("path", { d: "M7.5 6.786l4.5-4.5V3.7L7.5 8.2 3 3.7V2.286zM3 8.286V9.7l4.5 4.5L12 9.7V8.286l-4.5 4.5z" })),
-                            widget_1.tsx("span", { class: CSS.text }, title))) : null,
-                        expandedBadgeNumberNode),
-                    widget_1.tsx("div", { class: this.classes(CSS.content, CSS.mobileExpandContent, contentClasses), bind: this }, content))));
+            var hide = (_f = {},
+                _f["esri-mobile-expand--hide"] = this.content.length === 0,
+                _f);
+            return (widget_1.tsx("div", { class: this.classes(CSS.base, baseClasses, hide) }, this.content.length > 0
+                ? [
+                    widget_1.tsx("div", { bind: this, onclick: this._toggle, class: this.classes(CSS.expandMask, maskClasses) }),
+                    widget_1.tsx("div", { class: this.classes(CSS.container, containerExpanded) },
+                        widget_1.tsx("div", { class: CSS.panel },
+                            !expanded ? (widget_1.tsx("div", { bind: this, onclick: this._toggle, onkeydown: this._toggle, "aria-label": title, title: title, role: "button", tabindex: "0", class: CSS.button },
+                                badgeNumberNode,
+                                widget_1.tsx("svg", { class: CSS.expandCollapseIcon, xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 16 16" },
+                                    widget_1.tsx("path", { d: "M7.5 6.786l4.5-4.5V3.7L7.5 8.2 3 3.7V2.286zM3 8.286V9.7l4.5 4.5L12 9.7V8.286l-4.5 4.5z" })),
+                                widget_1.tsx("span", { class: CSS.text }, title))) : null,
+                            expandedBadgeNumberNode),
+                        widget_1.tsx("div", { class: this.classes(CSS.content, CSS.mobileExpandContent, contentClasses), bind: this }, content))
+                ]
+                : null));
         };
-        //--------------------------------------------------------------------------
+        // --------------------------------------------------------------------------
         //
         //  Private Methods
         //
-        //--------------------------------------------------------------------------
+        // --------------------------------------------------------------------------
         Expand.prototype._toggle = function () {
             this.toggle();
         };
         Expand.prototype._renderContent = function () {
             var _a, _b;
-            var components = this.content.map(function (component) {
+            var components = this.content.toArray().map(function (component) {
                 if (widgetSupport_1.isWidget(component)) {
-                    return (widget_1.tsx("div", { class: CSS.mobileExpandComponent }, component.render()));
+                    return (widget_1.tsx("div", { key: component.id, class: CSS.mobileExpandComponent }, component.render()));
                 }
                 return null;
             });
             var expanded = this.viewModel.expanded;
-            var expandTooltip = this.expandTooltip || i18n.expand;
-            var collapseTooltip = this.collapseTooltip || i18n.collapse;
+            var expandTooltip = this.expandTooltip || common_1.default.expand;
+            var collapseTooltip = this.collapseTooltip || common_1.default.collapse;
             var title = expanded ? collapseTooltip : expandTooltip;
             var collapseIconClass = this.collapseIconClass;
             var expandIconClass = this.expandIconClass;
@@ -445,62 +440,62 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             var content = this;
             node.appendChild(content);
         };
-        __decorate([
+        tslib_1.__decorate([
             decorators_1.aliasOf("viewModel.autoCollapse")
         ], Expand.prototype, "autoCollapse", void 0);
-        __decorate([
+        tslib_1.__decorate([
             decorators_1.property(),
             widget_1.renderable()
         ], Expand.prototype, "collapseTooltip", void 0);
-        __decorate([
+        tslib_1.__decorate([
             decorators_1.property(),
             widget_1.renderable()
         ], Expand.prototype, "content", void 0);
-        __decorate([
+        tslib_1.__decorate([
             decorators_1.aliasOf("viewModel.expanded"),
             widget_1.renderable()
         ], Expand.prototype, "expanded", void 0);
-        __decorate([
+        tslib_1.__decorate([
             decorators_1.property(),
             widget_1.renderable()
         ], Expand.prototype, "expandTooltip", void 0);
-        __decorate([
+        tslib_1.__decorate([
             decorators_1.property(),
             widget_1.renderable()
         ], Expand.prototype, "expandIconClass", void 0);
-        __decorate([
+        tslib_1.__decorate([
             decorators_1.property(),
             widget_1.renderable()
         ], Expand.prototype, "collapseIconClass", void 0);
-        __decorate([
+        tslib_1.__decorate([
             decorators_1.aliasOf("viewModel.group")
         ], Expand.prototype, "group", void 0);
-        __decorate([
+        tslib_1.__decorate([
             decorators_1.property(),
             widget_1.renderable()
         ], Expand.prototype, "iconNumber", void 0);
-        __decorate([
+        tslib_1.__decorate([
             decorators_1.property(),
             widget_1.renderable()
         ], Expand.prototype, "mode", void 0);
-        __decorate([
+        tslib_1.__decorate([
             decorators_1.aliasOf("viewModel.view"),
             widget_1.renderable()
         ], Expand.prototype, "view", void 0);
-        __decorate([
+        tslib_1.__decorate([
             decorators_1.property({
                 type: ExpandViewModel
             }),
             widget_1.renderable("viewModel.state")
         ], Expand.prototype, "viewModel", void 0);
-        __decorate([
+        tslib_1.__decorate([
             widget_1.accessibleHandler()
         ], Expand.prototype, "_toggle", null);
-        Expand = __decorate([
+        Expand = tslib_1.__decorate([
             decorators_1.subclass("esri.widgets.Expand")
         ], Expand);
         return Expand;
-    }(decorators_1.declared(Widget)));
+    }(Widget));
     return Expand;
 });
 //# sourceMappingURL=MobileExpand.js.map

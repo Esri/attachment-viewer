@@ -8,7 +8,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.​
-define(["require", "exports", "dojo/text!config/applicationBase.json", "dojo/text!config/application.json", "ApplicationBase/ApplicationBase", "./Main", "dojo/i18n!./userTypesError/nls/resources"], function (require, exports, applicationBaseConfig, applicationConfig, ApplicationBase, Application, i18n) {
+define(["require", "exports", "dojo/text!config/applicationBase.json", "dojo/text!config/application.json", "ApplicationBase/ApplicationBase", "./Main", "dojo/i18n!./userTypesError/nls/resources", "./Components/Unsupported/UnsupportedBrowser"], function (require, exports, applicationBaseConfig, applicationConfig, ApplicationBase, Application, i18n, UnsupportedBrowser) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var Main = new Application();
@@ -17,11 +17,21 @@ define(["require", "exports", "dojo/text!config/applicationBase.json", "dojo/tex
         settings: applicationBaseConfig
     })
         .load()
-        .then(function (base) { return Main.init(base); }, function (message) {
+        .then(function (base) {
+        if (base["isIE"]) {
+            document.body.classList.remove("configurable-application--loading");
+            new UnsupportedBrowser({
+                container: document.body,
+                isIE11: true
+            });
+            return;
+        }
+        return Main.init(base);
+    }, function (message) {
         if (message === "identity-manager:not-authorized") {
             document.body.classList.remove("configurable-application--loading");
             document.body.classList.add("app-error");
-            document.getElementById("app-container").innerHTML = "<h1>" + i18n.licenseError.title + "</h1><p>" + i18n.licenseError.message + "</p>";
+            document.querySelector(".app-container").innerHTML = "<h1>" + i18n.licenseError.title + "</h1><p>" + i18n.licenseError.message + "</p>";
         }
     });
 });

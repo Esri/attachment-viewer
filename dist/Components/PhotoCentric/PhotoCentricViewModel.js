@@ -1,87 +1,21 @@
-/// <amd-dependency path="esri/core/tsSupport/declareExtendsHelper" name="__extends" />
-/// <amd-dependency path="esri/core/tsSupport/decorateHelper" name="__decorate" />
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-var __assign = (this && this.__assign) || function () {
-    __assign = Object.assign || function(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                t[p] = s[p];
-        }
-        return t;
-    };
-    return __assign.apply(this, arguments);
-};
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-    function verb(n) { return function (v) { return step([n, v]); }; }
-    function step(op) {
-        if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
-            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [op[0] & 2, t.value];
-            switch (op[0]) {
-                case 0: case 1: t = op; break;
-                case 4: _.label++; return { value: op[1], done: false };
-                case 5: _.label++; y = op[1]; op = [0]; continue;
-                case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                default:
-                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                    if (t[2]) _.ops.pop();
-                    _.trys.pop(); continue;
-            }
-            op = body.call(thisArg, _);
-        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-    }
-};
-var __spreadArrays = (this && this.__spreadArrays) || function () {
-    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
-    for (var r = Array(s), k = 0, i = 0; i < il; i++)
-        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
-            r[k] = a[j];
-    return r;
-};
-define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/core/tsSupport/decorateHelper", "esri/core/accessorSupport/decorators", "esri/core/Collection", "esri/core/Handles", "esri/core/watchUtils", "esri/widgets/Feature", "esri/tasks/support/Query", "esri/views/layers/support/FeatureEffect", "../AttachmentViewer/AttachmentViewerLayerData", "../AttachmentViewer/AttachmentViewerViewModel", "./PhotoCentricData", "../AttachmentViewer/SelectedFeatureAttachments"], function (require, exports, __extends, __decorate, decorators_1, Collection, Handles, watchUtils, Feature, Query, FeatureEffect, AttachmentViewerLayerData, AttachmentViewerViewModel, PhotoCentricData, SelectedFeatureAttachments) {
+// Copyright 2019 Esri
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//   http://www.apache.org/licenses/LICENSE-2.0
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.​
+define(["require", "exports", "tslib", "esri/core/accessorSupport/decorators", "esri/core/Collection", "esri/core/Handles", "esri/core/watchUtils", "esri/widgets/Feature", "esri/tasks/support/Query", "esri/views/layers/support/FeatureEffect", "../AttachmentViewer/AttachmentViewerLayerData", "../AttachmentViewer/AttachmentViewerViewModel", "./PhotoCentricData", "../AttachmentViewer/SelectedFeatureAttachments"], function (require, exports, tslib_1, decorators_1, Collection, Handles, watchUtils, Feature, Query, FeatureEffect, AttachmentViewerLayerData, AttachmentViewerViewModel, PhotoCentricData, SelectedFeatureAttachments) {
     "use strict";
     var PhotoCentricViewModel = /** @class */ (function (_super) {
-        __extends(PhotoCentricViewModel, _super);
+        tslib_1.__extends(PhotoCentricViewModel, _super);
         function PhotoCentricViewModel() {
             var _this = _super !== null && _super.apply(this, arguments) || this;
             _this._photoCentricHandles = new Handles();
             _this._queryingForFeaturesPhotoCentric = null;
-            _this._highlightedFeaturePhotoCentric = null;
             _this._performingHitTestPhotoCentric = null;
             _this._currentSketchExtentPhotoCentric = null;
             _this._queryingForObjectIds = null;
@@ -92,8 +26,6 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             _this._queryingFeatures = null;
             // currentImageUrl
             _this.currentImageUrl = null;
-            // attachmentLayer
-            _this.attachmentLayer = null;
             // attachmentLayers
             _this.attachmentLayers = null;
             // imagePanZoomEnabled
@@ -106,14 +38,15 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             _this.attachmentIndex = null;
             // selectedLayerId
             _this.selectedLayerId = null;
+            _this.highlightedFeature = null;
             return _this;
         }
         Object.defineProperty(PhotoCentricViewModel.prototype, "queryingState", {
-            //----------------------------------
+            // ----------------------------------
             //
             //  state - readOnly
             //
-            //----------------------------------
+            // ----------------------------------
             get: function () {
                 var ready = this.get("view.ready");
                 return ready
@@ -126,20 +59,39 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                         ? "loading"
                         : "disabled";
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         PhotoCentricViewModel.prototype.initialize = function () {
+            var _this = this;
+            var _a, _b;
+            (_a = this._photoCentricHandles) === null || _a === void 0 ? void 0 : _a.add(watchUtils.watch(this, "appMode", function () {
+                _this._removeFeatureHighlight();
+            }));
             this._initAppOnViewReady();
-            this._initializeSketch();
+            (_b = this._photoCentricHandles) === null || _b === void 0 ? void 0 : _b.add([
+                watchUtils.whenTrue(this, "selectFeaturesEnabled", function () {
+                    _this._initializeSketch();
+                }),
+                ,
+                watchUtils.whenFalse(this, "selectFeaturesEnabled", function () {
+                    var _a;
+                    if ((_a = _this.layerSwitcher) === null || _a === void 0 ? void 0 : _a.featureLayerCollection) {
+                        _this._layerViewLoadPromises = [];
+                        _this._initLayerViewLoadPromises(_this.layerSwitcher.featureLayerCollection);
+                    }
+                })
+            ]);
             this._initSelectedAttachmentViewerDataWatcher();
         };
         // _initAppOnViewReady
         PhotoCentricViewModel.prototype._initAppOnViewReady = function () {
             var _this = this;
+            var _a;
             var photoCentricInit = "photo-centric-init";
-            this._photoCentricHandles.add(watchUtils.whenOnce(this, "view.ready", function () {
-                _this._photoCentricHandles.remove(photoCentricInit);
+            (_a = this._photoCentricHandles) === null || _a === void 0 ? void 0 : _a.add(watchUtils.whenOnce(this, "view.ready", function () {
+                var _a;
+                (_a = _this._photoCentricHandles) === null || _a === void 0 ? void 0 : _a.remove(photoCentricInit);
                 _this._initializeAppData();
                 _this._detectFeatureClick();
             }), photoCentricInit);
@@ -147,10 +99,11 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         // _initSelectedAttachmentViewerDataWatcher
         PhotoCentricViewModel.prototype._initSelectedAttachmentViewerDataWatcher = function () {
             var _this = this;
-            this._photoCentricHandles.add([
-                watchUtils.watch(this, "selectedAttachmentViewerData", function () { return __awaiter(_this, void 0, void 0, function () {
+            var _a;
+            (_a = this._photoCentricHandles) === null || _a === void 0 ? void 0 : _a.add([
+                watchUtils.watch(this, "selectedAttachmentViewerData", function () { return tslib_1.__awaiter(_this, void 0, void 0, function () {
                     var _a, socialSharingEnabled, defaultObjectId, selectedLayerId;
-                    return __generator(this, function (_b) {
+                    return tslib_1.__generator(this, function (_b) {
                         _a = this, socialSharingEnabled = _a.socialSharingEnabled, defaultObjectId = _a.defaultObjectId, selectedLayerId = _a.selectedLayerId;
                         if (socialSharingEnabled &&
                             defaultObjectId !== null &&
@@ -247,6 +200,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                 attachmentViewerData.set("attachments", null);
             })
                 .then(function (attachmentsRes) {
+                // console.log(attachmentsRes);
                 _this._handleOnlyDisplayFeaturesWithAttachmentsExpression(attachmentViewerData, attachmentsRes);
                 attachmentViewerData.set("attachments", attachmentsRes);
             });
@@ -323,9 +277,10 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         // _handleAttachmentViewerDataSortField
         PhotoCentricViewModel.prototype._handleAttachmentViewerDataSortField = function (attachmentViewerData) {
             var featureLayer = attachmentViewerData.layerData.featureLayer;
-            var attachmentLayers = JSON.parse(this.attachmentLayers);
-            if (attachmentLayers && attachmentLayers.length > 0) {
-                this._handleAttachmentLayers(attachmentLayers, attachmentViewerData, featureLayer);
+            var attachmentLayers = this.attachmentLayers;
+            var layers = attachmentLayers === null || attachmentLayers === void 0 ? void 0 : attachmentLayers.layers;
+            if (layers && layers.length > 0) {
+                this._handleAttachmentLayers(layers, attachmentViewerData, featureLayer);
             }
             else {
                 this._handleAttachmentLayer(attachmentViewerData, featureLayer);
@@ -380,7 +335,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             if (sketchQuery) {
                 var where = this._createUpdatedDefinitionExpression(attachmentViewerData);
                 var updatedSketchQuery = where
-                    ? __assign(__assign({}, sketchQuery), { where: where }) : sketchQuery;
+                    ? tslib_1.__assign(tslib_1.__assign({}, sketchQuery), { where: where }) : sketchQuery;
                 featureQuery = updatedSketchQuery;
             }
             else {
@@ -408,7 +363,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             return this.onlyDisplayFeaturesWithAttachmentsIsEnabled &&
                 attachmentObjectIds &&
                 attachmentObjectIds.length > 0
-                ? new Query(__assign(__assign({}, queryConfig), { objectIds: attachmentObjectIds }))
+                ? new Query(tslib_1.__assign(tslib_1.__assign({}, queryConfig), { objectIds: attachmentObjectIds }))
                 : new Query(queryConfig);
         };
         // _createUpdatedDefinitionExpression
@@ -484,7 +439,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                     return;
                 }
                 featureObjectIds.removeAll();
-                featureObjectIds.addMany(__spreadArrays(objectIds));
+                featureObjectIds.addMany(tslib_1.__spreadArrays(objectIds));
                 var featureQuery = _this._setupFeatureQuery(attachmentViewerData);
                 _this._queryFeaturesPromises.push(attachmentViewerData.layerData.featureLayer
                     .queryFeatures(featureQuery)
@@ -561,7 +516,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             var _this = this;
             var _photoCentricHandles = this._photoCentricHandles;
             var selectFeaturesEnabled = "select-features-enabled";
-            _photoCentricHandles.add(watchUtils.whenOnce(this, "selectFeaturesEnabled", function () {
+            _photoCentricHandles.add(watchUtils.when(this, "selectFeaturesEnabled", function () {
                 _photoCentricHandles.remove(selectFeaturesEnabled);
                 var sketchWidgetInit = "sketch-widget-init";
                 _photoCentricHandles.add(watchUtils.whenOnce(_this, "sketchWidget", function () {
@@ -573,22 +528,31 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         // _handlesketch
         PhotoCentricViewModel.prototype._handleSketch = function () {
             var _this = this;
+            var _a;
             var sketchWidgetKey = "sketch-widget";
-            this._photoCentricHandles.add(watchUtils.when(this, "selectedAttachmentViewerData.layerData.featureLayer", function () {
-                var _a = _this, sketchWidget = _a.sketchWidget, graphicsLayer = _a.graphicsLayer;
+            (_a = this._photoCentricHandles) === null || _a === void 0 ? void 0 : _a.add(watchUtils.when(this, "selectedAttachmentViewerData.layerData.featureLayer", function () {
+                var _a;
+                var _b = _this, sketchWidget = _b.sketchWidget, graphicsLayer = _b.graphicsLayer;
                 _this._watchSketchCreateAndUpdate(sketchWidget, graphicsLayer);
                 _this._watchSketchDelete(sketchWidget);
-                _this._photoCentricHandles.remove(sketchWidgetKey);
+                (_a = _this._photoCentricHandles) === null || _a === void 0 ? void 0 : _a.remove(sketchWidgetKey);
             }), sketchWidgetKey);
         };
         // _watchSketchCreateAndUpdate
         PhotoCentricViewModel.prototype._watchSketchCreateAndUpdate = function (sketchWidget, graphicsLayer) {
             var _this = this;
-            this._photoCentricHandles.add([
+            var _a;
+            (_a = this._photoCentricHandles) === null || _a === void 0 ? void 0 : _a.add([
                 sketchWidget.on("create", function (sketchEvent) {
+                    if (_this.appMode === "map-centric") {
+                        return;
+                    }
                     _this._handleSketchEvent(sketchEvent, graphicsLayer);
                 }),
                 sketchWidget.on("update", function (sketchEvent) {
+                    if (_this.appMode === "map-centric") {
+                        return;
+                    }
                     _this._handleSketchEvent(sketchEvent, graphicsLayer);
                 })
             ]);
@@ -617,7 +581,11 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         // _watchSketchDelete
         PhotoCentricViewModel.prototype._watchSketchDelete = function (sketchWidget) {
             var _this = this;
-            this._photoCentricHandles.add(sketchWidget.on("delete", function () {
+            var _a;
+            (_a = this._photoCentricHandles) === null || _a === void 0 ? void 0 : _a.add(sketchWidget.on("delete", function () {
+                if (_this.appMode === "map-centric") {
+                    return;
+                }
                 _this.attachmentViewerDataCollection.forEach(function (attachmentViewerData) {
                     attachmentViewerData.set("layerData.layerView.effect", null);
                 });
@@ -640,7 +608,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             return attachmentObjectIds &&
                 attachmentObjectIds.length > 0 &&
                 this.onlyDisplayFeaturesWithAttachmentsIsEnabled
-                ? __assign(__assign({}, queryConfig), { objectIds: __spreadArrays(attachmentObjectIds) }) : queryConfig;
+                ? tslib_1.__assign(tslib_1.__assign({}, queryConfig), { objectIds: tslib_1.__spreadArrays(attachmentObjectIds) }) : queryConfig;
         };
         // _handleSketchFeatureEffect
         PhotoCentricViewModel.prototype._handleSketchFeatureEffect = function (geometry) {
@@ -664,6 +632,9 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         PhotoCentricViewModel.prototype._detectFeatureClick = function () {
             var _this = this;
             return this.view.on("click", function (event) {
+                if (_this.appMode === "map-centric") {
+                    return;
+                }
                 if (_this.queryingState !== "ready") {
                     return;
                 }
@@ -741,9 +712,9 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         };
         // _removeFeatureHighlight
         PhotoCentricViewModel.prototype._removeFeatureHighlight = function () {
-            if (this._highlightedFeaturePhotoCentric) {
-                this._highlightedFeaturePhotoCentric.remove();
-                this._highlightedFeaturePhotoCentric = null;
+            if (this.highlightedFeature.feature) {
+                this.highlightedFeature.feature.remove();
+                this.highlightedFeature.feature = null;
             }
         };
         // _getHitTestAttachmentViewerData
@@ -785,6 +756,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         };
         // _setFeatureWidget
         PhotoCentricViewModel.prototype._setFeatureWidget = function () {
+            var _a;
             var featureWidget = new Feature({
                 graphic: this.selectedAttachmentViewerData.selectedFeature,
                 map: this.view.map,
@@ -793,13 +765,14 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             this.set("featureWidget", featureWidget);
             this.featureWidget.set("visibleElements.title", false);
             var featureWidgetKey = "feature-widget";
-            this._photoCentricHandles.add(this._watchFeatureWidgetLoad(featureWidgetKey), featureWidgetKey);
+            (_a = this._photoCentricHandles) === null || _a === void 0 ? void 0 : _a.add(this._watchFeatureWidgetLoad(featureWidgetKey), featureWidgetKey);
         };
         // _watchFeatureWidgetLoad
         PhotoCentricViewModel.prototype._watchFeatureWidgetLoad = function (featureWidgetKey) {
             var _this = this;
             return watchUtils.whenOnce(this, "featureWidget.viewModel.content", function () {
-                _this._photoCentricHandles.remove(featureWidgetKey);
+                var _a;
+                (_a = _this._photoCentricHandles) === null || _a === void 0 ? void 0 : _a.remove(featureWidgetKey);
                 _this._setupFeatureWidgetContent();
             });
         };
@@ -831,7 +804,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             var attachmentsArr = featureAttachments && featureAttachments.length > 0
                 ? featureAttachments
                 : [];
-            var attachments = new Collection(__spreadArrays(attachmentsArr));
+            var attachments = new Collection(tslib_1.__spreadArrays(attachmentsArr));
             var selectedFeatureAttachments = new SelectedFeatureAttachments({
                 attachments: attachments,
                 currentIndex: currentIndex
@@ -847,7 +820,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             var attributes = selectedFeature.attributes;
             var objectIdField = layerData.featureLayer.objectIdField;
             var objectId = attributes[objectIdField];
-            var featureAttachments = attachments[objectId];
+            var featureAttachments = attachments === null || attachments === void 0 ? void 0 : attachments[objectId];
             var currentAttachment = featureAttachments && featureAttachments[this.attachmentIndex];
             return !!currentAttachment;
         };
@@ -893,8 +866,9 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         PhotoCentricViewModel.prototype._handleSearchWidgets = function () {
             var _this = this;
             return watchUtils.whenOnce(this, ["searchWidget"], function () {
+                var _a;
                 _this.searchWidget.popupEnabled = false;
-                _this._photoCentricHandles.add(_this._watchSelectedSearchResults());
+                (_a = _this._photoCentricHandles) === null || _a === void 0 ? void 0 : _a.add(_this._watchSelectedSearchResults());
             });
         };
         // _watchSelectedSearchResults
@@ -931,9 +905,11 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         // _setupSocialSharing
         PhotoCentricViewModel.prototype._setupSocialSharing = function () {
             var _this = this;
+            var _a;
             var socialsharing = "social-sharing";
-            this._photoCentricHandles.add(watchUtils.when(this, "socialSharingEnabled", function () {
-                _this._photoCentricHandles.remove(socialsharing);
+            (_a = this._photoCentricHandles) === null || _a === void 0 ? void 0 : _a.add(watchUtils.when(this, "socialSharingEnabled", function () {
+                var _a;
+                (_a = _this._photoCentricHandles) === null || _a === void 0 ? void 0 : _a.remove(socialsharing);
                 _this.setupShare();
             }), socialsharing);
         };
@@ -948,8 +924,9 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             }
             var featureLayer = attachmentViewerData.layerData.featureLayer;
             if ((selectedLayerId && socialSharingEnabled) ||
-                !this._currentSketchExtentPhotoCentric)
+                !this._currentSketchExtentPhotoCentric) {
                 this.set("layerSwitcher.selectedLayer", featureLayer);
+            }
             this.set("layerSwitcher.selectedLayerId", featureLayer.id);
             this.set("selectedAttachmentViewerData", attachmentViewerData);
         };
@@ -1031,7 +1008,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                 return;
             }
             var selectedFeature = this._setSelectedFeature(selectedAttachmentViewerData);
-            if (this.addressEnabled && selectedFeature) {
+            if (selectedFeature) {
                 this.getAddress(selectedFeature.geometry);
             }
             this._setSelectedFeatureHighlight(selectedAttachmentViewerData, selectedFeature);
@@ -1041,13 +1018,13 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         PhotoCentricViewModel.prototype._setSelectedFeatureHighlight = function (selectedAttachmentViewerData, selectedFeature) {
             this._removeFeatureHighlight();
             var layerView = selectedAttachmentViewerData.layerData.layerView;
-            this._highlightedFeaturePhotoCentric = layerView.highlight(selectedFeature);
+            this.highlightedFeature.feature = layerView.highlight(selectedFeature);
         };
-        //----------------------------------
+        // ----------------------------------
         //
         //  SCROLL FEATURES
         //
-        //----------------------------------
+        // ----------------------------------
         // previousFeature
         PhotoCentricViewModel.prototype.previousFeature = function () {
             var selectedAttachmentViewerData = this
@@ -1193,11 +1170,11 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             selectedAttachmentViewerData.objectIdIndex =
                 objectIdIndex !== -1 ? objectIdIndex : 0;
         };
-        //----------------------------------
+        // ----------------------------------
         //
         //  Highlight
         //
-        //----------------------------------
+        // ----------------------------------
         // _highlightFeature
         PhotoCentricViewModel.prototype._highlightFeature = function (layerFeatureIndex) {
             this._removeFeatureHighlight();
@@ -1207,7 +1184,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                 ? layerFeatures.getItemAt(layerFeatureIndex)
                 : selectedFeature;
             var layerView = this.selectedAttachmentViewerData.get("layerData.layerView");
-            this._highlightedFeaturePhotoCentric =
+            this.highlightedFeature.feature =
                 layerView && feature && layerView.highlight(feature);
         };
         // updateSelectedFeatureFromClickOrSearch
@@ -1291,41 +1268,41 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                 this.set("imageIsLoaded", false);
             }
         };
-        __decorate([
+        tslib_1.__decorate([
             decorators_1.property({
                 dependsOn: ["view.ready", "imageIsLoaded"],
                 readOnly: true
             })
         ], PhotoCentricViewModel.prototype, "queryingState", null);
-        __decorate([
+        tslib_1.__decorate([
             decorators_1.property()
         ], PhotoCentricViewModel.prototype, "currentImageUrl", void 0);
-        __decorate([
-            decorators_1.property()
-        ], PhotoCentricViewModel.prototype, "attachmentLayer", void 0);
-        __decorate([
+        tslib_1.__decorate([
             decorators_1.property()
         ], PhotoCentricViewModel.prototype, "attachmentLayers", void 0);
-        __decorate([
+        tslib_1.__decorate([
             decorators_1.property()
         ], PhotoCentricViewModel.prototype, "imagePanZoomEnabled", void 0);
-        __decorate([
+        tslib_1.__decorate([
             decorators_1.property()
         ], PhotoCentricViewModel.prototype, "order", void 0);
-        __decorate([
+        tslib_1.__decorate([
             decorators_1.property()
         ], PhotoCentricViewModel.prototype, "defaultObjectId", void 0);
-        __decorate([
+        tslib_1.__decorate([
             decorators_1.property()
         ], PhotoCentricViewModel.prototype, "attachmentIndex", void 0);
-        __decorate([
+        tslib_1.__decorate([
             decorators_1.property()
         ], PhotoCentricViewModel.prototype, "selectedLayerId", void 0);
-        PhotoCentricViewModel = __decorate([
+        tslib_1.__decorate([
+            decorators_1.property()
+        ], PhotoCentricViewModel.prototype, "highlightedFeature", void 0);
+        PhotoCentricViewModel = tslib_1.__decorate([
             decorators_1.subclass("PhotoCentricViewModel")
         ], PhotoCentricViewModel);
         return PhotoCentricViewModel;
-    }(decorators_1.declared(AttachmentViewerViewModel)));
+    }(AttachmentViewerViewModel));
     return PhotoCentricViewModel;
 });
 //# sourceMappingURL=PhotoCentricViewModel.js.map

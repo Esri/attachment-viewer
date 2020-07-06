@@ -1,31 +1,22 @@
-/// <amd-dependency path="esri/core/tsSupport/declareExtendsHelper" name="__extends" />
-/// <amd-dependency path="esri/core/tsSupport/decorateHelper" name="__decorate" />
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/core/tsSupport/decorateHelper", "esri/core/accessorSupport/decorators", "esri/core/watchUtils", "esri/widgets/support/widget", "esri/widgets/Widget", "dojo/i18n!./MapCentric/nls/resources", "dojo/i18n!../nls/common", "./utils/urlUtils", "./utils/utils", "./utils/imageUtils", "./MapCentric/MapCentricViewModel", "ImageViewer"], function (require, exports, __extends, __decorate, decorators_1, watchUtils, widget_1, Widget, i18n, i18nCommon, urlUtils_1, utils_1, imageUtils_1, MapCentricViewModel, ImageViewer) {
+// Copyright 2019 Esri
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//   http://www.apache.org/licenses/LICENSE-2.0
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.​
+define(["require", "exports", "tslib", "esri/core/accessorSupport/decorators", "esri/core/watchUtils", "esri/widgets/support/widget", "esri/widgets/Widget", "dojo/i18n!./MapCentric/nls/resources", "dojo/i18n!../nls/common", "./utils/urlUtils", "./utils/utils", "./MapCentric/MapCentricViewModel", "ImageViewer"], function (require, exports, tslib_1, decorators_1, watchUtils, widget_1, Widget, resources_1, common_1, urlUtils_1, utils_1, MapCentricViewModel, ImageViewer) {
     "use strict";
-    //----------------------------------
+    resources_1 = tslib_1.__importDefault(resources_1);
+    common_1 = tslib_1.__importDefault(common_1);
+    // ----------------------------------
     //
     //  CSS Classes
     //
-    //----------------------------------
+    // ----------------------------------
     var CSS = {
         // general
         base: "esri-map-centric",
@@ -158,6 +149,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         pdf: "esri-map-centric__pdf",
         pdfSVG: "esri-map-centric__pdf-svg",
         pdfName: "esri-map-centric__pdf-name",
+        logo: "esri-map-centric__logo",
         // video
         videoParentContainer: "esri-map-centric__video-parent-container",
         // image
@@ -201,14 +193,14 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         }
     }
     var MapCentric = /** @class */ (function (_super) {
-        __extends(MapCentric, _super);
+        tslib_1.__extends(MapCentric, _super);
         function MapCentric(value) {
-            var _this = _super.call(this) || this;
-            //----------------------------------
+            var _this = _super.call(this, value) || this;
+            // ----------------------------------
             //
             //  Private Variables
             //
-            //----------------------------------
+            // ----------------------------------
             _this._currentMobileScreen = null;
             _this._expandAttachmentNode = null;
             _this._featureContentAvailable = null;
@@ -223,11 +215,12 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             _this._onboardingPanelIsOpen = null;
             _this._triggerScrollElement = null;
             _this._zoomSliderNode = null;
-            //----------------------------------
+            // ----------------------------------
             //
             //  Properties
             //
-            //----------------------------------
+            // ----------------------------------
+            _this.applySharedTheme = null;
             // addressEnabled
             _this.addressEnabled = null;
             // appMode
@@ -276,6 +269,8 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             _this.onlyDisplayFeaturesWithAttachmentsIsEnabled = null;
             // order
             _this.order = null;
+            // sharedTheme
+            _this.sharedTheme = null;
             // searchWidget
             _this.searchWidget = null;
             // selectFeaturesEnabled
@@ -296,13 +291,17 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             _this.title = null;
             // view
             _this.view = null;
+            // withinConfigurationExperience
+            _this.withinConfigurationExperience = null;
             // viewModel
             _this.viewModel = new MapCentricViewModel();
             // zoomLevel
             _this.zoomLevel = null;
+            _this.highlightedFeature = null;
             return _this;
         }
         MapCentric.prototype.postInitialize = function () {
+            var _this = this;
             if (this.onboardingIsEnabled) {
                 this.own([this._handleOnboarding()]);
             }
@@ -322,6 +321,14 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             if (this.addressEnabled) {
                 this.own([this._watchSelectedFeatureAddress()]);
             }
+            this.own(watchUtils.whenFalse(this, "imagePanZoomEnabled", function () {
+                if (_this._imageViewer) {
+                    _this._imageViewer.destroy();
+                    _this._imageViewer = null;
+                    _this._imageViewerSet = false;
+                    _this._imageZoomLoaded = false;
+                }
+            }));
         };
         // _handleOnboarding
         MapCentric.prototype._handleOnboarding = function () {
@@ -421,16 +428,16 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                 _this.scheduleRender();
             });
         };
-        //----------------------------------
+        // ----------------------------------
         //
         //  END OF WATCH UTILITY METHODS
         //
-        //----------------------------------
-        //----------------------------------
+        // ----------------------------------
+        // ----------------------------------
         //
         //  START OF RENDER METHODS
         //
-        //----------------------------------
+        // ----------------------------------
         MapCentric.prototype.render = function () {
             var header = this._renderHeader();
             var fullAttachment = this._renderFullAttachmentContainer();
@@ -509,27 +516,41 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         };
         // _renderHeader
         MapCentric.prototype._renderHeader = function () {
-            var clientWidth = document.body.clientWidth;
-            var _a = this, title = _a.title, shareLocationWidget = _a.shareLocationWidget;
-            var titleLength = title && this.title.length;
-            var titleValue = clientWidth < 813 && titleLength > 40
-                ? title
+            var _a, _b, _c, _d, _e, _f, _g;
+            var title = document.body.clientWidth < 830 && this.title.length > 40
+                ? this.title
                     .split("")
                     .slice(0, 35)
                     .join("") + "..."
-                : title;
-            var shareWidget = shareLocationWidget && clientWidth > 813 && this._renderShareWidget();
-            return (widget_1.tsx("header", { class: CSS.header },
+                : this.title;
+            var shareWidget = this.socialSharingEnabled &&
+                this.shareLocationWidget &&
+                document.body.clientWidth > 830
+                ? this._renderShareWidget()
+                : null;
+            var sharedTheme = this.applySharedTheme
+                ? {
+                    background: (_a = this.sharedTheme) === null || _a === void 0 ? void 0 : _a.background,
+                    color: (_b = this.sharedTheme) === null || _b === void 0 ? void 0 : _b.text,
+                    paddingLeft: "10px"
+                }
+                : {
+                    background: "",
+                    color: "",
+                    paddingLeft: "15px"
+                };
+            return (widget_1.tsx("header", { styles: sharedTheme, class: CSS.header },
                 widget_1.tsx("div", { class: CSS.headerContainer },
+                    (this === null || this === void 0 ? void 0 : this.applySharedTheme) ? (((_c = this.sharedTheme) === null || _c === void 0 ? void 0 : _c.logoLink) ? (widget_1.tsx("a", { class: "esri-attachment-viewer__logo-link", href: this.sharedTheme.logoLink, target: "_blank" }, ((_d = this.sharedTheme) === null || _d === void 0 ? void 0 : _d.logo) ? (widget_1.tsx("img", { class: CSS.logo, src: (_e = this.sharedTheme) === null || _e === void 0 ? void 0 : _e.logo, alt: "" })) : null)) : ((_f = this.sharedTheme) === null || _f === void 0 ? void 0 : _f.logo) ? (widget_1.tsx("img", { class: CSS.logo, src: (_g = this.sharedTheme) === null || _g === void 0 ? void 0 : _g.logo, alt: "" })) : null) : null,
                     widget_1.tsx("div", { class: CSS.titleInfoContainer },
-                        widget_1.tsx("h1", { class: CSS.headerText }, titleValue)),
-                    clientWidth > 813 && this.onboardingIsEnabled ? (widget_1.tsx("div", { bind: this, onclick: this._toggleOnboardingPanel, onkeydown: this._toggleOnboardingPanel, class: CSS.onboardingIcon, title: i18n.viewDetails, tabIndex: 0 },
-                        widget_1.tsx("span", { class: this.classes(CSS.icons.descriptionIcon, CSS.icons.flush) }))) : null),
+                        widget_1.tsx("h1", { class: CSS.headerText }, title),
+                        this.onboardingIsEnabled && document.body.clientWidth > 830 ? (widget_1.tsx("div", { bind: this, onclick: this._toggleOnboardingPanel, onkeydown: this._toggleOnboardingPanel, class: CSS.onboardingIcon, title: resources_1.default.viewDetails, tabIndex: 0 },
+                            widget_1.tsx("span", { class: this.classes(CSS.icons.descriptionIcon, CSS.icons.flush) }))) : null)),
                 widget_1.tsx("div", { class: CSS.shareWidgetContainer }, shareWidget)));
         };
         // _renderShareWidget
         MapCentric.prototype._renderShareWidget = function () {
-            return (widget_1.tsx("div", { class: CSS.shareLocationWidget, bind: this.shareLocationWidget.container, afterCreate: utils_1.attachToNode }));
+            return (widget_1.tsx("div", { class: CSS.shareLocationWidget, bind: this.shareLocationWidget.container, afterCreate: utils_1.attachToNode, afterUpdate: utils_1.attachToNode }));
         };
         // _renderContent
         MapCentric.prototype._renderContent = function () {
@@ -551,9 +572,10 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         };
         // _renderLayerSwitcher
         MapCentric.prototype._renderLayerSwitcher = function () {
+            var _a;
             return (widget_1.tsx("div", { key: buildKey("back-layer-container"), class: CSS.backToGalleryContainer },
-                this.featureContentPanelIsOpen ? (widget_1.tsx("div", { bind: this, onclick: this._closeFeatureContent, onkeydown: this._closeFeatureContent, tabIndex: 0, class: CSS.backToGallery, title: i18nCommon.back }, this.docDirection === "ltr" ? (widget_1.tsx("span", { class: CSS.icons.backArrow })) : (widget_1.tsx("span", { class: CSS.icons.backArrowRTL })))) : null,
-                widget_1.tsx("div", { bind: this.layerSwitcher.container, afterCreate: utils_1.attachToNode, class: CSS.layerSwitcherContainer })));
+                this.featureContentPanelIsOpen ? (widget_1.tsx("div", { bind: this, onclick: this._closeFeatureContent, onkeydown: this._closeFeatureContent, tabIndex: 0, class: CSS.backToGallery, title: common_1.default.back }, this.docDirection === "ltr" ? (widget_1.tsx("span", { class: CSS.icons.backArrow })) : (widget_1.tsx("span", { class: CSS.icons.backArrowRTL })))) : null,
+                widget_1.tsx("div", { bind: (_a = this.layerSwitcher) === null || _a === void 0 ? void 0 : _a.container, afterCreate: this.layerSwitcher ? utils_1.attachToNode : null, class: CSS.layerSwitcherContainer })));
         };
         // _renderFeatureGalleryContentPanelContainer
         MapCentric.prototype._renderFeatureGalleryContentPanelContainer = function () {
@@ -595,7 +617,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         MapCentric.prototype._renderOnboardingStartButton = function () {
             var buttonText = this.onboardingButtonText
                 ? this.onboardingButtonText
-                : i18n.start;
+                : resources_1.default.start;
             return (widget_1.tsx("div", { class: CSS.onboardingStartButtonContainer },
                 widget_1.tsx("button", { bind: this, onclick: this._disableOnboardingPanel, onkeydown: this._disableOnboardingPanel, tabIndex: 0, class: this.classes(CSS.onboardingStartButton, CSS.icons.button, CSS.icons.buttonFill) }, buttonText)));
         };
@@ -621,7 +643,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         MapCentric.prototype._renderGalleryLoader = function () {
             return (widget_1.tsx("div", { class: CSS.loaderContainer },
                 widget_1.tsx("span", { class: CSS.loadingText },
-                    i18n.loading,
+                    resources_1.default.loading,
                     "..."),
                 widget_1.tsx("div", { class: CSS.loaderGraphic })));
         };
@@ -671,9 +693,6 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         MapCentric.prototype._renderThumbnailContainer = function (attachments) {
             var attachment = attachments[0];
             var contentType = attachment && attachment.contentType;
-            var imageStyles = this.imageIsLoaded && attachment && attachment.orientationInfo
-                ? imageUtils_1.getOrientationStylesImageThumbnail(attachment.orientationInfo)
-                : {};
             var imageAttachmentTypes = [
                 "image/jpeg",
                 "image/jpg",
@@ -697,7 +716,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                             widget_1.tsx("path", { d: "M29.6,17c0-0.7,0.2-1.2,0.7-1.7s1-0.7,1.7-0.7c0.7,0,1.3,0.2,1.7,0.7c0.5,0.5,0.7,1.1,0.7,1.8\n\t\t\tc0,0.7-0.2,1.2-0.7,1.7c-0.5,0.5-1,0.7-1.7,0.7H32c-0.7,0-1.2-0.2-1.7-0.7c-0.5-0.5-0.7-1-0.7-1.7V17z M13.7,35.9V31\n\t\t\tc0.4,0.2,0.8,0.3,1.2,0.3c0.8,0,1.4-0.3,1.9-0.8l6.4-6.5l6.3,5.4c0.5,0.4,1.1,0.7,1.8,0.7c0.7,0,1.3-0.2,1.8-0.6l3.5-2.7l4.1,4.2\n\t\t\tv5H13.7z M37.4,24.7c-0.4-0.4-0.8-0.4-1.3-0.1L32,27.8c-0.4,0.3-0.8,0.3-1.2,0l-7-6c-0.2-0.2-0.4-0.2-0.7-0.2\n\t\t\tc-0.3,0-0.5,0.1-0.6,0.3l-7,7.2c-0.2,0.2-0.4,0.3-0.7,0.2c-0.3,0-0.5-0.1-0.6-0.3c-0.2-0.2-0.4-0.3-0.7-0.3\n\t\t\tc-0.3,0-0.5,0.1-0.7,0.3l-1,1.1v7.8h30.9V30L37.4,24.7z M42.7,41.8H11.7v-2h30.9V41.8z M44.6,43.8H9.8V12.1h34.8V43.8z M7.9,10.1\n\t\t\tv35.6h38.7V10.1H7.9z" })),
                         widget_1.tsx("g", null,
                             widget_1.tsx("polygon", { points: "3.8,8.8 5.5,6.9 49.4,47.5 47.7,49.4" }),
-                            widget_1.tsx("path", { d: "M6,8l42.7,39.5l-1.1,1.2L4.9,9.2L6,8 M5.5,6.2L4.8,6.9L3.8,8.1L3.1,8.8l0.7,0.7l43.2,40l0.7,0.7l0.7-0.7\n\t\t\tl1.1-1.2l0.7-0.7l-0.7-0.7L6.2,6.8L5.5,6.2L5.5,6.2z" })))))) : isImage ? (widget_1.tsx("img", { bind: this, styles: imageStyles, class: CSS.imageThumbnail, src: attachmentUrl, afterCreate: this._fadeInImage, afterUpdate: this._fadeInImage, alt: "" })) : isPDF ? (pdf) : isVideo ? (widget_1.tsx("svg", { class: CSS.svg.video },
+                            widget_1.tsx("path", { d: "M6,8l42.7,39.5l-1.1,1.2L4.9,9.2L6,8 M5.5,6.2L4.8,6.9L3.8,8.1L3.1,8.8l0.7,0.7l43.2,40l0.7,0.7l0.7-0.7\n\t\t\tl1.1-1.2l0.7-0.7l-0.7-0.7L6.2,6.8L5.5,6.2L5.5,6.2z" })))))) : isImage ? (widget_1.tsx("img", { bind: this, class: CSS.imageThumbnail, src: attachmentUrl, afterCreate: this._fadeInImage, afterUpdate: this._fadeInImage, alt: "" })) : isPDF ? (pdf) : isVideo ? (widget_1.tsx("svg", { class: CSS.svg.video },
                 widget_1.tsx("path", { d: "M31,21.3h-3.5v3.6H31V21.3z M15.1,32.1H9.8v1.8h5.3V32.1z M52.2,39.3H51L41.6,33v-8.9l9.4-6.4h1.2V39.3z\n           M50.5,15.9l-10.6,7.2v10.8l10.6,7.2H54V15.9H50.5z M4.4,41.1l-1.6-1.6V17.6l1.6-1.6h30.3l1.6,1.6v21.9l-1.6,1.6L4.4,41.1z\n           M38.1,40.2V16.8l-2.6-2.7h-5.8l-7.1-7.2H9.8v1.8h12l5.3,5.4H3.6L1,16.8v23.4l2.6,2.7h31.8L38.1,40.2z" }))) : null));
         };
         // _renderPDFThumbnailContainer
@@ -738,7 +757,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         };
         // _renderExpandAttachmentIconContainer
         MapCentric.prototype._renderExpandAttachment = function () {
-            return (widget_1.tsx("button", { bind: this, onclick: this._expandAttachment, onkeydown: this._expandAttachment, storeNode: "_expandAttachmentNode", tabIndex: !this.featureContentPanelIsOpen ? -1 : 0, class: CSS.expandMediaContainer, title: i18n.viewInFullScreen },
+            return (widget_1.tsx("button", { bind: this, onclick: this._expandAttachment, onkeydown: this._expandAttachment, storeNode: "_expandAttachmentNode", tabIndex: !this.featureContentPanelIsOpen ? -1 : 0, class: CSS.expandMediaContainer, title: resources_1.default.viewInFullScreen },
                 widget_1.tsx("svg", { class: CSS.svg.expandAttachment },
                     widget_1.tsx("g", null,
                         widget_1.tsx("path", { d: "M17.8,11.2v6.6h-6.6v-1.5h4.1l-5.3-4.7l1-0.9l5.3,4.7v-4.2L17.8,11.2z" }),
@@ -750,7 +769,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                 return;
             }
             var mediaViewerParentContainer = this._renderMediaViewerParentContainer();
-            return (widget_1.tsx("div", { class: CSS.mediaViewerSection }, this._layerDoesNotSupportAttachments ? (widget_1.tsx("div", { class: CSS.layerNotSupported }, i18n.notSupported)) : (mediaViewerParentContainer)));
+            return (widget_1.tsx("div", { class: CSS.mediaViewerSection }, this._layerDoesNotSupportAttachments ? (widget_1.tsx("div", { class: CSS.layerNotSupported }, resources_1.default.notSupported)) : (mediaViewerParentContainer)));
         };
         // _renderMediaViewerParentContainer
         MapCentric.prototype._renderMediaViewerParentContainer = function () {
@@ -776,13 +795,12 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                 attachmentLoader,
                 mediaViewerContainer,
                 imageDirection,
-                this._fullAttachmentContainerIsOpen ? null : attachmentScroll,
                 this._renderAttachmentScrollContainer()));
         };
         // _renderAttachmentLoader
         MapCentric.prototype._renderAttachmentLoader = function () {
             return (widget_1.tsx("div", { class: CSS.widgetLoader, key: buildKey("base-loader") },
-                widget_1.tsx("span", { class: CSS.animationLoader, role: "presentation", "aria-label": i18n.loadingImages })));
+                widget_1.tsx("span", { class: CSS.animationLoader, role: "presentation", "aria-label": resources_1.default.loadingImages })));
         };
         // _renderMediaViewerContainer
         MapCentric.prototype._renderMediaViewerContainer = function () {
@@ -831,28 +849,15 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                 this.viewModel.mapCentricState !== "querying" ? (widget_1.tsx("div", { key: buildKey("no-attachments-container"), class: CSS.noAttachmentsContainer },
                 widget_1.tsx("svg", { class: CSS.svg.media, xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 16 16" },
                     widget_1.tsx("path", { d: "M1 2v12h14V2zm13 11H2V3h12zm-1-1H3v-1h10zM3 8.678l.333-.356a.3.3 0 0 1 .445 0 .3.3 0 0 0 .444 0l2.242-2.39a.3.3 0 0 1 .423-.021l2.255 2.005a.299.299 0 0 0 .39.01l1.361-.915a.3.3 0 0 1 .41.032L13 8.678V10H3zM11.894 9l-.89-.859-.846.565a1.299 1.299 0 0 1-1.68-.043L6.732 7.11 4.958 9zm-.644-4.5a.75.75 0 1 1-.75-.75.75.75 0 0 1 .75.75z" })),
-                widget_1.tsx("span", { class: CSS.noAttachmentsText }, i18n.noAttachmentsFound))) : null));
+                widget_1.tsx("span", { class: CSS.noAttachmentsText }, resources_1.default.noAttachmentsFound))) : null));
         };
         // _renderCurrentImage
         MapCentric.prototype._renderCurrentImage = function () {
             var _a;
-            var attachment = this.viewModel.getCurrentAttachment();
-            var orientationInfo = attachment && attachment.get("orientationInfo");
-            var name = attachment ? attachment.name : null;
-            var container = this._fullAttachmentContainerIsOpen
-                ? this._mediaViewerContainerFullAttachment
-                : this._mediaViewerContainer;
-            var imageStyles = orientationInfo && container && this.imageIsLoaded
-                ? imageUtils_1.getOrientationStyles(orientationInfo, container, this.appMode)
-                : {
-                    transform: "none",
-                    height: "initial",
-                    maxHeight: "100%"
-                };
             var fadeImage = (_a = {},
                 _a[CSS.fadeImage] = !this.imageIsLoaded,
                 _a);
-            return (widget_1.tsx("img", { bind: this, key: buildKey("image-desktop-" + this.currentImageUrl), class: this.classes(CSS.imageDesktop, fadeImage), styles: imageStyles, src: this.currentImageUrl, afterCreate: this._fadeInImage, afterUpdate: this._fadeInImage, onload: this._fadeInImage, alt: name }));
+            return (widget_1.tsx("img", { bind: this, key: buildKey("image-desktop-" + this.currentImageUrl), class: this.classes(CSS.imageDesktop, fadeImage), src: this.currentImageUrl, afterCreate: this._fadeInImage, afterUpdate: this._fadeInImage, onload: this._fadeInImage, alt: name }));
         };
         // _renderVideo
         MapCentric.prototype._renderVideo = function (currentImageUrl) {
@@ -861,7 +866,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                 widget_1.tsx("source", { src: currentImageUrl, type: "video/quicktime" }),
                 widget_1.tsx("source", { src: currentImageUrl, type: "video/ogg" }),
                 widget_1.tsx("source", { src: currentImageUrl, type: "video/mov" }),
-                i18n.doesNotSupportVideo));
+                resources_1.default.doesNotSupportVideo));
         };
         // _renderPdf
         MapCentric.prototype._renderPdf = function (currentImageUrl) {
@@ -893,12 +898,12 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                 widget_1.tsx("button", { bind: this, onclick: this._previousImage, onkeydown: this._previousImage, disabled: this._onboardingPanelIsOpen ||
                         (attachments && attachments.length < 2)
                         ? true
-                        : false, tabIndex: 0, class: CSS.leftArrowContainer, title: i18n.previousAttachment }, this.docDirection === "rtl" ? (widget_1.tsx("span", { class: this.classes(CSS.icons.rightArrow, CSS.icons.flush) })) : (widget_1.tsx("span", { class: this.classes(CSS.icons.leftArrow, CSS.icons.flush) }))),
+                        : false, tabIndex: 0, class: CSS.leftArrowContainer, title: resources_1.default.previousAttachment }, this.docDirection === "rtl" ? (widget_1.tsx("span", { class: this.classes(CSS.icons.rightArrow, CSS.icons.flush) })) : (widget_1.tsx("span", { class: this.classes(CSS.icons.leftArrow, CSS.icons.flush) }))),
                 widget_1.tsx("span", { class: CSS.attachmentNumberText }, currentIndex + " / " + totalNumberOfAttachments),
                 widget_1.tsx("button", { bind: this, onclick: this._nextImage, onkeydown: this._nextImage, disabled: this._onboardingPanelIsOpen ||
                         (attachments && attachments.length < 2)
                         ? true
-                        : false, tabIndex: 0, class: CSS.rightArrowContainer, title: i18n.nextAttachment }, this.docDirection === "rtl" ? (widget_1.tsx("span", { class: this.classes(CSS.icons.leftArrow, CSS.icons.flush) })) : (widget_1.tsx("span", { class: this.classes(CSS.icons.rightArrow, CSS.icons.flush) })))));
+                        : false, tabIndex: 0, class: CSS.rightArrowContainer, title: resources_1.default.nextAttachment }, this.docDirection === "rtl" ? (widget_1.tsx("span", { class: this.classes(CSS.icons.leftArrow, CSS.icons.flush) })) : (widget_1.tsx("span", { class: this.classes(CSS.icons.rightArrow, CSS.icons.flush) })))));
         };
         // _renderImageDirection
         MapCentric.prototype._renderImageDirection = function (attachment) {
@@ -907,16 +912,16 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                 : null;
             return imageDirectionValue ? (this.docDirection === "ltr" ? (widget_1.tsx("div", { key: buildKey("gps-image-direction"), class: CSS.gpsImageDirection },
                 this._fullAttachmentContainerIsOpen ? (widget_1.tsx("span", { class: CSS.imageDirectionDegrees },
-                    i18n.gpsImageDirection,
+                    resources_1.default.gpsImageDirection,
                     ": ", "" + imageDirectionValue,
                     "\u00B0")) : null,
-                widget_1.tsx("div", { title: i18n.gpsImageDirection + ": " + imageDirectionValue + "\u00B0", class: CSS.imageDirection },
+                widget_1.tsx("div", { title: resources_1.default.gpsImageDirection + ": " + imageDirectionValue + "\u00B0", class: CSS.imageDirection },
                     widget_1.tsx("svg", { styles: { transform: "rotateZ(" + imageDirectionValue + "deg)" }, class: CSS.mapCentricCamera },
                         widget_1.tsx("g", null,
                             widget_1.tsx("path", { d: "M19.1,10.8h-0.3h-0.3h-1.3v2h-1v-0.7v-0.3h-11l0,0h-1v1.1v5.8v0h16v-1.9v-3.9v-1.1\nC20.2,11.3,19.7,10.8,19.1,10.8z" }),
                             widget_1.tsx("path", { d: "M15.2,8.2V7.4v-2c0-0.9-0.7-1.6-1.6-1.6H7.8c-0.9,0-1.6,0.7-1.6,1.6v2v0.8v2.6h9V8.2z" }),
                             widget_1.tsx("path", { d: "M12,1c6.1,0,11,4.9,11,11s-4.9,11-11,11S1,18.1,1,12S5.9,1,12,1 M12,0C5.4,0,0,5.4,0,12s5.4,12,12,12\nc6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z" })))))) : (widget_1.tsx("div", { key: buildKey("gps-image-direction"), class: CSS.gpsImageDirection },
-                widget_1.tsx("div", { title: i18n.gpsImageDirection + ": " + imageDirectionValue + "\u00B0", class: CSS.imageDirection },
+                widget_1.tsx("div", { title: resources_1.default.gpsImageDirection + ": " + imageDirectionValue + "\u00B0", class: CSS.imageDirection },
                     widget_1.tsx("svg", { styles: { transform: "rotateZ(" + imageDirectionValue + "deg)" }, class: CSS.mapCentricCamera },
                         widget_1.tsx("g", null,
                             widget_1.tsx("path", { d: "M19.1,10.8h-0.3h-0.3h-1.3v2h-1v-0.7v-0.3h-11l0,0h-1v1.1v5.8v0h16v-1.9v-3.9v-1.1\n\t\tC20.2,11.3,19.7,10.8,19.1,10.8z" }),
@@ -924,12 +929,12 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                             widget_1.tsx("path", { d: "M12,1c6.1,0,11,4.9,11,11s-4.9,11-11,11S1,18.1,1,12S5.9,1,12,1 M12,0C5.4,0,0,5.4,0,12s5.4,12,12,12\n\t\tc6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z" })))),
                 this._fullAttachmentContainerIsOpen ? (this.docDirection === "ltr" ? (widget_1.tsx("div", { key: buildKey("map-centric-gps-image-direction"), class: CSS.imageDirectionDegrees },
                     widget_1.tsx("div", null,
-                        i18n.gpsImageDirection,
+                        resources_1.default.gpsImageDirection,
                         ": "),
                     widget_1.tsx("div", null, "" + imageDirectionValue,
                         "\u00B0"))) : (widget_1.tsx("div", { key: buildKey("map-centric-gps-image-direction"), class: CSS.imageDirectionDegrees },
                     widget_1.tsx("div", null,
-                        i18n.gpsImageDirection,
+                        resources_1.default.gpsImageDirection,
                         ": "),
                     widget_1.tsx("div", null, "" + imageDirectionValue,
                         "\u00B0")))) : null))) : null;
@@ -957,7 +962,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         // _renderDownloadButton
         MapCentric.prototype._renderDownloadButton = function () {
             var attachment = this.viewModel.getCurrentAttachment();
-            return (widget_1.tsx("button", { class: this.classes(CSS.downloadIconContainer, CSS.downloadButtonDesktop), bind: this, onclick: this._downloadImage, onkeydown: this._downloadImage, "data-image-url": this.currentImageUrl, "data-image-name": attachment.name, title: i18n.download, disabled: this.imageIsLoaded ? false : true },
+            return (widget_1.tsx("button", { class: this.classes(CSS.downloadIconContainer, CSS.downloadButtonDesktop), bind: this, onclick: this._downloadImage, onkeydown: this._downloadImage, "data-image-url": this.currentImageUrl, "data-image-name": attachment.name, title: resources_1.default.download, disabled: this.imageIsLoaded ? false : true },
                 widget_1.tsx("span", { class: this.classes(CSS.icons.downloadIcon, CSS.icons.flush, CSS.downloadIcon) })));
         };
         // _renderFeatureInfoPanel
@@ -1010,10 +1015,10 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                 mapCentricState === "querying" ? (widget_1.tsx("div", { class: CSS.featureContentLoader },
                 widget_1.tsx("div", { class: CSS.loaderGraphic }),
                 widget_1.tsx("div", null,
-                    i18n.loading,
+                    resources_1.default.loading,
                     "..."))) : (widget_1.tsx("div", { class: CSS.featureContentContainer },
                 featureContentHeader,
-                address,
+                this.addressEnabled ? address : null,
                 (fieldsInfoText && fieldsInfoText.length > 0) ||
                     (mediaInfoContent && mediaInfoContent.length > 0) ||
                     this._featureContentAvailable ? (widget_1.tsx("div", null,
@@ -1044,7 +1049,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         };
         // _renderZoomTo
         MapCentric.prototype._renderZoomTo = function () {
-            return (widget_1.tsx("button", { bind: this, class: CSS.zoomTo, tabIndex: 0, onclick: this._zoomTo, onkeydown: this._zoomTo, title: i18n.zoomTo, label: i18n.zoomTo },
+            return (widget_1.tsx("button", { bind: this, class: CSS.zoomTo, tabIndex: 0, onclick: this._zoomTo, onkeydown: this._zoomTo, title: resources_1.default.zoomTo, label: resources_1.default.zoomTo },
                 widget_1.tsx("span", { class: this.classes(CSS.zoomToIcon, CSS.icons.zoomInIcon, CSS.icons.flush) })));
         };
         // _renderFeatureContentAddress
@@ -1090,21 +1095,21 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                     widget_1.tsx("span", { innerHTML: urlUtils_1.autoLink(hyperlink) }))) : contentInfo &&
                     contentInfo.content &&
                     typeof contentInfo.content === "string" &&
-                    contentInfo.content.trim() === "" ? (widget_1.tsx("p", null, i18n.noContentAvailable)) : (widget_1.tsx("p", { class: CSS.attributeContent, innerHTML: contentInfo.content }))) : (widget_1.tsx("p", null, i18n.noContentAvailable))));
+                    contentInfo.content.trim() === "" ? (widget_1.tsx("p", null, resources_1.default.noContentAvailable)) : (widget_1.tsx("p", { class: CSS.attributeContent, innerHTML: contentInfo.content }))) : (widget_1.tsx("p", null, resources_1.default.noContentAvailable))));
         };
         // _renderFeatureContentLoader
         MapCentric.prototype._renderFeatureContentLoader = function () {
-            return (widget_1.tsx("div", { key: buildKey("feature-content-loader"), class: CSS.widgetLoader }, i18n.loadingImages));
+            return (widget_1.tsx("div", { key: buildKey("feature-content-loader"), class: CSS.widgetLoader }, resources_1.default.loadingImages));
         };
         // _renderNoFeatureContentInfo
         MapCentric.prototype._renderNoFeatureContentInfo = function () {
-            return (widget_1.tsx("div", { key: buildKey("no-content"), class: CSS.noInfo }, i18n.noContentAvailable));
+            return (widget_1.tsx("div", { key: buildKey("no-content"), class: CSS.noInfo }, resources_1.default.noContentAvailable));
         };
         // _renderUnsupportedAttachmentTypes
         MapCentric.prototype._renderUnsupportedAttachmentTypes = function () {
             var unsupportedAttachmentTypes = this._renderUnsupportedAttachmentTypesList();
             return (widget_1.tsx("div", { key: buildKey("other-attachment-types") },
-                widget_1.tsx("h4", { class: CSS.attributeHeading }, i18n.otherAttachments),
+                widget_1.tsx("h4", { class: CSS.attributeHeading }, resources_1.default.otherAttachments),
                 unsupportedAttachmentTypes));
         };
         // _renderUnsupportedAttachmentTypesList
@@ -1168,8 +1173,8 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             if (imageAttachmentTypes.indexOf(contentType) === -1) {
                 this.set("imageIsLoaded", true);
             }
-            return (widget_1.tsx("div", { class: CSS.mediaViewerSection }, this._layerDoesNotSupportAttachments ? (widget_1.tsx("div", { class: CSS.layerNotSupported }, i18n.notSupported)) : (widget_1.tsx("div", { class: CSS.mediaViewer },
-                widget_1.tsx("button", { bind: this, afterCreate: widget_1.storeNode, "data-node-ref": "_fullScreenCloseNode", onclick: this._expandAttachment, onkeydown: this._expandAttachment, class: CSS.closeFeatureContainer, title: i18n.closeFullScreen, tabIndex: !this.featureContentPanelIsOpen ||
+            return (widget_1.tsx("div", { class: CSS.mediaViewerSection }, this._layerDoesNotSupportAttachments ? (widget_1.tsx("div", { class: CSS.layerNotSupported }, resources_1.default.notSupported)) : (widget_1.tsx("div", { class: CSS.mediaViewer },
+                widget_1.tsx("button", { bind: this, afterCreate: widget_1.storeNode, "data-node-ref": "_fullScreenCloseNode", onclick: this._expandAttachment, onkeydown: this._expandAttachment, class: CSS.closeFeatureContainer, title: resources_1.default.closeFullScreen, tabIndex: !this.featureContentPanelIsOpen ||
                         !this._fullAttachmentContainerIsOpen
                         ? -1
                         : 0 },
@@ -1184,14 +1189,14 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         MapCentric.prototype._renderZoomSlider = function () {
             var _this = this;
             return (widget_1.tsx("div", { class: CSS.zoomSlider },
-                widget_1.tsx("button", { bind: this, onclick: this._zoomOutImage, onkeydown: this._zoomOutImage, tabIndex: 0, class: CSS.zoomSliderButton, title: i18n.zoomOutImage },
+                widget_1.tsx("button", { bind: this, onclick: this._zoomOutImage, onkeydown: this._zoomOutImage, tabIndex: 0, class: CSS.zoomSliderButton, title: resources_1.default.zoomOutImage },
                     widget_1.tsx("span", { class: this.classes(CSS.slideSymbol, CSS.icons.minusIcon) })),
                 widget_1.tsx("input", { bind: this, afterCreate: widget_1.storeNode, "data-node-ref": "_zoomSliderNode", type: "range", min: "100", max: "500", step: "10", oninput: function (event) {
                         if (_this._imageViewer) {
                             _this._imageViewer.zoom(event.target.valueAsNumber);
                         }
                     } }),
-                widget_1.tsx("button", { bind: this, onclick: this._zoomInImage, onkeydown: this._zoomInImage, tabIndex: 0, class: CSS.zoomSliderButton, title: i18n.zoomInImage },
+                widget_1.tsx("button", { bind: this, onclick: this._zoomInImage, onkeydown: this._zoomInImage, tabIndex: 0, class: CSS.zoomSliderButton, title: resources_1.default.zoomInImage },
                     widget_1.tsx("span", { class: this.classes(CSS.slideSymbol, CSS.icons.plusIcon) }))));
         };
         // _renderMapViewContainer
@@ -1201,18 +1206,18 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         };
         // _renderMapView
         MapCentric.prototype._renderMapView = function () {
-            return (widget_1.tsx("div", { bind: this.view.container, afterCreate: utils_1.attachToNode, class: CSS.mapView }));
+            return (widget_1.tsx("div", { bind: this.view.container, class: CSS.mapView, afterCreate: utils_1.attachToNode }));
         };
-        //----------------------------------
+        // ----------------------------------
         //
         //  END OF RENDER NODE METHODS
         //
-        //----------------------------------
-        //----------------------------------
+        // ----------------------------------
+        // ----------------------------------
         //
         //  START OF ACCESSIBLE HANDLERS
         //
-        //----------------------------------
+        // ----------------------------------
         // _toggleOnboardingPanel
         MapCentric.prototype._toggleOnboardingPanel = function () {
             if (this._onboardingPanelIsOpen) {
@@ -1323,11 +1328,11 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             this._currentMobileScreen = navItem;
             this.scheduleRender();
         };
-        //----------------------------------
+        // ----------------------------------
         //
         //  END OF ACCESSIBLE HANDLERS
         //
-        //----------------------------------
+        // ----------------------------------
         // _triggerScrollQuery
         MapCentric.prototype._triggerScrollQuery = function () {
             var _triggerScrollElement = this._triggerScrollElement;
@@ -1398,6 +1403,8 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                     if (this._imageViewer) {
                         this._imageViewer.destroy();
                         this._imageViewer = null;
+                        this._imageViewerSet = false;
+                        this._imageZoomLoaded = false;
                     }
                     this._imageViewer = new ImageViewer(this._mediaViewerContainerFullAttachment, {
                         snapView: false,
@@ -1410,11 +1417,6 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                 }
                 if (this._imageViewerSet && !this._imageZoomLoaded && contentTypeCheck) {
                     this._imageViewer.load(this.currentImageUrl);
-                    var rotation = attachment && attachment.get("orientationInfo.rotation");
-                    if (rotation) {
-                        var ivImageElement = document.querySelector(".iv-image");
-                        ivImageElement.style.transform = "rotate(" + rotation + "deg)";
-                    }
                     this._imageZoomLoaded = true;
                     this.scheduleRender();
                 }
@@ -1449,191 +1451,213 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         MapCentric.prototype._getLayerId = function () {
             return this.get("selectedAttachmentViewerData.layerData.featureLayer.id");
         };
-        __decorate([
+        tslib_1.__decorate([
+            decorators_1.property(),
+            widget_1.renderable()
+        ], MapCentric.prototype, "applySharedTheme", void 0);
+        tslib_1.__decorate([
             decorators_1.aliasOf("viewModel.addressEnabled"),
-            decorators_1.property()
+            decorators_1.property(),
+            widget_1.renderable()
         ], MapCentric.prototype, "addressEnabled", void 0);
-        __decorate([
+        tslib_1.__decorate([
             decorators_1.aliasOf("viewModel.appMode"),
             widget_1.renderable(),
             decorators_1.property()
         ], MapCentric.prototype, "appMode", void 0);
-        __decorate([
+        tslib_1.__decorate([
             decorators_1.aliasOf("viewModel.attachmentIndex"),
             decorators_1.property()
         ], MapCentric.prototype, "attachmentIndex", void 0);
-        __decorate([
+        tslib_1.__decorate([
             decorators_1.aliasOf("viewModel.attachmentLayer"),
             decorators_1.property()
         ], MapCentric.prototype, "attachmentLayer", void 0);
-        __decorate([
+        tslib_1.__decorate([
             decorators_1.aliasOf("viewModel.attachmentLayers"),
-            decorators_1.property()
+            decorators_1.property(),
+            widget_1.renderable()
         ], MapCentric.prototype, "attachmentLayers", void 0);
-        __decorate([
+        tslib_1.__decorate([
             decorators_1.aliasOf("viewModel.attachmentViewerDataCollection"),
             decorators_1.property()
         ], MapCentric.prototype, "attachmentViewerDataCollection", void 0);
-        __decorate([
+        tslib_1.__decorate([
             decorators_1.aliasOf("viewModel.currentImageUrl"),
             decorators_1.property()
         ], MapCentric.prototype, "currentImageUrl", void 0);
-        __decorate([
+        tslib_1.__decorate([
             decorators_1.aliasOf("viewModel.defaultObjectId"),
             decorators_1.property()
         ], MapCentric.prototype, "defaultObjectId", void 0);
-        __decorate([
+        tslib_1.__decorate([
             decorators_1.property()
         ], MapCentric.prototype, "showOnboardingOnStart", void 0);
-        __decorate([
+        tslib_1.__decorate([
             decorators_1.aliasOf("viewModel.downloadEnabled"),
-            decorators_1.property()
+            decorators_1.property(),
+            widget_1.renderable()
         ], MapCentric.prototype, "downloadEnabled", void 0);
-        __decorate([
+        tslib_1.__decorate([
             decorators_1.property()
         ], MapCentric.prototype, "docDirection", void 0);
-        __decorate([
+        tslib_1.__decorate([
             decorators_1.aliasOf("viewModel.featureContentPanelIsOpen"),
             widget_1.renderable(),
             decorators_1.property()
         ], MapCentric.prototype, "featureContentPanelIsOpen", void 0);
-        __decorate([
+        tslib_1.__decorate([
             decorators_1.aliasOf("viewModel.graphicsLayer"),
             decorators_1.property()
         ], MapCentric.prototype, "graphicsLayer", void 0);
-        __decorate([
-            decorators_1.aliasOf("viewModel.imageDirectionEnabled"),
+        tslib_1.__decorate([
             widget_1.renderable(),
             decorators_1.property()
         ], MapCentric.prototype, "imageDirectionEnabled", void 0);
-        __decorate([
+        tslib_1.__decorate([
             decorators_1.aliasOf("viewModel.imageIsLoaded"),
             decorators_1.property()
         ], MapCentric.prototype, "imageIsLoaded", void 0);
-        __decorate([
-            decorators_1.property()
+        tslib_1.__decorate([
+            decorators_1.property(),
+            widget_1.renderable()
         ], MapCentric.prototype, "imagePanZoomEnabled", void 0);
-        __decorate([
+        tslib_1.__decorate([
             decorators_1.aliasOf("viewModel.layerSwitcher"),
             decorators_1.property()
         ], MapCentric.prototype, "layerSwitcher", void 0);
-        __decorate([
+        tslib_1.__decorate([
             decorators_1.aliasOf("viewModel.mapCentricSketchQueryExtent"),
             decorators_1.property()
         ], MapCentric.prototype, "mapCentricSketchQueryExtent", void 0);
-        __decorate([
+        tslib_1.__decorate([
             decorators_1.aliasOf("viewModel.mapCentricTooltipEnabled"),
             decorators_1.property()
         ], MapCentric.prototype, "mapCentricTooltipEnabled", void 0);
-        __decorate([
+        tslib_1.__decorate([
             decorators_1.property()
         ], MapCentric.prototype, "onboardingButtonText", void 0);
-        __decorate([
+        tslib_1.__decorate([
             decorators_1.property()
         ], MapCentric.prototype, "onboardingContent", void 0);
-        __decorate([
-            decorators_1.property()
+        tslib_1.__decorate([
+            decorators_1.property(),
+            widget_1.renderable()
         ], MapCentric.prototype, "onboardingIsEnabled", void 0);
-        __decorate([
+        tslib_1.__decorate([
             decorators_1.aliasOf("viewModel.onlyDisplayFeaturesWithAttachmentsIsEnabled"),
             decorators_1.property()
         ], MapCentric.prototype, "onlyDisplayFeaturesWithAttachmentsIsEnabled", void 0);
-        __decorate([
+        tslib_1.__decorate([
             decorators_1.aliasOf("viewModel.order"),
-            decorators_1.property()
+            decorators_1.property(),
+            widget_1.renderable()
         ], MapCentric.prototype, "order", void 0);
-        __decorate([
+        tslib_1.__decorate([
+            decorators_1.property()
+        ], MapCentric.prototype, "sharedTheme", void 0);
+        tslib_1.__decorate([
             decorators_1.aliasOf("viewModel.searchWidget"),
             decorators_1.property()
         ], MapCentric.prototype, "searchWidget", void 0);
-        __decorate([
+        tslib_1.__decorate([
             decorators_1.aliasOf("viewModel.selectFeaturesEnabled"),
             decorators_1.property()
         ], MapCentric.prototype, "selectFeaturesEnabled", void 0);
-        __decorate([
+        tslib_1.__decorate([
             decorators_1.aliasOf("viewModel.selectedAttachmentViewerData"),
             widget_1.renderable(),
             decorators_1.property()
         ], MapCentric.prototype, "selectedAttachmentViewerData", void 0);
-        __decorate([
+        tslib_1.__decorate([
             decorators_1.aliasOf("viewModel.selectedLayerId"),
             decorators_1.property()
         ], MapCentric.prototype, "selectedLayerId", void 0);
-        __decorate([
+        tslib_1.__decorate([
             decorators_1.aliasOf("viewModel.shareLocationWidget"),
             decorators_1.property()
         ], MapCentric.prototype, "shareLocationWidget", void 0);
-        __decorate([
+        tslib_1.__decorate([
             decorators_1.aliasOf("viewModel.sketchWidget"),
             decorators_1.property()
         ], MapCentric.prototype, "sketchWidget", void 0);
-        __decorate([
+        tslib_1.__decorate([
             decorators_1.aliasOf("viewModel.socialSharingEnabled"),
-            decorators_1.property()
+            decorators_1.property(),
+            widget_1.renderable()
         ], MapCentric.prototype, "socialSharingEnabled", void 0);
-        __decorate([
+        tslib_1.__decorate([
             decorators_1.aliasOf("viewModel.supportedAttachmentTypes"),
             decorators_1.property()
         ], MapCentric.prototype, "supportedAttachmentTypes", void 0);
-        __decorate([
+        tslib_1.__decorate([
             decorators_1.aliasOf("viewModel.title"),
-            decorators_1.property()
+            decorators_1.property(),
+            widget_1.renderable()
         ], MapCentric.prototype, "title", void 0);
-        __decorate([
+        tslib_1.__decorate([
             decorators_1.aliasOf("viewModel.view"),
             decorators_1.property()
         ], MapCentric.prototype, "view", void 0);
-        __decorate([
+        tslib_1.__decorate([
+            decorators_1.aliasOf("viewModel.withinConfigurationExperience"),
+            decorators_1.property()
+        ], MapCentric.prototype, "withinConfigurationExperience", void 0);
+        tslib_1.__decorate([
             widget_1.renderable(["viewModel.state", "viewModel.mapCentricState"]),
             decorators_1.property({
                 type: MapCentricViewModel
             })
         ], MapCentric.prototype, "viewModel", void 0);
-        __decorate([
+        tslib_1.__decorate([
             decorators_1.aliasOf("viewModel.zoomLevel"),
             decorators_1.property()
         ], MapCentric.prototype, "zoomLevel", void 0);
-        __decorate([
+        tslib_1.__decorate([
+            decorators_1.aliasOf("viewModel.highlightedFeature"),
+            decorators_1.property()
+        ], MapCentric.prototype, "highlightedFeature", void 0);
+        tslib_1.__decorate([
             widget_1.accessibleHandler()
         ], MapCentric.prototype, "_toggleOnboardingPanel", null);
-        __decorate([
+        tslib_1.__decorate([
             widget_1.accessibleHandler()
         ], MapCentric.prototype, "_disableOnboardingPanel", null);
-        __decorate([
+        tslib_1.__decorate([
             widget_1.accessibleHandler()
         ], MapCentric.prototype, "_selectGalleryItem", null);
-        __decorate([
+        tslib_1.__decorate([
             widget_1.accessibleHandler()
         ], MapCentric.prototype, "_zoomTo", null);
-        __decorate([
+        tslib_1.__decorate([
             widget_1.accessibleHandler()
         ], MapCentric.prototype, "_previousImage", null);
-        __decorate([
+        tslib_1.__decorate([
             widget_1.accessibleHandler()
         ], MapCentric.prototype, "_nextImage", null);
-        __decorate([
+        tslib_1.__decorate([
             widget_1.accessibleHandler()
         ], MapCentric.prototype, "_downloadImage", null);
-        __decorate([
+        tslib_1.__decorate([
             widget_1.accessibleHandler()
         ], MapCentric.prototype, "_closeFeatureContent", null);
-        __decorate([
+        tslib_1.__decorate([
             widget_1.accessibleHandler()
         ], MapCentric.prototype, "_expandAttachment", null);
-        __decorate([
+        tslib_1.__decorate([
             widget_1.accessibleHandler()
         ], MapCentric.prototype, "_zoomInImage", null);
-        __decorate([
+        tslib_1.__decorate([
             widget_1.accessibleHandler()
         ], MapCentric.prototype, "_zoomOutImage", null);
-        __decorate([
+        tslib_1.__decorate([
             widget_1.accessibleHandler()
         ], MapCentric.prototype, "_handleNavItem", null);
-        MapCentric = __decorate([
+        MapCentric = tslib_1.__decorate([
             decorators_1.subclass("MapCentric")
         ], MapCentric);
         return MapCentric;
-    }(decorators_1.declared(Widget)));
+    }(Widget));
     return MapCentric;
 });
 //# sourceMappingURL=MapCentric.js.map

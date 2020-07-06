@@ -1,6 +1,3 @@
-/// <amd-dependency path="esri/core/tsSupport/declareExtendsHelper" name="__extends" />
-/// <amd-dependency path="esri/core/tsSupport/decorateHelper" name="__decorate" />
-
 // Copyright 2019 Esri
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,16 +9,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.​
 
-// dijit
-import _WidgetBase = require("dijit/_WidgetBase");
-
 // dojo
-import * as i18n from "dojo/i18n!../nls/common";
+import i18n from "dojo/i18n!../nls/common";
 
 // esri.core.accessorSupport
 import {
   aliasOf,
-  declared,
   property,
   subclass
 } from "esri/core/accessorSupport/decorators";
@@ -35,17 +28,15 @@ import Widget = require("esri/widgets/Widget");
 // esri.widgets.Expand
 import ExpandViewModel = require("esri/widgets/Expand/ExpandViewModel");
 
-// esri.widgets.support
-// import {  } from "./support/interfaces";
 import {
   accessibleHandler,
   renderable,
   tsx
 } from "esri/widgets/support/widget";
 
-import { isWidget, isWidgetBase } from "./MobileExpand/support/widgetSupport";
+import { isWidget } from "./MobileExpand/support/widgetSupport";
 
-// type ContentSource = string | HTMLElement | Widget | _WidgetBase;
+import Collection = require("esri/core/Collection");
 
 const CSS = {
   base: "esri-expand esri-widget esri-mobile-expand",
@@ -76,12 +67,12 @@ const CSS = {
 };
 
 @subclass("esri.widgets.Expand")
-class Expand extends declared(Widget) {
-  //--------------------------------------------------------------------------
+class Expand extends Widget {
+  // --------------------------------------------------------------------------
   //
   //  Lifecycle
   //
-  //--------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   /**
    * @constructor
@@ -91,18 +82,18 @@ class Expand extends declared(Widget) {
    *                                that may be passed into the constructor.
    */
   constructor(params?: any) {
-    super();
+    super(params);
   }
 
-  //--------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //
   //  Properties
   //
-  //--------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
-  //----------------------------------
+  // ----------------------------------
   //  autoCollapse
-  //----------------------------------
+  // ----------------------------------
 
   /**
    * Automatically collapses the expand widget instance when the view's
@@ -116,9 +107,9 @@ class Expand extends declared(Widget) {
   @aliasOf("viewModel.autoCollapse")
   autoCollapse: boolean = null;
 
-  //----------------------------------
+  // ----------------------------------
   //  collapseIconClass
-  //----------------------------------
+  // ----------------------------------
 
   /**
    * Icon font used to style the Expand button.
@@ -146,9 +137,9 @@ class Expand extends declared(Widget) {
   //   this._override("collapseIconClass", value);
   // }
 
-  //----------------------------------
+  // ----------------------------------
   //  collapseTooltip
-  //----------------------------------
+  // ----------------------------------
 
   /**
    * Tooltip to display to indicate Expand widget can be collapsed.
@@ -162,9 +153,9 @@ class Expand extends declared(Widget) {
   @renderable()
   collapseTooltip: string = "";
 
-  //----------------------------------
+  // ----------------------------------
   //  content
-  //----------------------------------
+  // ----------------------------------
 
   /**
    * The content to display within the expanded Expand widget.
@@ -220,11 +211,11 @@ class Expand extends declared(Widget) {
    */
   @property()
   @renderable()
-  content: Expand[] = [];
+  content: Collection<Expand> = new Collection();
 
-  //----------------------------------
+  // ----------------------------------
   //  expanded
-  //----------------------------------
+  // ----------------------------------
 
   /**
    * Indicates whether the widget is currently expanded or not.
@@ -238,9 +229,9 @@ class Expand extends declared(Widget) {
   @renderable()
   expanded: boolean = null;
 
-  //----------------------------------
+  // ----------------------------------
   //  expandIconClass
-  //----------------------------------
+  // ----------------------------------
 
   /**
    * Icon font used to style the Expand button.
@@ -268,9 +259,9 @@ class Expand extends declared(Widget) {
   //   this._override("expandIconClass", value);
   // }
 
-  //----------------------------------
+  // ----------------------------------
   //  expandTooltip
-  //----------------------------------
+  // ----------------------------------
 
   /**
    * Tooltip to display to indicate Expand widget can be expanded.
@@ -292,9 +283,9 @@ class Expand extends declared(Widget) {
   @renderable()
   collapseIconClass: string = null;
 
-  //----------------------------------
+  // ----------------------------------
   //  group
-  //----------------------------------
+  // ----------------------------------
 
   /**
    * This value associates two or more Expand widget instances with each other, allowing one
@@ -330,9 +321,9 @@ class Expand extends declared(Widget) {
   @aliasOf("viewModel.group")
   group: string = null;
 
-  //----------------------------------
+  // ----------------------------------
   //  iconNumber
-  //----------------------------------
+  // ----------------------------------
 
   /**
    * A number to display at the corner of the widget to indicate the number of, for example, open issues or unread notices.
@@ -347,9 +338,9 @@ class Expand extends declared(Widget) {
   @renderable()
   iconNumber: number = 0;
 
-  //----------------------------------
+  // ----------------------------------
   //  mode
-  //----------------------------------
+  // ----------------------------------
 
   /**
    * The mode in which the widget displays. These modes are listed below.
@@ -370,9 +361,9 @@ class Expand extends declared(Widget) {
   @renderable()
   mode: "auto" | "floating" | "drawer" = "auto";
 
-  //----------------------------------
+  // ----------------------------------
   //  view
-  //----------------------------------
+  // ----------------------------------
 
   /**
    * A reference to the {@link module:esri/views/MapView} or {@link module:esri/views/SceneView}. Set this to link the widget to a specific view.
@@ -385,9 +376,9 @@ class Expand extends declared(Widget) {
   @renderable()
   view: View = null;
 
-  //----------------------------------
+  // ----------------------------------
   //  viewModel
-  //----------------------------------
+  // ----------------------------------
 
   /**
    * The view model for this widget. This is a class that contains all the logic
@@ -406,11 +397,11 @@ class Expand extends declared(Widget) {
   @renderable("viewModel.state")
   viewModel: ExpandViewModel = new ExpandViewModel();
 
-  //--------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //
   //  Public Methods
   //
-  //--------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   /**
    * Expand the widget.
@@ -490,61 +481,68 @@ class Expand extends declared(Widget) {
       [CSS.modeFloating]: mode === "floating"
     };
     const content = this._renderContent();
+    const hide = {
+      ["esri-mobile-expand--hide"]: this.content.length === 0
+    };
     return (
-      <div class={this.classes(CSS.base, baseClasses)}>
-        <div
-          bind={this}
-          onclick={this._toggle}
-          class={this.classes(CSS.expandMask, maskClasses)}
-        />
-        <div class={this.classes(CSS.container, containerExpanded)}>
-          <div class={CSS.panel}>
-            {!expanded ? (
+      <div class={this.classes(CSS.base, baseClasses, hide)}>
+        {this.content.length > 0
+          ? [
               <div
                 bind={this}
                 onclick={this._toggle}
-                onkeydown={this._toggle}
-                aria-label={title}
-                title={title}
-                role="button"
-                tabindex="0"
-                class={CSS.button}
-              >
-                {badgeNumberNode}
+                class={this.classes(CSS.expandMask, maskClasses)}
+              />,
+              <div class={this.classes(CSS.container, containerExpanded)}>
+                <div class={CSS.panel}>
+                  {!expanded ? (
+                    <div
+                      bind={this}
+                      onclick={this._toggle}
+                      onkeydown={this._toggle}
+                      aria-label={title}
+                      title={title}
+                      role="button"
+                      tabindex="0"
+                      class={CSS.button}
+                    >
+                      {badgeNumberNode}
 
-                <svg
-                  class={CSS.expandCollapseIcon}
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 16 16"
+                      <svg
+                        class={CSS.expandCollapseIcon}
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 16 16"
+                      >
+                        <path d="M7.5 6.786l4.5-4.5V3.7L7.5 8.2 3 3.7V2.286zM3 8.286V9.7l4.5 4.5L12 9.7V8.286l-4.5 4.5z" />
+                      </svg>
+
+                      <span class={CSS.text}>{title}</span>
+                    </div>
+                  ) : null}
+                  {expandedBadgeNumberNode}
+                </div>
+                <div
+                  class={this.classes(
+                    CSS.content,
+                    CSS.mobileExpandContent,
+                    contentClasses
+                  )}
+                  bind={this}
                 >
-                  <path d="M7.5 6.786l4.5-4.5V3.7L7.5 8.2 3 3.7V2.286zM3 8.286V9.7l4.5 4.5L12 9.7V8.286l-4.5 4.5z" />
-                </svg>
-
-                <span class={CSS.text}>{title}</span>
+                  {content}
+                </div>
               </div>
-            ) : null}
-            {expandedBadgeNumberNode}
-          </div>
-          <div
-            class={this.classes(
-              CSS.content,
-              CSS.mobileExpandContent,
-              contentClasses
-            )}
-            bind={this}
-          >
-            {content}
-          </div>
-        </div>
+            ]
+          : null}
       </div>
     );
   }
 
-  //--------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   //
   //  Private Methods
   //
-  //--------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
 
   @accessibleHandler()
   private _toggle(): void {
@@ -552,10 +550,12 @@ class Expand extends declared(Widget) {
   }
 
   private _renderContent() {
-    const components = this.content.map((component: Expand) => {
+    const components = this.content.toArray().map((component: Expand) => {
       if (isWidget(component)) {
         return (
-          <div class={CSS.mobileExpandComponent}>{component.render()}</div>
+          <div key={component.id} class={CSS.mobileExpandComponent}>
+            {component.render()}
+          </div>
         );
       }
 

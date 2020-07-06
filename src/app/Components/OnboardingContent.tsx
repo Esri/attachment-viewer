@@ -1,6 +1,3 @@
-/// <amd-dependency path="esri/core/tsSupport/declareExtendsHelper" name="__extends" />
-/// <amd-dependency path="esri/core/tsSupport/decorateHelper" name="__decorate" />
-
 // Copyright 2019 Esri
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,19 +9,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.​
 
-import {
-  subclass,
-  declared,
-  property
-} from "esri/core/accessorSupport/decorators";
+import { subclass, property } from "esri/core/accessorSupport/decorators";
 import Widget = require("esri/widgets/Widget");
 
 import { ApplicationConfig } from "ApplicationBase/interfaces";
 import { renderable, tsx } from "esri/widgets/support/widget";
 
 // nls
-import * as i18nPhotoCentric from "dojo/i18n!./PhotoCentric/nls/resources";
-import * as i18nMapCentric from "dojo/i18n!./MapCentric/nls/resources";
+import i18nPhotoCentric from "dojo/i18n!./PhotoCentric/nls/resources";
 
 const CSS = {
   title: "title-container",
@@ -35,64 +27,73 @@ const CSS = {
 };
 
 @subclass("OnboardingContent")
-class OnboardingContent extends declared(Widget) {
+class OnboardingContent extends Widget {
   constructor(params) {
     super(params);
   }
   @property()
-  @renderable()
+  @renderable(["config.customOnboarding", "config.customOnboardingHTML"])
   config: ApplicationConfig;
 
   @property()
   @renderable()
   appMode: string = null;
 
+  @property()
+  withinConfigurationExperience: boolean = null;
+
   render() {
-    const {
-      customOnboardingHTML,
-      customOnboardingContentEnabled
-    } = this.config;
+    const { customOnboarding, customOnboardingHTML } = this.config;
     const onboardingContainer = {
-      [CSS.onboardingContentContainer]: !customOnboardingContentEnabled
+      [CSS.onboardingContentContainer]: !customOnboarding
     };
-    return (
-      <div
-        class={this.classes(onboardingContainer)}
-        innerHTML={
-          customOnboardingContentEnabled
-            ? customOnboardingHTML
-              ? customOnboardingHTML
-              : null
-            : null
-        }
-      >
-        {customOnboardingContentEnabled ? null : (
-          <div>
-            <div class={CSS.headingContainer}>
-              <h2 class={CSS.onboardingHeadingText}>
-                {i18nPhotoCentric.welcome}
-              </h2>
-            </div>
-            <h4>{i18nPhotoCentric.subtitle}</h4>
-            <h6>{i18nPhotoCentric.instructionHeading}</h6>
-            {this.appMode === "photo-centric" ? (
-              <ul>
-                <li>{i18nPhotoCentric.stepOne}</li>
-                <li>{i18nPhotoCentric.stepTwo}</li>
-                <li>{i18nPhotoCentric.stepThree}</li>
-              </ul>
-            ) : (
-              <ul class="esri-onboarding-content__map-centric-list">
-                <li>{i18nMapCentric.stepOne}</li>
-                <li>{i18nMapCentric.stepTwo}</li>
-                <li>{i18nMapCentric.stepThree}</li>
-                <li>{i18nMapCentric.stepFour}</li>
-              </ul>
-            )}
-          </div>
-        )}
+
+    return customOnboarding ? (
+      this.withinConfigurationExperience ? (
+        <div
+          key="custom-onboarding"
+          class={this.classes(onboardingContainer)}
+          bind={this}
+          afterCreate={this._setCustomOnboardingHTML}
+          afterUpdate={this._setCustomOnboardingHTML}
+          data-onboarding-html={customOnboardingHTML}
+        />
+      ) : (
+        <div
+          key="custom-onboarding"
+          class={this.classes(onboardingContainer)}
+          bind={this}
+          afterCreate={this._setCustomOnboardingHTML}
+          data-onboarding-html={customOnboardingHTML}
+        />
+      )
+    ) : (
+      <div key="default-onboarding">
+        <h2 key="default-onboarding-title">
+          <span key="default-onboarding-span" style="color:#0079c1;">
+            {i18nPhotoCentric.welcome}
+          </span>
+        </h2>
+        <p key="default-onboarding-subtitle">{i18nPhotoCentric.subtitle}</p>
+        <p key="default-onboarding-int-heading">
+          {i18nPhotoCentric.instructionHeading}
+        </p>
+        <ul key="default-onboarding-ul">
+          <li key="default-onboarding-li-1">{i18nPhotoCentric.stepOne}</li>
+          <li key="default-onboarding-li-2">{i18nPhotoCentric.stepTwo}</li>
+        </ul>
       </div>
     );
+  }
+
+  private _setCustomOnboardingHTML(node: HTMLDivElement): void {
+    while (node.firstChild) {
+      node.removeChild(node.firstChild);
+    }
+    const content = node.getAttribute("data-onboarding-html");
+    const paragraph = document.createElement("p");
+    paragraph.innerHTML = content;
+    node.appendChild(paragraph);
   }
 }
 

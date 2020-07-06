@@ -11,6 +11,7 @@
 define(["require", "exports"], function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.attachToNode = void 0;
     function attachToNode(node) {
         var content = this;
         node.appendChild(content);

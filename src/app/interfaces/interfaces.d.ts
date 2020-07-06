@@ -12,7 +12,7 @@
 */
 
 import Accessor = require("esri/core/Accessor");
-import MapCentric = require("../Components/MapCentric");
+import { ApplicationConfig } from "../application-base-js/interfaces";
 
 interface AttachmentViewerLayerData extends Accessor {
   featureLayer: __esri.FeatureLayer;
@@ -111,4 +111,12 @@ export interface PhotoCentricFeaturesPromise {
 export interface HitTestResult {
   graphic: __esri.Graphic;
   mapPoint: __esri.Point;
+}
+
+export interface esriWidgetProps extends __esri.WidgetProperties {
+  config: ApplicationConfig;
+  view?: __esri.MapView;
+  portal?: __esri.Portal;
+  propertyName?: string;
+  docDirection?: string;
 }

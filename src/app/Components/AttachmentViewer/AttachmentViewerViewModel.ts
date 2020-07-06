@@ -1,6 +1,3 @@
-/// <amd-dependency path="esri/core/tsSupport/declareExtendsHelper" name="__extends" />
-/// <amd-dependency path="esri/core/tsSupport/decorateHelper" name="__decorate" />
-
 // Copyright 2019 Esri
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,11 +13,7 @@
 import Accessor = require("esri/core/Accessor");
 
 // esri.core.accessorSupport
-import {
-  subclass,
-  declared,
-  property
-} from "esri/core/accessorSupport/decorators";
+import { subclass, property } from "esri/core/accessorSupport/decorators";
 
 // esri.core.watchUtils
 import watchUtils = require("esri/core/watchUtils");
@@ -30,9 +23,6 @@ import Handles = require("esri/core/Handles");
 
 // esri.core.Collection
 import Collection = require("esri/core/Collection");
-
-// esri.tasks.support.Query
-import Query = require("esri/tasks/support/Query");
 
 // esri.tasks.Locator
 import Locator = require("esri/tasks/Locator");
@@ -54,9 +44,6 @@ import PhotoCentricData = require("../PhotoCentric/PhotoCentricData");
 // MapCentricData
 import MapCentricData = require("../MapCentric/MapCentricData");
 
-// esri.core.promiseUtils
-import promiseUtils = require("esri/core/promiseUtils");
-
 // Share
 import Share = require("../Share");
 
@@ -69,11 +56,11 @@ import LayerSwitcher = require("../LayerSwitcher");
 // SelectedFeatureAttachments
 import SelectedFeatureAttachments = require("./SelectedFeatureAttachments");
 
-//----------------------------------
+// ----------------------------------
 //
 //  State
 //
-//----------------------------------
+// ----------------------------------
 type State =
   | "ready"
   | "loading"
@@ -84,24 +71,24 @@ type State =
   | "performingHitTest";
 
 @subclass("AttachmentViewerViewModel")
-class AttachmentViewerViewModel extends declared(Accessor) {
+class AttachmentViewerViewModel extends Accessor {
   private _handles: Handles = new Handles();
   private _preparingDownload: boolean = null;
   private _queryingForFeatures: IPromise<any> = null;
   private _performingHitTest: IPromise<any> = null;
   private _updateShareIndexes: boolean = null;
 
-  //----------------------------------
+  // ----------------------------------
   //
   //  Private Variables
   //
-  //----------------------------------
+  // ----------------------------------
 
-  //----------------------------------
+  // ----------------------------------
   //
   //  state - readOnly
   //
-  //----------------------------------
+  // ----------------------------------
   @property({
     dependsOn: ["view.ready", "imageIsLoaded"],
     readOnly: true
@@ -123,11 +110,11 @@ class AttachmentViewerViewModel extends declared(Accessor) {
       : "disabled";
   }
 
-  //----------------------------------
+  // ----------------------------------
   //
   //  Properties
   //
-  //----------------------------------
+  // ----------------------------------
 
   // view
   @property()
@@ -225,14 +212,18 @@ class AttachmentViewerViewModel extends declared(Accessor) {
     "application/pdf"
   ];
 
-  //----------------------------------
+  // withinConfigurationExperience
+  @property()
+  withinConfigurationExperience: boolean = null;
+
+  // ----------------------------------
   //
   //  Lifecycle
   //
-  //----------------------------------
+  // ----------------------------------
 
   destroy() {
-    this._handles.removeAll();
+    this._handles?.removeAll();
     this._handles = null;
   }
 
@@ -272,7 +263,10 @@ class AttachmentViewerViewModel extends declared(Accessor) {
 
   // updateSharePropIndexes
   updateSharePropIndexes(): void {
-    if (!this.selectedAttachmentViewerData) {
+    if (
+      !this.selectedAttachmentViewerData ||
+      this.withinConfigurationExperience
+    ) {
       return;
     }
     if (this.shareLocationWidget && this.shareLocationWidget.isDefault) {
@@ -330,7 +324,7 @@ class AttachmentViewerViewModel extends declared(Accessor) {
           fieldContents &&
             fieldContents.forEach(content => {
               if (content.type === "fields") {
-                content.fieldInfos.forEach(
+                content?.fieldInfos?.forEach(
                   (fieldInfo: __esri.FieldInfo, fieldInfoIndex: number) => {
                     if (
                       fieldInfo.fieldName !==
