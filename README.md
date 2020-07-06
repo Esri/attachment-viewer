@@ -4,6 +4,17 @@ Attachment Viewer is a configurable app template that allows you to view photos,
 
 ![Attachment Viewer Preview](images/attachment-viewer.png)
 
+
+## 8.2 Release Updates
+
+1. Updated ArcGIS JSAPI to v4.16
+
+2. Removed usage of dojo declared and TS directives
+
+3. Supports 'Instant apps' new configuration experience.
+
+4.  Property name udpates. 
+
 ## 7.3 Release Updates
 
 1. Map layout
