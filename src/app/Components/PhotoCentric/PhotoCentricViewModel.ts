@@ -9,7 +9,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.​
 
-// esri.core.accessorSupport2020
+// esri.core.accessorSupport
 import { subclass, property } from "esri/core/accessorSupport/decorators";
 
 // esri.core
