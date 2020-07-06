@@ -1,6 +1,3 @@
-/// <amd-dependency path="esri/core/tsSupport/declareExtendsHelper" name="__extends" />
-/// <amd-dependency path="esri/core/tsSupport/decorateHelper" name="__decorate" />
-
 // Copyright 2019 Esri
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,13 +12,12 @@
 // esri.core.accessorSupport
 import {
   subclass,
-  declared,
   property,
   aliasOf
 } from "esri/core/accessorSupport/decorators";
 
 // nls
-import * as i18n from "dojo/i18n!./LayerSwitcher/nls/resources";
+import i18n from "dojo/i18n!./LayerSwitcher/nls/resources";
 
 // esri.widgets
 import Widget = require("esri/widgets/Widget");
@@ -71,15 +67,16 @@ const CSS = {
 };
 
 @subclass("LayerSwitcher")
-class LayerSwitcher extends declared(Widget) {
+class LayerSwitcher extends Widget {
   constructor(value?: any) {
-    super();
+    super(value);
   }
 
   // _dropDownIsOpen
   private _dropDownIsOpen: boolean = null;
 
   @property()
+  @renderable()
   appMode: string = null;
 
   // view
@@ -116,7 +113,6 @@ class LayerSwitcher extends declared(Widget) {
 
   render() {
     const layers = this._renderLayerItems();
-
     const arrowIcon = {
       [CSS.icons.upArrowIcon]: this._dropDownIsOpen,
       [CSS.icons.downArrowIcon]: !this._dropDownIsOpen
@@ -124,10 +120,7 @@ class LayerSwitcher extends declared(Widget) {
     const selectedLayerTitle = this.get("selectedLayer.title") as string;
     const title =
       selectedLayerTitle && selectedLayerTitle.length > 30
-        ? `${selectedLayerTitle
-            .split("")
-            .slice(0, 30)
-            .join("")}...`
+        ? `${selectedLayerTitle.split("").slice(0, 30).join("")}...`
         : selectedLayerTitle;
     const layerTitleToDisplay = title ? title : null;
     return (

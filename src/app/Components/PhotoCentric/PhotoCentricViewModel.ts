@@ -1,6 +1,3 @@
-/// <amd-dependency path="esri/core/tsSupport/declareExtendsHelper" name="__extends" />
-/// <amd-dependency path="esri/core/tsSupport/decorateHelper" name="__decorate" />
-
 // Copyright 2019 Esri
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,11 +10,7 @@
 // limitations under the License.​
 
 // esri.core.accessorSupport
-import {
-  subclass,
-  declared,
-  property
-} from "esri/core/accessorSupport/decorators";
+import { subclass, property } from "esri/core/accessorSupport/decorators";
 
 // esri.core
 import Collection = require("esri/core/Collection");
@@ -53,24 +46,25 @@ import {
 } from "../../interfaces/interfaces";
 
 @subclass("PhotoCentricViewModel")
-class PhotoCentricViewModel extends declared(AttachmentViewerViewModel) {
+class PhotoCentricViewModel extends AttachmentViewerViewModel {
   private _photoCentricHandles: Handles = new Handles();
   private _queryingForFeaturesPhotoCentric: Promise<void> = null;
-  private _highlightedFeaturePhotoCentric: __esri.Handle = null;
   private _performingHitTestPhotoCentric: Promise<__esri.HitTestResult> = null;
   private _currentSketchExtentPhotoCentric: __esri.Extent = null;
   private _queryingForObjectIds: Promise<void> = null;
-  private _layerViewLoadPromises: Promise<__esri.FeatureLayerView>[] = [];
-  private _queryObjectIdPromises: Promise<PhotoCentricOIDPromise>[] = [];
-  private _queryFeaturesPromises: Promise<PhotoCentricFeaturesPromise>[] = [];
-  private _queryAttachmentsPromises: Promise<void>[] = [];
+  private _layerViewLoadPromises: Array<Promise<__esri.FeatureLayerView>> = [];
+  private _queryObjectIdPromises: Array<Promise<PhotoCentricOIDPromise>> = [];
+  private _queryFeaturesPromises: Array<
+    Promise<PhotoCentricFeaturesPromise>
+  > = [];
+  private _queryAttachmentsPromises: Array<Promise<void>> = [];
   private _queryingFeatures: Promise<__esri.FeatureSet> = null;
 
-  //----------------------------------
+  // ----------------------------------
   //
   //  state - readOnly
   //
-  //----------------------------------
+  // ----------------------------------
   @property({
     dependsOn: ["view.ready", "imageIsLoaded"],
     readOnly: true
@@ -92,13 +86,9 @@ class PhotoCentricViewModel extends declared(AttachmentViewerViewModel) {
   @property()
   currentImageUrl: string = null;
 
-  // attachmentLayer
-  @property()
-  attachmentLayer: any = null;
-
   // attachmentLayers
   @property()
-  attachmentLayers: string = null;
+  attachmentLayers = null;
 
   // imagePanZoomEnabled
   @property()
@@ -120,18 +110,40 @@ class PhotoCentricViewModel extends declared(AttachmentViewerViewModel) {
   @property()
   selectedLayerId: string = null;
 
+  @property()
+  highlightedFeature = null;
+
   initialize() {
+    this._photoCentricHandles?.add(
+      watchUtils.watch(this, "appMode", () => {
+        this._removeFeatureHighlight();
+      })
+    );
+
     this._initAppOnViewReady();
-    this._initializeSketch();
+    this._photoCentricHandles?.add([
+      watchUtils.whenTrue(this, "selectFeaturesEnabled", () => {
+        this._initializeSketch();
+      }),
+      ,
+      watchUtils.whenFalse(this, "selectFeaturesEnabled", () => {
+        if (this.layerSwitcher?.featureLayerCollection) {
+          this._layerViewLoadPromises = [];
+          this._initLayerViewLoadPromises(
+            this.layerSwitcher.featureLayerCollection
+          );
+        }
+      })
+    ]);
     this._initSelectedAttachmentViewerDataWatcher();
   }
 
   // _initAppOnViewReady
   private _initAppOnViewReady(): void {
     const photoCentricInit = "photo-centric-init";
-    this._photoCentricHandles.add(
+    this._photoCentricHandles?.add(
       watchUtils.whenOnce(this, "view.ready", () => {
-        this._photoCentricHandles.remove(photoCentricInit);
+        this._photoCentricHandles?.remove(photoCentricInit);
         this._initializeAppData();
         this._detectFeatureClick();
       }),
@@ -141,7 +153,7 @@ class PhotoCentricViewModel extends declared(AttachmentViewerViewModel) {
 
   // _initSelectedAttachmentViewerDataWatcher
   private _initSelectedAttachmentViewerDataWatcher(): void {
-    this._photoCentricHandles.add([
+    this._photoCentricHandles?.add([
       watchUtils.watch(this, "selectedAttachmentViewerData", async () => {
         const { socialSharingEnabled, defaultObjectId, selectedLayerId } = this;
         if (
@@ -256,6 +268,7 @@ class PhotoCentricViewModel extends declared(AttachmentViewerViewModel) {
         attachmentViewerData.set("attachments", null);
       })
       .then((attachmentsRes: Object) => {
+        // console.log(attachmentsRes);
         this._handleOnlyDisplayFeaturesWithAttachmentsExpression(
           attachmentViewerData,
           attachmentsRes
@@ -354,6 +367,7 @@ class PhotoCentricViewModel extends declared(AttachmentViewerViewModel) {
       layerData,
       selectedLayerId: layer.id
     });
+
     this.attachmentViewerDataCollection.add(attachmentViewerData);
     return attachmentViewerData;
   }
@@ -363,13 +377,10 @@ class PhotoCentricViewModel extends declared(AttachmentViewerViewModel) {
     attachmentViewerData: PhotoCentricData
   ): void {
     const { featureLayer } = attachmentViewerData.layerData;
-    const attachmentLayers = JSON.parse(this.attachmentLayers);
-    if (attachmentLayers && attachmentLayers.length > 0) {
-      this._handleAttachmentLayers(
-        attachmentLayers,
-        attachmentViewerData,
-        featureLayer
-      );
+    const { attachmentLayers } = this;
+    const layers = attachmentLayers?.layers;
+    if (layers && layers.length > 0) {
+      this._handleAttachmentLayers(layers, attachmentViewerData, featureLayer);
     } else {
       this._handleAttachmentLayer(attachmentViewerData, featureLayer);
     }
@@ -710,7 +721,7 @@ class PhotoCentricViewModel extends declared(AttachmentViewerViewModel) {
     const { _photoCentricHandles } = this;
     const selectFeaturesEnabled = "select-features-enabled";
     _photoCentricHandles.add(
-      watchUtils.whenOnce(this, "selectFeaturesEnabled", () => {
+      watchUtils.when(this, "selectFeaturesEnabled", () => {
         _photoCentricHandles.remove(selectFeaturesEnabled);
         const sketchWidgetInit = "sketch-widget-init";
         _photoCentricHandles.add(
@@ -728,7 +739,7 @@ class PhotoCentricViewModel extends declared(AttachmentViewerViewModel) {
   // _handlesketch
   private _handleSketch(): void {
     const sketchWidgetKey = "sketch-widget";
-    this._photoCentricHandles.add(
+    this._photoCentricHandles?.add(
       watchUtils.when(
         this,
         "selectedAttachmentViewerData.layerData.featureLayer",
@@ -736,7 +747,7 @@ class PhotoCentricViewModel extends declared(AttachmentViewerViewModel) {
           const { sketchWidget, graphicsLayer } = this;
           this._watchSketchCreateAndUpdate(sketchWidget, graphicsLayer);
           this._watchSketchDelete(sketchWidget);
-          this._photoCentricHandles.remove(sketchWidgetKey);
+          this._photoCentricHandles?.remove(sketchWidgetKey);
         }
       ),
       sketchWidgetKey
@@ -748,11 +759,17 @@ class PhotoCentricViewModel extends declared(AttachmentViewerViewModel) {
     sketchWidget: __esri.Sketch,
     graphicsLayer: __esri.GraphicsLayer
   ): void {
-    this._photoCentricHandles.add([
+    this._photoCentricHandles?.add([
       sketchWidget.on("create", (sketchEvent: __esri.SketchCreateEvent) => {
+        if (this.appMode === "map-centric") {
+          return;
+        }
         this._handleSketchEvent(sketchEvent, graphicsLayer);
       }),
       sketchWidget.on("update", (sketchEvent: __esri.SketchUpdateEvent) => {
+        if (this.appMode === "map-centric") {
+          return;
+        }
         this._handleSketchEvent(sketchEvent, graphicsLayer);
       })
     ]);
@@ -784,8 +801,11 @@ class PhotoCentricViewModel extends declared(AttachmentViewerViewModel) {
 
   // _watchSketchDelete
   private _watchSketchDelete(sketchWidget: __esri.Sketch): void {
-    this._photoCentricHandles.add(
+    this._photoCentricHandles?.add(
       sketchWidget.on("delete", () => {
+        if (this.appMode === "map-centric") {
+          return;
+        }
         this.attachmentViewerDataCollection.forEach(attachmentViewerData => {
           attachmentViewerData.set("layerData.layerView.effect", null);
         });
@@ -845,6 +865,9 @@ class PhotoCentricViewModel extends declared(AttachmentViewerViewModel) {
   // _detectFeatureClick
   private _detectFeatureClick(): __esri.WatchHandle {
     return this.view.on("click", (event: __esri.MapViewClickEvent) => {
+      if (this.appMode === "map-centric") {
+        return;
+      }
       if (this.queryingState !== "ready") {
         return;
       }
@@ -941,9 +964,9 @@ class PhotoCentricViewModel extends declared(AttachmentViewerViewModel) {
 
   // _removeFeatureHighlight
   private _removeFeatureHighlight(): void {
-    if (this._highlightedFeaturePhotoCentric) {
-      this._highlightedFeaturePhotoCentric.remove();
-      this._highlightedFeaturePhotoCentric = null;
+    if (this.highlightedFeature.feature) {
+      this.highlightedFeature.feature.remove();
+      this.highlightedFeature.feature = null;
     }
   }
 
@@ -1008,6 +1031,7 @@ class PhotoCentricViewModel extends declared(AttachmentViewerViewModel) {
     const selectedFeature = layerFeatures.getItemAt(
       layerFeatureIndex
     ) as __esri.Graphic;
+
     selectedAttachmentViewerData.set("selectedFeature", selectedFeature);
     return selectedFeature;
   }
@@ -1023,7 +1047,7 @@ class PhotoCentricViewModel extends declared(AttachmentViewerViewModel) {
     this.set("featureWidget", featureWidget);
     this.featureWidget.set("visibleElements.title", false);
     const featureWidgetKey = "feature-widget";
-    this._photoCentricHandles.add(
+    this._photoCentricHandles?.add(
       this._watchFeatureWidgetLoad(featureWidgetKey),
       featureWidgetKey
     );
@@ -1034,7 +1058,7 @@ class PhotoCentricViewModel extends declared(AttachmentViewerViewModel) {
     featureWidgetKey: string
   ): __esri.WatchHandle {
     return watchUtils.whenOnce(this, "featureWidget.viewModel.content", () => {
-      this._photoCentricHandles.remove(featureWidgetKey);
+      this._photoCentricHandles?.remove(featureWidgetKey);
       this._setupFeatureWidgetContent();
     });
   }
@@ -1100,7 +1124,7 @@ class PhotoCentricViewModel extends declared(AttachmentViewerViewModel) {
     const { attributes } = selectedFeature;
     const { objectIdField } = layerData.featureLayer;
     const objectId = attributes[objectIdField];
-    const featureAttachments = attachments[objectId];
+    const featureAttachments = attachments?.[objectId];
     const currentAttachment =
       featureAttachments && featureAttachments[this.attachmentIndex];
     return !!currentAttachment;
@@ -1157,7 +1181,7 @@ class PhotoCentricViewModel extends declared(AttachmentViewerViewModel) {
   private _handleSearchWidgets(): __esri.WatchHandle {
     return watchUtils.whenOnce(this, ["searchWidget"], () => {
       this.searchWidget.popupEnabled = false;
-      this._photoCentricHandles.add(this._watchSelectedSearchResults());
+      this._photoCentricHandles?.add(this._watchSelectedSearchResults());
     });
   }
 
@@ -1225,9 +1249,9 @@ class PhotoCentricViewModel extends declared(AttachmentViewerViewModel) {
   // _setupSocialSharing
   private _setupSocialSharing(): void {
     const socialsharing = "social-sharing";
-    this._photoCentricHandles.add(
+    this._photoCentricHandles?.add(
       watchUtils.when(this, "socialSharingEnabled", () => {
-        this._photoCentricHandles.remove(socialsharing);
+        this._photoCentricHandles?.remove(socialsharing);
         this.setupShare();
       }),
       socialsharing
@@ -1244,6 +1268,7 @@ class PhotoCentricViewModel extends declared(AttachmentViewerViewModel) {
       socialSharingEnabled,
       photoCentricDataCollection
     );
+
     if (!attachmentViewerData) {
       return;
     }
@@ -1251,8 +1276,9 @@ class PhotoCentricViewModel extends declared(AttachmentViewerViewModel) {
     if (
       (selectedLayerId && socialSharingEnabled) ||
       !this._currentSketchExtentPhotoCentric
-    )
+    ) {
       this.set("layerSwitcher.selectedLayer", featureLayer);
+    }
     this.set("layerSwitcher.selectedLayerId", featureLayer.id);
     this.set("selectedAttachmentViewerData", attachmentViewerData);
   }
@@ -1361,7 +1387,7 @@ class PhotoCentricViewModel extends declared(AttachmentViewerViewModel) {
     const selectedFeature = this._setSelectedFeature(
       selectedAttachmentViewerData
     );
-    if (this.addressEnabled && selectedFeature) {
+    if (selectedFeature) {
       this.getAddress(selectedFeature.geometry);
     }
 
@@ -1379,14 +1405,14 @@ class PhotoCentricViewModel extends declared(AttachmentViewerViewModel) {
   ): void {
     this._removeFeatureHighlight();
     const { layerView } = selectedAttachmentViewerData.layerData;
-    this._highlightedFeaturePhotoCentric = layerView.highlight(selectedFeature);
+    this.highlightedFeature.feature = layerView.highlight(selectedFeature);
   }
 
-  //----------------------------------
+  // ----------------------------------
   //
   //  SCROLL FEATURES
   //
-  //----------------------------------
+  // ----------------------------------
 
   // previousFeature
   previousFeature(): void {
@@ -1574,11 +1600,11 @@ class PhotoCentricViewModel extends declared(AttachmentViewerViewModel) {
       objectIdIndex !== -1 ? objectIdIndex : 0;
   }
 
-  //----------------------------------
+  // ----------------------------------
   //
   //  Highlight
   //
-  //----------------------------------
+  // ----------------------------------
 
   // _highlightFeature
   private _highlightFeature(layerFeatureIndex?: number): void {
@@ -1596,7 +1622,7 @@ class PhotoCentricViewModel extends declared(AttachmentViewerViewModel) {
     const layerView = this.selectedAttachmentViewerData.get(
       "layerData.layerView"
     ) as __esri.FeatureLayerView;
-    this._highlightedFeaturePhotoCentric =
+    this.highlightedFeature.feature =
       layerView && feature && layerView.highlight(feature);
   }
 

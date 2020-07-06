@@ -1,6 +1,3 @@
-/// <amd-dependency path="esri/core/tsSupport/declareExtendsHelper" name="__extends" />
-/// <amd-dependency path="esri/core/tsSupport/decorateHelper" name="__decorate" />
-
 // Copyright 2019 Esri
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,22 +9,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.​
 
-// esri.core
-import Accessor = require("esri/core/Accessor");
-
 // esri.core.accessorSupport
-import {
-  subclass,
-  declared,
-  property
-} from "esri/core/accessorSupport/decorators";
+import { subclass, property } from "esri/core/accessorSupport/decorators";
 
 import Collection = require("esri/core/Collection");
 
 import AttachmentViewerData = require("../AttachmentViewer/AttachmentViewerData");
 
 @subclass("PhotoCentricData")
-class PhotoCentricData extends declared(AttachmentViewerData) {
+class PhotoCentricData extends AttachmentViewerData {
   // queryRange
   queryRange: number[] = [0, 10];
 

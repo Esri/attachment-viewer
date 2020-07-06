@@ -1,90 +1,24 @@
-/// <amd-dependency path="esri/core/tsSupport/declareExtendsHelper" name="__extends" />
-/// <amd-dependency path="esri/core/tsSupport/decorateHelper" name="__decorate" />
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-var __assign = (this && this.__assign) || function () {
-    __assign = Object.assign || function(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                t[p] = s[p];
-        }
-        return t;
-    };
-    return __assign.apply(this, arguments);
-};
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-    function verb(n) { return function (v) { return step([n, v]); }; }
-    function step(op) {
-        if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
-            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [op[0] & 2, t.value];
-            switch (op[0]) {
-                case 0: case 1: t = op; break;
-                case 4: _.label++; return { value: op[1], done: false };
-                case 5: _.label++; y = op[1]; op = [0]; continue;
-                case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                default:
-                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                    if (t[2]) _.ops.pop();
-                    _.trys.pop(); continue;
-            }
-            op = body.call(thisArg, _);
-        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-    }
-};
-var __spreadArrays = (this && this.__spreadArrays) || function () {
-    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
-    for (var r = Array(s), k = 0, i = 0; i < il; i++)
-        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
-            r[k] = a[j];
-    return r;
-};
-define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/core/tsSupport/decorateHelper", "esri/core/accessorSupport/decorators", "esri/core/Handles", "esri/core/Collection", "esri/core/watchUtils", "esri/widgets/Feature", "esri/tasks/support/Query", "esri/tasks/support/AttachmentQuery", "esri/views/layers/support/FeatureEffect", "../AttachmentViewer/AttachmentViewerViewModel", "../AttachmentViewer/AttachmentViewerLayerData", "./MapCentricData", "../AttachmentViewer/SelectedFeatureAttachments"], function (require, exports, __extends, __decorate, decorators_1, Handles, Collection, watchUtils, Feature, Query, AttachmentQuery, FeatureEffect, AttachmentViewerViewModel, AttachmentViewerLayerData, MapCentricData, SelectedFeatureAttachments) {
+// Copyright 2019 Esri
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//   http://www.apache.org/licenses/LICENSE-2.0
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.​
+define(["require", "exports", "tslib", "esri/core/accessorSupport/decorators", "esri/core/Handles", "esri/core/Collection", "esri/core/watchUtils", "esri/widgets/Feature", "esri/tasks/support/Query", "esri/tasks/support/AttachmentQuery", "esri/views/layers/support/FeatureEffect", "../AttachmentViewer/AttachmentViewerViewModel", "../AttachmentViewer/AttachmentViewerLayerData", "./MapCentricData", "../AttachmentViewer/SelectedFeatureAttachments"], function (require, exports, tslib_1, decorators_1, Handles, Collection, watchUtils, Feature, Query, AttachmentQuery, FeatureEffect, AttachmentViewerViewModel, AttachmentViewerLayerData, MapCentricData, SelectedFeatureAttachments) {
     "use strict";
     var MapCentricViewModel = /** @class */ (function (_super) {
-        __extends(MapCentricViewModel, _super);
+        tslib_1.__extends(MapCentricViewModel, _super);
         function MapCentricViewModel() {
-            var _this = _super !== null && _super.apply(this, arguments) || this;
-            //----------------------------------
+            // ----------------------------------
             //
             //  Variables
             //
-            //----------------------------------
-            _this._highlightedFeatureMapCentric = null;
+            // ----------------------------------
+            var _this = _super !== null && _super.apply(this, arguments) || this;
             _this._mapCentricHandles = new Handles();
             _this._performingHitTestMapCentric = null;
             _this._layerViewPromises = [];
@@ -94,11 +28,11 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             _this._settingUpAttachments = false;
             _this._openToolTipPromise = null;
             _this._galleryItemPromise = null;
-            //----------------------------------
+            // ----------------------------------
             //
             // Properties
             //
-            //----------------------------------
+            // ----------------------------------
             // attachmentLayer
             _this.attachmentLayer = null;
             // attachmentLayers
@@ -119,14 +53,16 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             _this.order = null;
             // selectedLayerId
             _this.selectedLayerId = null;
+            // highlightedFeature
+            _this.highlightedFeature = null;
             return _this;
         }
         Object.defineProperty(MapCentricViewModel.prototype, "mapCentricState", {
-            //----------------------------------
+            // ----------------------------------
             //
             //  state - readOnly
             //
-            //----------------------------------
+            // ----------------------------------
             get: function () {
                 var ready = this.get("view.ready");
                 return ready
@@ -141,19 +77,31 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                         ? "loading"
                         : "disabled";
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
-        //----------------------------------
+        // ----------------------------------
         //
         //  Lifecycle Methods
         //
-        //----------------------------------
+        // ----------------------------------
         MapCentricViewModel.prototype.initialize = function () {
+            var _this = this;
+            var _a, _b;
+            (_a = this._mapCentricHandles) === null || _a === void 0 ? void 0 : _a.add([
+                watchUtils.watch(this, "appMode", function () {
+                    _this._removeFeatureHighlight();
+                }),
+                watchUtils.watch(this, "selectFeaturesEnabled", function () {
+                    _this._initSketchWatchers();
+                }),
+                watchUtils.whenFalse(this, "selectFeaturesEnabled", function () {
+                    _this._queryAllLayerData();
+                })
+            ]);
             this._initLayers();
             this._initSocialShare();
-            this._initSketch();
-            this._mapCentricHandles.add([
+            (_b = this._mapCentricHandles) === null || _b === void 0 ? void 0 : _b.add([
                 this._initQueryFeaturesOnStationaryWatcher(),
                 this._initFeatureContentCloseWatcher(),
                 this._initLayerSwitchWatcher(),
@@ -161,34 +109,39 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             ]);
         };
         MapCentricViewModel.prototype.destroy = function () {
-            this._mapCentricHandles.removeAll();
-            this._mapCentricHandles.destroy();
+            var _a, _b;
+            (_a = this._mapCentricHandles) === null || _a === void 0 ? void 0 : _a.removeAll();
+            (_b = this._mapCentricHandles) === null || _b === void 0 ? void 0 : _b.destroy();
             this._mapCentricHandles = null;
         };
-        //----------------------------------
+        // ----------------------------------
         //
         //  Private Methods
         //
-        //----------------------------------
+        // ----------------------------------
         // _initLayers
         MapCentricViewModel.prototype._initLayers = function () {
+            var _a;
             var layerInitKey = "layer-init-key";
-            this._mapCentricHandles.add(this._handleLayerInitialization(layerInitKey), layerInitKey);
+            (_a = this._mapCentricHandles) === null || _a === void 0 ? void 0 : _a.add(this._handleLayerInitialization(layerInitKey), layerInitKey);
         };
         // _handleLayerInitialization
         MapCentricViewModel.prototype._handleLayerInitialization = function (layerInitKey) {
             var _this = this;
             return watchUtils.whenOnce(this, "view.ready", function () {
-                _this._mapCentricHandles.remove(layerInitKey);
+                var _a, _b;
+                _this.view.padding.bottom = 0;
+                (_a = _this._mapCentricHandles) === null || _a === void 0 ? void 0 : _a.remove(layerInitKey);
                 _this._handleFeatureClickEvent();
                 var featureLayerCollection = "feature-layer-collection";
-                _this._mapCentricHandles.add(_this._watchFeatureLayerCollection(featureLayerCollection), featureLayerCollection);
+                (_b = _this._mapCentricHandles) === null || _b === void 0 ? void 0 : _b.add(_this._watchFeatureLayerCollection(featureLayerCollection), featureLayerCollection);
             });
         };
         MapCentricViewModel.prototype._watchFeatureLayerCollection = function (featureLayerCollection) {
             var _this = this;
             return watchUtils.whenOnce(this, "layerSwitcher.featureLayerCollection.length", function () {
-                _this._mapCentricHandles.remove(featureLayerCollection);
+                var _a;
+                (_a = _this._mapCentricHandles) === null || _a === void 0 ? void 0 : _a.remove(featureLayerCollection);
                 _this.layerSwitcher.featureLayerCollection.forEach(function (featureLayer) {
                     return _this._handleLayerFromCollection(featureLayer);
                 });
@@ -230,6 +183,9 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                 this.set("view.popup.autoOpenEnabled", false);
             }
             return this.view.on("click", function (event) {
+                if (_this.appMode === "photo-centric") {
+                    return;
+                }
                 if (_this.state !== "ready") {
                     return;
                 }
@@ -344,7 +300,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         };
         // _updateAddress
         MapCentricViewModel.prototype._updateAddress = function (graphic) {
-            if (this.addressEnabled && graphic && graphic.geometry) {
+            if (graphic && graphic.geometry) {
                 this.set("selectedAttachmentViewerData.selectedFeatureAddress", null);
                 this.getAddress(graphic.geometry);
             }
@@ -450,92 +406,95 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         };
         // _storeFeatureSortFields
         MapCentricViewModel.prototype._storeFeatureSortFields = function (featureLayer, attachmentViewerData) {
-            var attachmentLayer = this.attachmentLayer;
-            var attachmentLayers = JSON.parse(this.attachmentLayers);
-            if (attachmentLayers && attachmentLayers.length > 0) {
-                attachmentLayers.forEach(function (currentAttachmentLayer) {
+            var attachmentLayers = this.attachmentLayers;
+            var layers = attachmentLayers === null || attachmentLayers === void 0 ? void 0 : attachmentLayers.layers;
+            if (layers && layers.length > 0) {
+                layers.forEach(function (currentAttachmentLayer) {
                     var sortField = currentAttachmentLayer.fields &&
                         currentAttachmentLayer.fields.length > 0 &&
                         currentAttachmentLayer.fields[0];
                     if (currentAttachmentLayer.id === featureLayer.id && sortField) {
                         attachmentViewerData.sortField = sortField;
                     }
+                    else {
+                        attachmentViewerData.sortField =
+                            attachmentViewerData.layerData.featureLayer.objectIdField;
+                    }
                 });
             }
             else {
-                if (attachmentLayer &&
-                    attachmentLayer.id === featureLayer.id &&
-                    attachmentLayer &&
-                    attachmentLayer.fields &&
-                    attachmentLayer.fields.length > 0 &&
-                    attachmentLayer.fields[0] &&
-                    attachmentLayer.fields[0].fields &&
-                    attachmentLayer.fields[0].fields.length > 0 &&
-                    attachmentLayer.fields[0].fields[0]) {
-                    attachmentViewerData.sortField = this.attachmentLayer.fields[0].fields[0];
-                }
+                attachmentViewerData.sortField =
+                    attachmentViewerData.layerData.featureLayer.objectIdField;
             }
         };
         // _initSocialShare
         MapCentricViewModel.prototype._initSocialShare = function () {
             var _this = this;
+            var _a;
             var setupSocialShare = "setup-social-share";
-            this._mapCentricHandles.add(watchUtils.whenOnce(this, "selectedAttachmentViewerData", function () {
-                _this._mapCentricHandles.remove(setupSocialShare);
-                if (_this.socialSharingEnabled) {
-                    _this._setupSocialSharing();
-                }
+            (_a = this._mapCentricHandles) === null || _a === void 0 ? void 0 : _a.add(watchUtils.whenOnce(this, "selectedAttachmentViewerData", function () {
+                var _a;
+                (_a = _this._mapCentricHandles) === null || _a === void 0 ? void 0 : _a.remove(setupSocialShare);
+                // if (this.socialSharingEnabled) {
+                _this._setupSocialSharing();
+                // }
                 if (_this.mapCentricTooltipEnabled) {
                     var popup = _this.view.popup;
                     popup.defaultPopupTemplateEnabled = true;
                     popup.dockOptions.buttonEnabled = false;
-                    popup.featureNavigationEnabled = false;
+                    popup.visibleElements.featureNavigation = false;
                     popup.collapseEnabled = false;
                     popup.highlightEnabled = true;
                     popup.actions.removeAll();
                 }
             }), setupSocialShare);
         };
-        // _initSketch
-        MapCentricViewModel.prototype._initSketch = function () {
-            var _this = this;
-            var selectFeauresEnabledKey = "select-features-enabled";
-            this._mapCentricHandles.add(watchUtils.whenOnce(this, "selectFeaturesEnabled", function () {
-                _this._initSketchWatchers(selectFeauresEnabledKey);
-            }), selectFeauresEnabledKey);
-        };
         // Feature selection methods
         // _initSketchWatchers
-        MapCentricViewModel.prototype._initSketchWatchers = function (selectFeauresEnabledKey) {
+        MapCentricViewModel.prototype._initSketchWatchers = function () {
             var _this = this;
-            this._mapCentricHandles.remove(selectFeauresEnabledKey);
+            var _a;
             var sketchWidgetInitKey = "sketch-widget-init";
-            this._mapCentricHandles.add(watchUtils.when(this, "sketchWidget", function () {
+            (_a = this._mapCentricHandles) === null || _a === void 0 ? void 0 : _a.add(watchUtils.when(this, "sketchWidget", function () {
                 _this._handleSketchWidgetLoad(sketchWidgetInitKey);
             }), sketchWidgetInitKey);
         };
         // _handleSketchWidgetLoad
         MapCentricViewModel.prototype._handleSketchWidgetLoad = function (sketchWidgetInitKey) {
-            this._mapCentricHandles.remove(sketchWidgetInitKey);
+            var _a;
+            (_a = this._mapCentricHandles) === null || _a === void 0 ? void 0 : _a.remove(sketchWidgetInitKey);
             this._watchSketchCreateAndUpdate(this.sketchWidget, this.graphicsLayer);
             this._watchSketchDelete(this.sketchWidget);
         };
         // _watchSketchCreateAndUpdate
         MapCentricViewModel.prototype._watchSketchCreateAndUpdate = function (sketchWidget, graphicsLayer) {
             var _this = this;
-            this._mapCentricHandles.add([
+            var _a, _b;
+            var createUpdateKey = "create-update-key";
+            (_a = this._mapCentricHandles) === null || _a === void 0 ? void 0 : _a.remove(createUpdateKey);
+            (_b = this._mapCentricHandles) === null || _b === void 0 ? void 0 : _b.add([
                 sketchWidget.on("create", function (sketchEvent) {
+                    if (_this.appMode === "photo-centric") {
+                        return;
+                    }
                     _this._handleSketchEvent(sketchEvent, graphicsLayer);
                 }),
                 sketchWidget.on("update", function (sketchEvent) {
+                    if (_this.appMode === "photo-centric") {
+                        return;
+                    }
                     _this._handleSketchEvent(sketchEvent, graphicsLayer);
                 })
-            ]);
+            ], createUpdateKey);
         };
         // _watchSketchDelete
         MapCentricViewModel.prototype._watchSketchDelete = function (sketchWidget) {
             var _this = this;
-            this._mapCentricHandles.add(sketchWidget.on("delete", function () {
+            var _a;
+            (_a = this._mapCentricHandles) === null || _a === void 0 ? void 0 : _a.add(sketchWidget.on("delete", function () {
+                if (_this.appMode === "photo-centric") {
+                    return;
+                }
                 _this.set("mapCentricSketchQueryExtent", null);
                 _this._queryAllLayerData();
                 _this.attachmentViewerDataCollection.forEach(function (attachmentViewerData) {
@@ -585,6 +544,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         // _queryOnStationary
         MapCentricViewModel.prototype._queryOnStationary = function () {
             var _this = this;
+            var _a, _b, _c, _d;
             if (!this.selectedAttachmentViewerData) {
                 return;
             }
@@ -595,18 +555,18 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             if (this.view && !this.view.stationary) {
                 var mapCentricStationaryWhenTrue = "map-centric-stationary-when-true";
                 if (this._mapCentricHandles.has(mapCentricStationaryWhenTrue)) {
-                    this._mapCentricHandles.remove(mapCentricStationaryWhenTrue);
+                    (_a = this._mapCentricHandles) === null || _a === void 0 ? void 0 : _a.remove(mapCentricStationaryWhenTrue);
                 }
-                this._mapCentricHandles.add(watchUtils.whenTrueOnce(this.view, "stationary", function () {
+                (_b = this._mapCentricHandles) === null || _b === void 0 ? void 0 : _b.add(watchUtils.whenTrueOnce(this.view, "stationary", function () {
                     _this._queryAllLayerData();
                 }), mapCentricStationaryWhenTrue);
             }
             else {
                 var mapCentricStationaryWhenFalse = "map-centric-stationary-when-false";
                 if (this._mapCentricHandles.has(mapCentricStationaryWhenFalse)) {
-                    this._mapCentricHandles.remove(mapCentricStationaryWhenFalse);
+                    (_c = this._mapCentricHandles) === null || _c === void 0 ? void 0 : _c.remove(mapCentricStationaryWhenFalse);
                 }
-                this._mapCentricHandles.add(watchUtils.whenFalseOnce(this.view, "interacting", function () {
+                (_d = this._mapCentricHandles) === null || _d === void 0 ? void 0 : _d.add(watchUtils.whenFalseOnce(this.view, "interacting", function () {
                     _this._queryAllLayerData();
                 }), mapCentricStationaryWhenFalse);
             }
@@ -631,7 +591,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                 if (isSketch) {
                     _this._handleSketchFeatureEffect(geometry, attachmentViewerData);
                 }
-                var sortField = attachmentViewerData.get("sortField");
+                var sortField = attachmentViewerData.sortField;
                 var order = _this.order ? _this.order : "ASC";
                 var sortFieldValue = sortField
                     ? [sortField + " " + order]
@@ -642,23 +602,13 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                         return parseInt(objectId);
                     })
                     : [];
-                var where = _this.onlyDisplayFeaturesWithAttachmentsIsEnabled
-                    ? attachmentObjectIds && attachmentObjectIds.length
-                        ? attachmentViewerData.defaultLayerExpression
-                            ? attachmentViewerData.defaultLayerExpression
-                            : "1=1"
-                        : "1=0"
-                    : attachmentViewerData.defaultLayerExpression
-                        ? attachmentViewerData.defaultLayerExpression
-                        : "1=1";
                 var queryConfig = {
                     geometry: geometry,
                     outSpatialReference: outSpatialReference,
-                    orderByFields: sortFieldValue,
-                    where: where
+                    orderByFields: sortFieldValue
                 };
                 var query = _this.onlyDisplayFeaturesWithAttachmentsIsEnabled
-                    ? new Query(__assign(__assign({}, queryConfig), { objectIds: __spreadArrays(attachmentObjectIds) }))
+                    ? new Query(tslib_1.__assign(tslib_1.__assign({}, queryConfig), { objectIds: tslib_1.__spreadArrays(attachmentObjectIds) }))
                     : new Query(queryConfig);
                 var objectIdPromise = featureLayer
                     .queryObjectIds(query)
@@ -699,7 +649,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         // _handleQueryFeaturesLogic
         MapCentricViewModel.prototype._handleQueryFeaturesLogic = function (featureObjectIds, objectIdResult) {
             featureObjectIds.removeAll();
-            featureObjectIds.addMany(__spreadArrays(objectIdResult.objectIds));
+            featureObjectIds.addMany(tslib_1.__spreadArrays(objectIdResult.objectIds));
             var featureObjectIdArr = featureObjectIds.slice();
             var attachmentsArr = featureObjectIdArr.map(function (objectId) {
                 var attachments = objectIdResult &&
@@ -722,7 +672,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                 .toArray()
                 .slice(layerData.start, layerData.start + 24);
             attachmentDataCollection.removeAll();
-            attachmentDataCollection.addMany(__spreadArrays(subsetFeatures));
+            attachmentDataCollection.addMany(tslib_1.__spreadArrays(subsetFeatures));
         };
         // _handleAttachmentDataPromises
         MapCentricViewModel.prototype._handleAttachmentDataPromises = function () {
@@ -730,7 +680,8 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             Promise.all(this._attachmentDataPromises).then(function (attachmentDataPromiseResults) {
                 attachmentDataPromiseResults.forEach(function (attachmentDataPromiseResult) {
                     var features = attachmentDataPromiseResult.features, attachmentViewerData = attachmentDataPromiseResult.attachmentViewerData;
-                    _this._handleAttachmentDataRes(features, attachmentViewerData);
+                    var mapCentricData = attachmentViewerData;
+                    _this._handleAttachmentDataRes(features, mapCentricData);
                 });
                 var attachmentViewerData = null;
                 if (_this.selectedLayerId) {
@@ -746,7 +697,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                 _this._handleFeatureUpdate();
             });
         };
-        //_handleFeatureUpdate
+        // _handleFeatureUpdate
         MapCentricViewModel.prototype._handleFeatureUpdate = function () {
             if (this.defaultObjectId) {
                 this._handleDefaultObjectId();
@@ -762,10 +713,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                 selectedResult.feature &&
                 selectedResult.feature.layer &&
                 selectedResult.feature.layer.id) {
-                if (this._highlightedFeatureMapCentric) {
-                    this._highlightedFeatureMapCentric.remove();
-                    this._highlightedFeatureMapCentric = null;
-                }
+                this._removeFeatureHighlight();
                 this._updateAttachmentViewerDataOnSearch(selectedResult);
                 this.set("selectedAttachmentViewerData.attachmentIndex", 0);
                 this._setFeatureMapCentric(selectedResult.feature);
@@ -794,9 +742,11 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         // _handleDefaultObjectId
         MapCentricViewModel.prototype._handleDefaultObjectId = function () {
             var _this = this;
+            var _a;
             var handleDefaultObjectIdKey = "handle-default-object-id-key";
-            this._mapCentricHandles.add(watchUtils.when(this, "selectedAttachmentViewerData.layerData.featureLayer", function () {
-                _this._mapCentricHandles.remove(handleDefaultObjectIdKey);
+            (_a = this._mapCentricHandles) === null || _a === void 0 ? void 0 : _a.add(watchUtils.when(this, "selectedAttachmentViewerData.layerData.featureLayer", function () {
+                var _a;
+                (_a = _this._mapCentricHandles) === null || _a === void 0 ? void 0 : _a.remove(handleDefaultObjectIdKey);
                 if (!_this.defaultObjectId) {
                     return;
                 }
@@ -829,11 +779,11 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                     }
                     else {
                         var layerView = _this.get("selectedAttachmentViewerData.layerData.layerView");
-                        if (_this._highlightedFeatureMapCentric) {
-                            _this._highlightedFeatureMapCentric.remove();
-                            _this._highlightedFeatureMapCentric = null;
+                        if (_this.highlightedFeature.feature) {
+                            _this.highlightedFeature.feature.remove();
+                            _this.highlightedFeature.feature = null;
                         }
-                        _this._highlightedFeatureMapCentric = layerView.highlight(feature);
+                        _this.highlightedFeature.feature = layerView.highlight(feature);
                     }
                     if (!feature) {
                         return;
@@ -908,8 +858,9 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         // _handleLayerSwitch
         MapCentricViewModel.prototype._handleLayerSwitch = function () {
             var _this = this;
-            this._mapCentricHandles.add(watchUtils.watch(this, "selectedAttachmentViewerData", function () { return __awaiter(_this, void 0, void 0, function () {
-                return __generator(this, function (_a) {
+            var _a;
+            (_a = this._mapCentricHandles) === null || _a === void 0 ? void 0 : _a.add(watchUtils.watch(this, "selectedAttachmentViewerData", function () { return tslib_1.__awaiter(_this, void 0, void 0, function () {
+                return tslib_1.__generator(this, function (_a) {
                     if (this.socialSharingEnabled) {
                         this.updateSharePropIndexes();
                     }
@@ -957,13 +908,14 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             var attributes = selectedFeature.attributes;
             var objectIdField = layerData.featureLayer.objectIdField;
             var objectId = attributes[objectIdField];
-            var featureAttachments = attachments[objectId];
+            var featureAttachments = attachments === null || attachments === void 0 ? void 0 : attachments[objectId];
             var currentAttachment = featureAttachments && featureAttachments[this.attachmentIndex];
             return !!currentAttachment;
         };
         // _handleFeatureWidget
         MapCentricViewModel.prototype._handleFeatureWidget = function () {
             var _this = this;
+            var _a;
             var graphic = this.get("selectedAttachmentViewerData.selectedFeature");
             if (!this.featureWidget) {
                 this.featureWidget = this._createFeatureWidget(graphic);
@@ -973,7 +925,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             }
             this.featureWidget.set("visibleElements.title", false);
             var featureWidgetKey = "feature-widget";
-            this._mapCentricHandles.add(watchUtils.when(this, "featureWidget", function () {
+            (_a = this._mapCentricHandles) === null || _a === void 0 ? void 0 : _a.add(watchUtils.when(this, "featureWidget", function () {
                 if (_this.socialSharingEnabled) {
                     _this.updateSharePropIndexes();
                 }
@@ -1004,7 +956,8 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         };
         // _handleFeatureWidgetContent
         MapCentricViewModel.prototype._handleFeatureWidgetContent = function (featureWidgetContentKey) {
-            this._mapCentricHandles.remove(featureWidgetContentKey);
+            var _a;
+            (_a = this._mapCentricHandles) === null || _a === void 0 ? void 0 : _a.remove(featureWidgetContentKey);
             this.setFeatureInfo(this.featureWidget);
             this._setFeatureAttachments();
         };
@@ -1017,7 +970,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                 ? attachmentContentInfos
                 : [];
             var sortedAttachments = this._sortFeatureAttachments(attachmentsArr);
-            var attachments = new Collection(__spreadArrays(sortedAttachments));
+            var attachments = new Collection(tslib_1.__spreadArrays(sortedAttachments));
             var selectedFeatureAttachments = new SelectedFeatureAttachments({
                 attachments: attachments,
                 currentIndex: currentIndex
@@ -1063,16 +1016,22 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         MapCentricViewModel.prototype._setupSocialSharing = function () {
             this.setupShare();
         };
-        //----------------------------------
+        MapCentricViewModel.prototype._removeFeatureHighlight = function () {
+            if (this.highlightedFeature.feature) {
+                this.highlightedFeature.feature.remove();
+                this.highlightedFeature.feature = null;
+            }
+        };
+        // ----------------------------------
         //
         //  End of Private Methods
         //
-        //----------------------------------
-        //----------------------------------
+        // ----------------------------------
+        // ----------------------------------
         //
         //  Public Methods
         //
-        //----------------------------------
+        // ----------------------------------
         // updateSelectedFeatureMapCentric
         MapCentricViewModel.prototype.updateSelectedFeatureMapCentric = function (graphic) {
             this.set("selectedAttachmentViewerData.selectedFeature", graphic);
@@ -1152,7 +1111,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                     var attachmentDataSubset = attachmentsArr
                         .toArray()
                         .slice(layerData.start, end);
-                    selectedAttachmentViewerData.attachmentDataCollection.addMany(__spreadArrays(attachmentDataSubset));
+                    selectedAttachmentViewerData.attachmentDataCollection.addMany(tslib_1.__spreadArrays(attachmentDataSubset));
                 }
             }
         };
@@ -1199,10 +1158,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                     }
                 }
                 else {
-                    if (this._highlightedFeatureMapCentric) {
-                        this._highlightedFeatureMapCentric.remove();
-                        this._highlightedFeatureMapCentric = null;
-                    }
+                    this._removeFeatureHighlight();
                 }
             }
         };
@@ -1222,15 +1178,12 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                         collapsed: true
                     };
                 var popupConfigToOpen = queryPromise
-                    ? __assign(__assign({}, config), { promises: [queryPromise] }) : config;
+                    ? tslib_1.__assign(tslib_1.__assign({}, config), { promises: [queryPromise] }) : config;
                 this.view.popup.open(popupConfigToOpen);
             }
             else {
-                if (this._highlightedFeatureMapCentric) {
-                    this._highlightedFeatureMapCentric.remove();
-                    this._highlightedFeatureMapCentric = null;
-                }
-                this._highlightedFeatureMapCentric = layerView.highlight(graphic);
+                this._removeFeatureHighlight();
+                this.highlightedFeature.feature = layerView.highlight(graphic);
             }
         };
         // getCurrentAttachment
@@ -1305,47 +1258,50 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         MapCentricViewModel.prototype.getAttachments = function () {
             return this.get("selectedAttachmentViewerData.selectedFeatureAttachments.attachments");
         };
-        __decorate([
+        tslib_1.__decorate([
             decorators_1.property({
                 dependsOn: ["view.ready", "featureWidget.viewModel.waitingForContent"],
                 readOnly: true
             })
         ], MapCentricViewModel.prototype, "mapCentricState", null);
-        __decorate([
+        tslib_1.__decorate([
             decorators_1.property()
         ], MapCentricViewModel.prototype, "attachmentLayer", void 0);
-        __decorate([
+        tslib_1.__decorate([
             decorators_1.property()
         ], MapCentricViewModel.prototype, "attachmentLayers", void 0);
-        __decorate([
+        tslib_1.__decorate([
             decorators_1.property()
         ], MapCentricViewModel.prototype, "attachmentIndex", void 0);
-        __decorate([
+        tslib_1.__decorate([
             decorators_1.property()
         ], MapCentricViewModel.prototype, "currentImageUrl", void 0);
-        __decorate([
+        tslib_1.__decorate([
             decorators_1.property()
         ], MapCentricViewModel.prototype, "defaultObjectId", void 0);
-        __decorate([
+        tslib_1.__decorate([
             decorators_1.property()
         ], MapCentricViewModel.prototype, "featureContentPanelIsOpen", void 0);
-        __decorate([
+        tslib_1.__decorate([
             decorators_1.property()
         ], MapCentricViewModel.prototype, "mapCentricSketchQueryExtent", void 0);
-        __decorate([
+        tslib_1.__decorate([
             decorators_1.property()
         ], MapCentricViewModel.prototype, "mapCentricTooltipEnabled", void 0);
-        __decorate([
+        tslib_1.__decorate([
             decorators_1.property()
         ], MapCentricViewModel.prototype, "order", void 0);
-        __decorate([
+        tslib_1.__decorate([
             decorators_1.property()
         ], MapCentricViewModel.prototype, "selectedLayerId", void 0);
-        MapCentricViewModel = __decorate([
+        tslib_1.__decorate([
+            decorators_1.property()
+        ], MapCentricViewModel.prototype, "highlightedFeature", void 0);
+        MapCentricViewModel = tslib_1.__decorate([
             decorators_1.subclass("MapCentricViewModel")
         ], MapCentricViewModel);
         return MapCentricViewModel;
-    }(decorators_1.declared(AttachmentViewerViewModel)));
+    }(AttachmentViewerViewModel));
     return MapCentricViewModel;
 });
 //# sourceMappingURL=MapCentricViewModel.js.map

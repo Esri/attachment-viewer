@@ -1,6 +1,3 @@
-/// <amd-dependency path="esri/core/tsSupport/declareExtendsHelper" name="__extends" />
-/// <amd-dependency path="esri/core/tsSupport/decorateHelper" name="__decorate" />
-
 // Copyright 2019 Esri
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,11 +13,7 @@
 import Accessor = require("esri/core/Accessor");
 
 // esri.core.accessorSupport
-import {
-  subclass,
-  declared,
-  property
-} from "esri/core/accessorSupport/decorators";
+import { subclass, property } from "esri/core/accessorSupport/decorators";
 
 import watchUtils = require("esri/core/watchUtils");
 import Collection = require("esri/core/Collection");
@@ -35,7 +28,7 @@ import MapCentricViewModel = require("../MapCentric/MapCentricViewModel");
 type State = "ready" | "loading" | "disabled";
 
 @subclass("LayerSwitcherViewModel")
-class LayerSwitcherViewModel extends declared(Accessor) {
+class LayerSwitcherViewModel extends Accessor {
   //----------------------------------
   //
   //  Private Variables

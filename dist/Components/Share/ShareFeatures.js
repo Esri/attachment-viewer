@@ -1,28 +1,17 @@
-/// <amd-dependency path="esri/core/tsSupport/declareExtendsHelper" name="__extends" />
-/// <amd-dependency path="esri/core/tsSupport/decorateHelper" name="__decorate" />
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/core/tsSupport/decorateHelper", "esri/core/accessorSupport/decorators", "esri/core/Accessor"], function (require, exports, __extends, __decorate, decorators_1, Accessor) {
+// Copyright 2019 Esri
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//   http://www.apache.org/licenses/LICENSE-2.0
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.​
+define(["require", "exports", "tslib", "esri/core/accessorSupport/decorators", "esri/core/Accessor"], function (require, exports, tslib_1, decorators_1, Accessor) {
     "use strict";
     var ShareFeatures = /** @class */ (function (_super) {
-        __extends(ShareFeatures, _super);
+        tslib_1.__extends(ShareFeatures, _super);
         function ShareFeatures() {
             var _this = _super !== null && _super.apply(this, arguments) || this;
             _this.embedMap = true;
@@ -37,7 +26,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                 }
                 this._set("copyToClipboard", value);
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(ShareFeatures.prototype, "shareServices", {
@@ -48,26 +37,26 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                 }
                 this._set("shareServices", value);
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
-        __decorate([
+        tslib_1.__decorate([
             decorators_1.property({ value: true })
         ], ShareFeatures.prototype, "copyToClipboard", null);
-        __decorate([
+        tslib_1.__decorate([
             decorators_1.property({ value: true })
         ], ShareFeatures.prototype, "shareServices", null);
-        __decorate([
+        tslib_1.__decorate([
             decorators_1.property()
         ], ShareFeatures.prototype, "embedMap", void 0);
-        __decorate([
+        tslib_1.__decorate([
             decorators_1.property()
         ], ShareFeatures.prototype, "shortenLink", void 0);
-        ShareFeatures = __decorate([
+        ShareFeatures = tslib_1.__decorate([
             decorators_1.subclass("ShareFeatures")
         ], ShareFeatures);
         return ShareFeatures;
-    }(decorators_1.declared(Accessor)));
+    }(Accessor));
     return ShareFeatures;
 });
 //# sourceMappingURL=ShareFeatures.js.map

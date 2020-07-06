@@ -47,6 +47,6 @@
       { name: "config", location: `${distPath}/config` }
     ]
   };
-
+  window["esriConfig"] = { locale: dojoLocale };
   window["dojoConfig"] = config;
 })();

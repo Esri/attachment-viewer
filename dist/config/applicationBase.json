@@ -40,13 +40,9 @@
     "featureIndex",
     "attachmentIndex",
     "appMode",
-    "onlyDisplayFeaturesWithAttachmentsIsEnabled",
-    "selectFeaturesEnabled",
-    "imageDirectionEnabled",
-    "imagePanZoomEnabled",
     "showOnboardingOnStart",
-    "onboardingIsEnabled",
-    "photoCentricMobileMapExpanded"
+    "photoCentricMobileMapExpanded",
+    "locale"
   ],
   "webMap": {
     "default": "f283e8db389241f7bbc61aaa1c342d97",

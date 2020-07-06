@@ -10,9 +10,13 @@
     "experimentalDecorators": true,
     "preserveConstEnums": true,
     "suppressImplicitAnyIndexErrors": true,
-    "outDir": "./dist"
+    "outDir": "./dist",
+    "types": ["arcgis-js-api"],
+    "esModuleInterop": true,
+    "importHelpers": true,
+    "moduleResolution": "node"
   },
-  "include": ["./src/app/*"],
+  "include": ["./src/app/*", "./src/app/**/*"],
   "exclude": ["./node_modules", "./tsrules", "./src/app/application-base-js"],
   "files": [
     "./src/app/interfaces/declarations.d.ts",

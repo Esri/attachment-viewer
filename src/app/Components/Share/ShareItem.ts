@@ -1,6 +1,3 @@
-/// <amd-dependency path="esri/core/tsSupport/declareExtendsHelper" name="__extends" />
-/// <amd-dependency path="esri/core/tsSupport/decorateHelper" name="__decorate" />
-
 // Copyright 2019 Esri
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,15 +9,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.​
 
-import {
-  declared,
-  property,
-  subclass
-} from "esri/core/accessorSupport/decorators";
+import { property, subclass } from "esri/core/accessorSupport/decorators";
 import Accessor = require("esri/core/Accessor");
 
 @subclass("ShareItem")
-class ShareItem extends declared(Accessor) {
+class ShareItem extends Accessor {
   @property() id: string = null;
 
   @property() name: string = null;

@@ -1,6 +1,3 @@
-/// <amd-dependency path="esri/core/tsSupport/declareExtendsHelper" name="__extends" />
-/// <amd-dependency path="esri/core/tsSupport/decorateHelper" name="__decorate" />
-
 // Copyright 2019 Esri
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,11 +13,7 @@
 import Accessor = require("esri/core/Accessor");
 
 // esri.core.accessorSupport
-import {
-  subclass,
-  declared,
-  property
-} from "esri/core/accessorSupport/decorators";
+import { subclass, property } from "esri/core/accessorSupport/decorators";
 
 // SelectedFeatureAttachments
 import SelectedFeatureAttachments = require("./SelectedFeatureAttachments");
@@ -32,7 +25,7 @@ import Collection = require("esri/core/Collection");
 import AttachmentViewerLayerData = require("./AttachmentViewerLayerData");
 
 @subclass("AttachmentViewerData")
-class AttachmentViewerData extends declared(Accessor) {
+class AttachmentViewerData extends Accessor {
   // attachments
   @property()
   attachments: any = null;
@@ -93,7 +86,7 @@ class AttachmentViewerData extends declared(Accessor) {
 
   // layerFeatureIndex
   @property()
-  layerFeatureIndex: number = null;
+  layerFeatureIndex: number = 0;
 }
 
 export = AttachmentViewerData;

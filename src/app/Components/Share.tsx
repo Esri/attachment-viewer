@@ -1,6 +1,3 @@
-/// <amd-dependency path="esri/core/tsSupport/declareExtendsHelper" name="__extends" />
-/// <amd-dependency path="esri/core/tsSupport/decorateHelper" name="__decorate" />
-
 // Copyright 2019 Esri
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,7 +12,7 @@
 // dojo
 import i18n = require("dojo/i18n!./Share/nls/resources");
 
-import * as i18nCommon from "dojo/i18n!../nls/common";
+import i18nCommon from "dojo/i18n!../nls/common";
 
 // esri.core
 import Collection = require("esri/core/Collection");
@@ -28,7 +25,6 @@ import { replace } from "./Share/utils/replace";
 // esri.core.accessorSupport
 import {
   subclass,
-  declared,
   property,
   aliasOf
 } from "esri/core/accessorSupport/decorators";
@@ -152,7 +148,7 @@ const CSS = {
 };
 
 @subclass("Share")
-class Share extends declared(Widget) {
+class Share extends Widget {
   constructor(value?: any) {
     super(value);
   }
@@ -524,9 +520,7 @@ class Share extends declared(Widget) {
             key="copy-container"
           >
             <div class={CSS.shareModal.main.mainUrl.inputGroup}>
-              <h2 class={CSS.shareModal.main.mainHeader}>
-                {i18nCommon.sendALinkToThisPage}
-              </h2>
+              <h2 class={CSS.shareModal.main.mainHeader}>{i18n.sendLink}</h2>
               <div
                 bind={this}
                 onclick={this._toggleShareLinkNode}

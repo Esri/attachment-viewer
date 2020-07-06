@@ -1,6 +1,3 @@
-/// <amd-dependency path="esri/core/tsSupport/declareExtendsHelper" name="__extends" />
-/// <amd-dependency path="esri/core/tsSupport/decorateHelper" name="__decorate" />
-
 // Copyright 2019 Esri
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,12 +12,11 @@
 // esri.core.accessorSupport
 import {
   subclass,
-  declared,
   property,
   aliasOf
 } from "esri/core/accessorSupport/decorators";
 
-//esri.widgets.support
+// esri.widgets.support
 import {
   accessibleHandler,
   renderable,
@@ -29,7 +25,7 @@ import {
 } from "esri/widgets/support/widget";
 
 // nls
-import * as i18n from "dojo/i18n!./PhotoCentric/nls/resources";
+import i18n from "dojo/i18n!./PhotoCentric/nls/resources";
 
 // esri.widgets
 import Widget = require("esri/widgets/Widget");
@@ -49,12 +45,6 @@ import Share = require("./Share");
 // interfaces
 import { VNode } from "../interfaces/interfaces";
 
-// getOrientationStyles
-import {
-  getOrientationStyles,
-  getOrientationStylesMobile
-} from "./utils/imageUtils";
-
 // autoLink
 import { autoLink } from "./utils/urlUtils";
 
@@ -70,11 +60,11 @@ import LayerSwitcher = require("./LayerSwitcher");
 // ImageViewer
 import ImageViewer = require("ImageViewer");
 
-//----------------------------------
+// ----------------------------------
 //
 //  CSS Classes
 //
-//----------------------------------
+// ----------------------------------
 
 const CSS = {
   base: "esri-photo-centric",
@@ -119,6 +109,7 @@ const CSS = {
   mainPageMid: "esri-photo-centric__main-page-mid-container",
   rightPanel: "esri-photo-centric__right-panel",
   midBottomContainer: "esri-photo-centric__mid-bottom-container",
+  logo: "esri-photo-centric__logo",
   // mobile collapse
 
   midBottomContainerCollapsed:
@@ -248,16 +239,16 @@ function buildKey(element: string, index?: number): string {
 }
 
 @subclass("PhotoCentric")
-class PhotoCentric extends declared(Widget) {
+class PhotoCentric extends Widget {
   constructor(value?: any) {
-    super();
+    super(value);
   }
 
-  //----------------------------------
+  // ----------------------------------
   //
   //  Private Variables
   //
-  //----------------------------------
+  // ----------------------------------
   private _imageAttachment: HTMLImageElement = null;
   private _imageCarouselIsOpen: boolean = null;
   private _photoViewerContainer: HTMLElement = null;
@@ -272,16 +263,24 @@ class PhotoCentric extends declared(Widget) {
   private _zoomSliderNode: HTMLInputElement = null;
   private _featureContentPanelMinimized = false;
 
-  //----------------------------------
+  // ----------------------------------
   //
   //  Properties
   //
-  //----------------------------------
+  // ----------------------------------
+
+  @property()
+  @renderable()
+  applySharedTheme: boolean = null;
+
+  @property()
+  sharedTheme: any = null;
 
   // addressEnabled
   @aliasOf("viewModel.addressEnabled")
   @property()
-  addressEnabled: string = null;
+  @renderable()
+  addressEnabled: boolean = null;
 
   // appMode
   @aliasOf("viewModel.appMode")
@@ -293,19 +292,15 @@ class PhotoCentric extends declared(Widget) {
   @property()
   attachmentIndex: number = null;
 
-  // attachmentLayer
-  @aliasOf("viewModel.attachmentLayer")
-  @property()
-  attachmentLayer: any = null;
-
   // attachmentLayers
   @aliasOf("viewModel.attachmentLayers")
   @property()
-  attachmentLayers: string = null;
+  attachmentLayers;
 
   // attachmentViewerDataCollection
   @aliasOf("viewModel.attachmentViewerDataCollection")
   @property()
+  @renderable()
   attachmentViewerDataCollection: __esri.Collection<
     AttachmentViewerData
   > = null;
@@ -355,8 +350,8 @@ class PhotoCentric extends declared(Widget) {
   graphicsLayer: __esri.GraphicsLayer = null;
 
   // imageDirectionEnabled
-  @aliasOf("viewModel.imageDirectionEnabled")
   @property()
+  @renderable()
   imageDirectionEnabled: boolean = null;
 
   // imageIsLoaded
@@ -368,6 +363,7 @@ class PhotoCentric extends declared(Widget) {
   // imagePanZoomEnabled
   @aliasOf("viewModel.imagePanZoomEnabled")
   @property()
+  @renderable()
   imagePanZoomEnabled: boolean = null;
 
   // layerSwitcher
@@ -429,11 +425,13 @@ class PhotoCentric extends declared(Widget) {
   // socialSharingEnabled
   @aliasOf("viewModel.socialSharingEnabled")
   @property()
+  @renderable()
   socialSharingEnabled: boolean = null;
 
   // title
   @aliasOf("viewModel.title")
   @property()
+  @renderable()
   title: string = null;
 
   // selectFeaturesEnabled
@@ -445,6 +443,10 @@ class PhotoCentric extends declared(Widget) {
   @aliasOf("viewModel.selectedLayerId")
   @property()
   selectedLayerId: string = null;
+
+  @aliasOf("viewModel.highlightedFeature")
+  @property()
+  highlightedFeature = null;
 
   // view
   @aliasOf("viewModel.view")
@@ -458,7 +460,13 @@ class PhotoCentric extends declared(Widget) {
 
   // onboardingIsEnabled
   @property()
+  @renderable()
   onboardingIsEnabled = true;
+
+  // withinConfigurationExperience
+  @aliasOf("viewModel.withinConfigurationExperience")
+  @property()
+  withinConfigurationExperience: boolean = null;
 
   // viewModel
   @renderable(["viewModel.state"])
@@ -467,11 +475,11 @@ class PhotoCentric extends declared(Widget) {
   })
   viewModel: PhotoCentricViewModel = new PhotoCentricViewModel();
 
-  //----------------------------------
+  // ----------------------------------
   //
   //  Lifecycle
   //
-  //----------------------------------
+  // ----------------------------------
 
   postInitialize() {
     this.own([
@@ -497,9 +505,40 @@ class PhotoCentric extends declared(Widget) {
         }
       })
     ]);
+
     if (this.imagePanZoomEnabled) {
       this.own([this._setImageZoomLoadedToFalse()]);
     }
+
+    this.own([
+      watchUtils.watch(this, "imagePanZoomEnabled", () => {
+        if (this.imagePanZoomEnabled) {
+          const attachments = this.get(
+            "selectedAttachmentViewerData.selectedFeatureAttachments.attachments"
+          ) as __esri.Collection<__esri.AttachmentInfo>;
+          const attachmentIndex = this.get(
+            "selectedAttachmentViewerData.attachmentIndex"
+          ) as number;
+
+          const attachment =
+            attachments &&
+            (attachments.getItemAt(attachmentIndex) as __esri.AttachmentInfo);
+
+          const attachmentUrl = attachment ? attachment.url : null;
+          this.currentImageUrl = this._convertAttachmentUrl(attachmentUrl);
+          this._handlePanZoomForCurrentAttachment(attachment);
+          this.scheduleRender();
+        } else {
+          this._imageViewer && this._imageViewer.destroy();
+          this._imageViewer = null;
+          this._imageViewerSet = false;
+          this._imageZoomLoaded = false;
+          if (this._zoomSliderNode) {
+            this._zoomSliderNode.value = "100";
+          }
+        }
+      })
+    ]);
   }
 
   // _handleOnboardingPanel
@@ -612,10 +651,10 @@ class PhotoCentric extends declared(Widget) {
   // _handleScheduleRenderOnSketchEvent
   private _handleScheduleRenderOnSketchEvent(): void {
     this.own([
-      this.sketchWidget.on("create", () => {
+      this.sketchWidget?.on("create", () => {
         this.scheduleRender();
       }),
-      this.sketchWidget.on("update", () => {
+      this.sketchWidget?.on("update", () => {
         this.scheduleRender();
       })
     ]);
@@ -650,11 +689,11 @@ class PhotoCentric extends declared(Widget) {
     }
   }
 
-  //----------------------------------
+  // ----------------------------------
   //
   //  START OF RENDER NODE METHODS
   //
-  //----------------------------------
+  // ----------------------------------
 
   // _renderHeader
   private _renderHeader(): VNode {
@@ -669,15 +708,48 @@ class PhotoCentric extends declared(Widget) {
       "selectedAttachmentViewerData.layerFeatures"
     ) as __esri.Collection<__esri.Graphic>;
     const shareWidget =
+      this.socialSharingEnabled &&
       this.shareLocationWidget &&
       layerFeatures &&
       layerFeatures.length &&
       document.body.clientWidth > 830
         ? this._renderShareLocationWidget()
         : null;
+
+    const sharedTheme = this.applySharedTheme
+      ? {
+          background: this.sharedTheme?.background,
+          color: this.sharedTheme?.text,
+          paddingLeft: "10px"
+        }
+      : {
+          background: "",
+          color: "",
+          paddingLeft: "15px"
+        };
+
     return (
-      <header class={CSS.header}>
+      <header
+        key="photo-centric-header"
+        styles={sharedTheme}
+        class={CSS.header}
+      >
         <div class={CSS.headerContainer}>
+          {this?.applySharedTheme ? (
+            this.sharedTheme?.logoLink ? (
+              <a
+                class="esri-attachment-viewer__logo-link"
+                href={this.sharedTheme.logoLink}
+                target="_blank"
+              >
+                {this.sharedTheme?.logo ? (
+                  <img class={CSS.logo} src={this.sharedTheme?.logo} alt="" />
+                ) : null}
+              </a>
+            ) : this.sharedTheme?.logo ? (
+              <img class={CSS.logo} src={this.sharedTheme?.logo} alt="" />
+            ) : null
+          ) : null}
           <div class={CSS.titleInfoContainer}>
             <h1 class={CSS.headerText}>{title}</h1>
             {this.onboardingIsEnabled ? (
@@ -827,8 +899,8 @@ class PhotoCentric extends declared(Widget) {
     return (
       <div
         bind={this.view.container}
-        afterCreate={attachToNode}
         class={CSS.mapView}
+        afterCreate={attachToNode}
       />
     );
   }
@@ -1582,7 +1654,7 @@ class PhotoCentric extends declared(Widget) {
       >
         {minimizeZoomToContainer}
         {titleContainer}
-        {selectedFeatureAddress ? (
+        {this.addressEnabled ? (
           <h3 class={CSS.addressText}>{selectedFeatureAddress}</h3>
         ) : null}
         <div class={CSS.attachmentsImageContainer}>{attachmentsMobile}</div>
@@ -1943,23 +2015,6 @@ class PhotoCentric extends declared(Widget) {
     const { url } = attachment;
     const attachmentUrl = this._convertAttachmentUrl(url);
 
-    const imageStyles =
-      attachment &&
-      attachment.orientationInfo &&
-      this._photoViewerContainer &&
-      this.imageIsLoaded
-        ? getOrientationStylesMobile(
-            attachment.orientationInfo,
-            this._mobileAttachment
-          )
-        : {
-            transform: "none",
-            maxHeight: "100%",
-            height: "initial",
-            width: "initial"
-          };
-
-    const imageAttachmentHeight = imageStyles.width;
     const transparentBackground = {
       [CSS.transparentBackground]: !this.imageIsLoaded
     };
@@ -1987,7 +2042,6 @@ class PhotoCentric extends declared(Widget) {
     return (
       <div
         bind={this}
-        styles={{ height: imageAttachmentHeight }}
         afterCreate={storeNode}
         afterUpdate={storeNode}
         data-node-ref="_mobileAttachment"
@@ -2054,30 +2108,6 @@ c6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z"
 
   // _renderMobileAttachment
   private _renderMobileAttachment(attachment: __esri.AttachmentInfo): VNode {
-    const userAgent = navigator.userAgent || navigator.vendor;
-
-    let isAndroid = false;
-
-    if (userAgent.match(/Android/i)) {
-      isAndroid = true;
-    }
-
-    const addPadding = {
-      [CSS.mobileAttachmentsAddPadding]:
-        attachment &&
-        attachment.orientationInfo &&
-        attachment.orientationInfo.rotation !== 0 &&
-        isAndroid
-    };
-
-    const removeBorderRadius = {
-      [CSS.removeBorderRadius]:
-        attachment &&
-        attachment.orientationInfo &&
-        attachment.orientationInfo.rotation !== 0 &&
-        isAndroid
-    };
-
     const removeOpacity = {
       [CSS.removeOpacity]: this.imageIsLoaded
     };
@@ -2087,7 +2117,7 @@ c6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z"
     const attachmentUrl = this._convertAttachmentUrl(url);
 
     return (
-      <div class={this.classes(CSS.mobileAttachmentContainer, addPadding)}>
+      <div class={CSS.mobileAttachmentContainer}>
         {attachment &&
         attachment.contentType &&
         attachment.contentType.indexOf("video") !== -1 ? (
@@ -2115,11 +2145,7 @@ c6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z"
           attachment.contentType.indexOf("image") !== -1 ? (
           <img
             key={buildKey(`mobile-image-${attachmentUrl}`)}
-            class={this.classes(
-              CSS.imageMobile,
-              removeBorderRadius,
-              removeOpacity
-            )}
+            class={this.classes(CSS.imageMobile, removeOpacity)}
             src={attachmentUrl}
             alt={name}
           />
@@ -2128,17 +2154,17 @@ c6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z"
     );
   }
 
-  //----------------------------------
+  // ----------------------------------
   //
   //  END OF RENDER NODE METHODS
   //
-  //----------------------------------
+  // ----------------------------------
 
-  //----------------------------------
+  // ----------------------------------
   //
   //  ACCESSIBLE HANDLERS
   //
-  //----------------------------------
+  // ----------------------------------
 
   // _disableOnboardingPanel
   @accessibleHandler()
@@ -2380,15 +2406,6 @@ c6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z"
       if (this._imageViewerSet && !this._imageZoomLoaded) {
         this._imageViewer.load(this.currentImageUrl);
         this._imageZoomLoaded = true;
-        const rotation = attachment.get("orientationInfo.rotation") as number;
-
-        if (rotation) {
-          const ivImageElement = document.querySelector(
-            ".iv-image"
-          ) as HTMLImageElement;
-          ivImageElement.style.transform = `rotate(${rotation}deg)`;
-        }
-
         this.scheduleRender();
       }
     }
@@ -2396,36 +2413,8 @@ c6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z"
 
   // _removeImageLoader
   private _removeImageLoader(event: Event): void {
-    const node = event.currentTarget as HTMLImageElement;
-    const attachment = node["data-attachment"];
     if (this._imageAttachment) {
-      const imageStyles =
-        attachment && attachment.orientationInfo === null
-          ? {
-              transform: "none",
-              maxHeight: "100%",
-              maxWidth: "100%",
-              height: "initial"
-            }
-          : attachment &&
-            attachment.orientationInfo &&
-            this._photoViewerContainer
-          ? getOrientationStyles(
-              attachment.orientationInfo,
-              this._photoViewerContainer
-            )
-          : ({} as any);
       const { style } = this._imageAttachment;
-      style.width =
-        imageStyles && imageStyles.transform && imageStyles.transform === "none"
-          ? ""
-          : `${imageStyles.width}`;
-      style.height =
-        imageStyles && imageStyles.transform && imageStyles.transform === "none"
-          ? ""
-          : `${imageStyles.height}`;
-      style.maxHeight = `${imageStyles.maxHeight}`;
-      style.transform = `${imageStyles.transform}`;
       style.opacity = "1";
     }
     this.set("imageIsLoaded", true);

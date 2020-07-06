@@ -17,6 +17,8 @@ import ApplicationBase = require("ApplicationBase/ApplicationBase");
 import Application = require("./Main");
 import i18n = require("dojo/i18n!./userTypesError/nls/resources");
 
+import UnsupportedBrowser = require("./Components/Unsupported/UnsupportedBrowser");
+
 const Main = new Application();
 
 new ApplicationBase({
@@ -25,13 +27,24 @@ new ApplicationBase({
 })
   .load()
   .then(
-    base => Main.init(base),
+    base => {
+      if (base["isIE"]) {
+        document.body.classList.remove("configurable-application--loading");
+        new UnsupportedBrowser({
+          container: document.body,
+          isIE11: true
+        });
+        return;
+      }
+
+      return Main.init(base);
+    },
     message => {
       if (message === "identity-manager:not-authorized") {
         document.body.classList.remove("configurable-application--loading");
         document.body.classList.add("app-error");
-        document.getElementById(
-          "app-container"
+        document.querySelector(
+          ".app-container"
         ).innerHTML = `<h1>${i18n.licenseError.title}</h1><p>${i18n.licenseError.message}</p>`;
       }
     }

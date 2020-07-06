@@ -13,6 +13,7 @@
 define(["require", "exports"], function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.isWidgetBase = exports.isWidget = void 0;
     function isWidget(value) {
         // duck-type check
         return value && typeof value.render === "function";
