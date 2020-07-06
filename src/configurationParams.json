@@ -1,4 +1,7 @@
 {
+  "map": {
+    "conditions": ["attachments"]
+  },
   "about": {
     "appComprehension": {
       "appComprehension": {
@@ -22,7 +25,7 @@
             "defaultValue": false,
             "express": true,
             "customOnboardingHTML": {
-              "defaultValue": ""
+              "defaultValue": "<h2><span style='color:#0079c1'>Welcome!</span></h2><p>View a location&rsquo;s attachments:</p><p>In addition to browsing through location details and attachments, use the following methods to explore the map:</p><ul><li>Select a feature on the map</li><li>If a search box is available, search for a specific feature</li></ul>"
             }
           }
         }
@@ -36,7 +39,7 @@
         "address": {
           "defaultValue": false
         },
-        "legendEnabled": {
+        "legend": {
           "defaultValue": false,
           "express": true
         },
@@ -44,8 +47,7 @@
           "defaultValue": false
         },
         "order": {
-          "defaultValue": "ASC",
-          "express": true
+          "defaultValue": "ASC"
         },
         "attachmentLayers": {
           "express": false,
