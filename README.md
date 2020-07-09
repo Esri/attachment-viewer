@@ -13,7 +13,7 @@ Attachment Viewer is a configurable app template that allows you to view photos,
 
 3. Supports 'Instant apps' new configuration experience.
 
-4.  Property name udpates. 
+4.  Property name updates. 
 
 ## 7.3 Release Updates
 
