@@ -1,0 +1,12 @@
+{
+  "licenseError": {
+    "message": "Não tem licença para usar Configurable Apps que não sejam públicas. Peça ao administrador da sua organização para lhe atribuir um tipo de utilizador que inclua a licença para aplicações essenciais ou aplicações essenciais complementares.",
+    "title": "Não licenciado"
+  },
+  "originError": {
+    "message": "A aplicação a que está a tentar aceder não tem origem no URL facultado",
+    "close": "Fechar",
+    "options": "Opções avançadas",
+    "linkMessage": "Continuar para"
+  }
+}

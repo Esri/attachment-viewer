@@ -1,0 +1,72 @@
+.esri-attachment-viewer-related-features__list {
+  display: none;
+  position: absolute;
+  width: 100%;
+  background: #fff;
+  bottom: 30px;
+  margin: 0;
+  padding: 0;
+
+  &-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0;
+    padding: 2% 3%;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-bottom: none;
+    font-size: 14px;
+  }
+
+  &-item:hover {
+    background-color: #d2e9f9;
+  }
+}
+
+.calcite-mode-dark {
+  .esri-attachment-viewer-related-features__list {
+    &-item {
+      color: #fff;
+      background-color: #323232;
+    }
+    &-item:hover {
+      background-color: #474747;
+    }
+  }
+}
+
+.esri-attachment-viewer-related-features__list--open {
+  display: block;
+}
+
+.esri-attachment-viewer-related-features__button {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 5%;
+  border: none;
+  background-color: #323232;
+  color: #fff;
+  transition: 0.2s;
+
+  height: 30px;
+  position: absolute;
+  bottom: 0;
+
+  &-icon,
+  &-text,
+  &-chip {
+    margin: 0 2.5px;
+  }
+}
+
+.esri-attachment-viewer-related-features__button:hover {
+  background-color: #474747;
+}
+
+.esri-attachment-viewer-related-features__list-item,
+.esri-attachment-viewer-related-features__button,
+.esri-attachment-viewer-related-features__button-chip {
+  cursor: pointer;
+}

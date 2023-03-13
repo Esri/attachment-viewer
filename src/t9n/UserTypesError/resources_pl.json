@@ -1,0 +1,12 @@
+{
+  "licenseError": {
+    "message": "Twoje konto nie jest licencjonowane do korzystania z aplikacji konfigurowalnych, które nie są publiczne. Poproś administratora instytucji o przypisanie typu użytkownika, który obejmuje licencję na kluczowe aplikacje lub licencję na kluczowe aplikacje dodatkowe.",
+    "title": "Brak licencji"
+  },
+  "originError": {
+    "message": "Aplikacja, do której próbujesz uzyskać dostęp, nie pochodzi z podanego adresu URL",
+    "close": "Zamknij",
+    "options": "Opcje zaawansowane",
+    "linkMessage": "Przejdź do"
+  }
+}

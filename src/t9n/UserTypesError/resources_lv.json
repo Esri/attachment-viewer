@@ -1,0 +1,12 @@
+{
+  "licenseError": {
+    "message": "Jūsu kontam nav licences, lai izmantotu konfigurējamās lietotnes Configurable Apps, kas nav publiskas. Pieprasiet savas organizācijas administratoram piešķirt jums lietotāja veidu, kurā iekļauts lietotņu komplekts Essential Apps vai papildinājumlietotņu Essential Apps licence.",
+    "title": "Nav licences"
+  },
+  "originError": {
+    "message": "Lietotne, kam mēģināt piekļūt, nav no jūsu norādītā vietrāža URL",
+    "close": "Aizvērt",
+    "options": "Papildu opcijas",
+    "linkMessage": "Turpināt ar"
+  }
+}

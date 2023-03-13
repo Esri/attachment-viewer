@@ -1,0 +1,12 @@
+{
+  "licenseError": {
+    "message": "Din konto har ikke licens til at bruge Konfigurérbare apps, der ikke er offentlige. Bed din organisationsadministrator om at knytte dig til en brugertype, der omfatter Essential Apps eller en add-on Essential Apps-licens.",
+    "title": "Ikke licenseret"
+  },
+  "originError": {
+    "message": "Den applikation, som du prøver at få adgang til, stammer ikke fra den URL, du sendte",
+    "close": "Luk",
+    "options": "Avancerede indstillinger",
+    "linkMessage": "Fortsæt til"
+  }
+}

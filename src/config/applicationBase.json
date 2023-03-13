@@ -1,0 +1,52 @@
+{
+  "localStorage": {
+    "fetch": true
+  },
+  "group": {
+    "default": "",
+    "fetchInfo": false,
+    "fetchItems": false,
+    "itemParams": {
+      "sortField": "modified",
+      "sortOrder": "desc",
+      "num": 9,
+      "start": 0
+    }
+  },
+  "portal": {
+    "fetch": true
+  },
+  "urlParams": [
+    "appid",
+    "basemapUrl",
+    "basemapReferenceUrl",
+    "center",
+    "components",
+    "embed",
+    "extent",
+    "find",
+    "group",
+    "level",
+    "marker",
+    "oauthappid",
+    "portalUrl",
+    "viewpoint",
+    "webmap",
+    "webscene",
+    "featureIndex",
+    "attachmentIndex",
+    "appLayout",
+    "showOnboardingOnStart",
+    "photoCentricMobileMapExpanded",
+    "locale",
+    "onboarding"
+  ],
+  "webMap": {
+    "default": "f283e8db389241f7bbc61aaa1c342d97",
+    "fetch": true
+  },
+  "webScene": {
+    "default": "e8f078ba0c1546b6a6e0727f877742a5",
+    "fetch": false
+  }
+}

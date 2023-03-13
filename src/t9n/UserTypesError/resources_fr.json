@@ -1,0 +1,12 @@
+{
+  "licenseError": {
+    "message": "La licence de votre compte ne permet pas d’utiliser des applications Configurable Apps non publiques. Demandez à l’administrateur de votre organisation de vous attribuer un type d’utilisateur qui inclut une licence Essential Apps ou une licence Essential Apps additionnelle.",
+    "title": "Aucune licence"
+  },
+  "originError": {
+    "message": "L’application à laquelle vous essayez d’accéder n’est pas disponible à l’URL que vous avez indiquée",
+    "close": "Fermer",
+    "options": "Options avancées",
+    "linkMessage": "Poursuivre vers"
+  }
+}

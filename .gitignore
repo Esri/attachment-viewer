@@ -1,9 +1,5 @@
 node_modules
-.editorconfig
-.eslintrc
-.jsbeautifyrc
-tslint.json
-web.config
-yarn.lock
-.vscode
-.DS_Store
+!public/Icon_draw_icon_16_dark.svg
+!public/Icon_draw_icon_16_light.svg
+public/assets
+dist

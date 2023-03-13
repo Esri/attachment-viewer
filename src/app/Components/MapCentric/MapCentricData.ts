@@ -1,4 +1,4 @@
-// Copyright 2020 Esri
+// Copyright 2023 Esri
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -10,13 +10,13 @@
 // limitations under the License.​
 
 // esri.core
-import Collection = require("esri/core/Collection");
+import Collection from "@arcgis/core/core/Collection";
 
 // esri.core.accessorSupport
-import { subclass, property } from "esri/core/accessorSupport/decorators";
+import { subclass, property } from "@arcgis/core/core/accessorSupport/decorators";
 
 // AttachmentViewerData
-import AttachmentViewerData = require("../AttachmentViewer/AttachmentViewerData");
+import AttachmentViewerData from "../AttachmentViewer/AttachmentViewerData";
 
 // interfaces
 import { AttachmentData } from "../../interfaces/interfaces";
@@ -29,7 +29,7 @@ class MapCentricData extends AttachmentViewerData {
 
   // attachmentsHaveMoreThanOne
   @property()
-  attachmentsHaveMoreThanOne: boolean = null;
+  attachmentsHaveMoreThanOne: boolean | null = null;
 }
 
-export = MapCentricData;
+export default MapCentricData;

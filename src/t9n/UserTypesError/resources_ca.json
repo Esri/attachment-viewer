@@ -1,0 +1,12 @@
+{
+  "licenseError": {
+    "message": "El vostre compte no té llicència per utilitzar Configurable Apps que no siguin públiques. Demaneu a l'administrador de l'organització que us assigni un tipus d'usuari que inclogui les aplicacions bàsiques o una llicència d'aplicacions bàsiques de complement.",
+    "title": "Sense llicència"
+  },
+  "originError": {
+    "message": "L'aplicació a la qual esteu intentant accedir no té el seu origen en l'URL que heu facilitat",
+    "close": "Tanca",
+    "options": "Opcions avançades",
+    "linkMessage": "Continua"
+  }
+}

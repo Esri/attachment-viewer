@@ -1,0 +1,261 @@
+// Copyright 2023 Esri
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//   http://www.apache.org/licenses/LICENSE-2.0
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.​
+
+@use "./app/Components/PhotoCentric/css/PhotoCentric.scss";
+@use "./app/Components/MapCentric/css/MapCentric.scss";
+@use "./app/Components/LayerSwitcher/css/LayerSwitcher.scss";
+@use "./app/Components/RelatedFeatures/css/RelatedFeatures.scss";
+@use "./app/Components/MobileExpand/css/MobileExpand.scss";
+
+$calcite-blue: #0079c1;
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+#app-container {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.configurable-application--loading {
+  text-align: center;
+  display: block;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  background-color: #fff;
+  background-position: center center;
+  background-repeat: no-repeat;
+
+  .configurable-application__view-container {
+    display: none;
+  }
+}
+
+.app-error #app-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.3em;
+  text-align: center;
+  flex-direction: column;
+}
+
+.esri-ui {
+  height: 100%;
+}
+
+.esri-popup {
+  .esri-feature__media.esri-feature__content-element,
+  .esri-feature-media {
+    display: none;
+  }
+
+  .esri-feature__text.esri-feature__content-element {
+    display: none;
+  }
+
+  .esri-feature__attachments.esri-feature__content-element.esri-feature__attachments--list {
+    display: none;
+  }
+
+  .esri-popup__header-buttons {
+    display: none;
+  }
+
+  .esri-popup__header-title {
+    padding: 0 7px;
+    margin: 6px 7px;
+  }
+
+  .esri-popup__content {
+    margin: 0;
+  }
+
+  .esri-feature__fields.esri-feature__content-element > .esri-widget__table {
+    height: 15px;
+  }
+
+  .esri-popup__header-title {
+    margin: 6px 7px 0;
+  }
+
+  .esri-feature__content-element {
+    padding: 0;
+  }
+
+  .esri-popup__main-container.esri-widget {
+    padding: 8px 10px;
+  }
+
+  .esri-popup__header-title:hover {
+    background-color: #fff;
+    cursor: default;
+  }
+
+  .esri-feature__last-edited-info.esri-feature__content-element {
+    display: none;
+  }
+}
+
+.esri-widget__table {
+  display: none;
+}
+
+.esri-feature__text.esri-feature__content-element {
+  word-break: break-word;
+}
+
+.esri-attachment-viewer__svg {
+  width: 17px;
+  height: 17px;
+  fill: #fff;
+}
+
+.photo-centric-body {
+  .esri-attachment-viewer__svg {
+    fill: #000;
+  }
+}
+
+.map-centric-body .esri-popup__main-container {
+  width: auto;
+  max-width: 200px;
+  height: auto;
+  padding: 7px 5px 0px 5px;
+}
+
+.esri-map-centric__slider {
+  display: flex;
+  position: absolute;
+  bottom: 3%;
+  background: #fff;
+  align-items: center;
+  width: 50%;
+}
+
+.custom-sketch {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 16px;
+  height: 16px;
+}
+
+.custom-sketch:before {
+  width: 16px;
+  height: 16px;
+  content: url("../Icon_draw_icon_16_light.svg");
+}
+
+@media screen and (-ms-high-contrast: active), screen and (-ms-high-contrast: none) {
+  .esri-popup__content {
+    width: 150px;
+  }
+}
+
+.esri-attachment-viewer__logo-link {
+  display: flex;
+  align-items: center;
+  margin-right: 5px;
+  img {
+    width: 100%;
+  }
+}
+
+.esri-popup__footer.esri-popup__footer--has-actions {
+  display: none;
+}
+
+.esri-popup__header-title {
+  margin: 10px;
+}
+
+.esri-header__shared-theme-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.app-error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  details,
+  summary {
+    display: revert;
+  }
+}
+
+.esri-attachment-viewer__opt-out-button {
+  float: right;
+}
+
+html[dir="rtl"] .esri-attachment-viewer__opt-out-button {
+  float: left;
+}
+
+// .sr-only styles below
+// Copyright (c) 2021 by ffoodd (https://codepen.io/ffoodd/pen/gwKZyq)
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+.sr-only {
+  border: 0 !important;
+  clip: rect(1px, 1px, 1px, 1px) !important; /* 1 */
+  -webkit-clip-path: inset(50%) !important;
+  clip-path: inset(50%) !important; /* 2 */
+  height: 1px !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+  position: absolute !important;
+  width: 1px !important;
+  white-space: nowrap !important;
+}
+
+focus-trap {
+  width: 100%;
+  height: 100%;
+}
+
+.esri-attachment-viewer--dark {
+  .esri-mobile-expand__expand-collapse-icon {
+    fill: #adadad;
+  }
+
+  .custom-sketch:before {
+    content: url("../Icon_draw_icon_16_dark.svg");
+  }
+}
+
+.esri-feature-attachments {
+  display: none;
+}
+
+.image {
+  margin: 0;
+  img {
+    width: inherit;
+  }
+}

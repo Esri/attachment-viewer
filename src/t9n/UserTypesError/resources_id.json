@@ -1,0 +1,12 @@
+{
+  "licenseError": {
+    "message": "Akun Anda tidak memiliki lisensi untuk menggunakan Configurable Apps yang tidak bersifat publik. Harap meminta administrator organisasi Anda untuk memberikan Anda akses pengguna yang memiliki lisensi Essential App atau add-on Essential App.",
+    "title": "Tidak Berlisensi"
+  },
+  "originError": {
+    "message": "Aplikasi yang hendak Anda akses tidak berasal dari URL yang Anda berikan",
+    "close": "Tutup",
+    "options": "Opsi lanjutan",
+    "linkMessage": "Lanjut ke"
+  }
+}

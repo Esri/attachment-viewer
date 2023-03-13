@@ -1,4 +1,4 @@
-// Copyright 2020 Esri
+// Copyright 2023 Esri
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -10,27 +10,18 @@
 // limitations under the License.​
 
 // esri.core.accessorSupport
-import {
-  subclass,
-  property,
-  aliasOf
-} from "esri/core/accessorSupport/decorators";
-
-// nls
-import i18n from "dojo/i18n!./LayerSwitcher/nls/resources";
+import { subclass, property, aliasOf } from "@arcgis/core/core/accessorSupport/decorators";
 
 // esri.widgets
-import Widget = require("esri/widgets/Widget");
+import Widget from "@arcgis/core/widgets/Widget";
 
 //esri.widgets.support
-import {
-  accessibleHandler,
-  renderable,
-  tsx
-} from "esri/widgets/support/widget";
+import { accessibleHandler, tsx, messageBundle } from "@arcgis/core/widgets/support/widget";
 
-import LayerSwitcherViewModel = require("./LayerSwitcher/LayerSwitcherViewModel");
-import MapCentricViewModel = require("./MapCentric/MapCentricViewModel");
+import LayerSwitcherViewModel from "./LayerSwitcher/LayerSwitcherViewModel";
+import MapCentricViewModel from "./MapCentric/MapCentricViewModel";
+
+import LayerSwitcher_t9n from "../../t9n/Components/LayerSwitcher/resources.json";
 
 //----------------------------------
 //
@@ -43,11 +34,13 @@ const CSS = {
   layerSwitcherPhotoCentric: "esri-layer-switcher__photo-centric",
   layerSwitcherMapCentric: "esri-layer-switcher__map-centric",
   layerItem: "esri-layer-switcher__layer-item",
+  groupLayerItem: "esri-layer-switcher__group-layer-item",
   layerItemSelected: "esri-layer-switcher__layer-item--selected",
   selectLayerDropDown: "esri-layer-switcher__select-layer-dropdown",
   selectLayerDropDownTitle: "esri-layer-switcher__select-layer-dropdown-title",
-  featureLayerTitleContainer:
-    "esri-layer-switcher__feature-layer-title-container",
+  groupLayerTitleContainer: "esri-layer-switcher__group-layer-title-container",
+  childLayerFeatureTitleContainer: "esri-layer-switcher__child-layer-title-container",
+  featureLayerTitleContainer: "esri-layer-switcher__feature-layer-title-container",
   checkMarkContainer: "esri-layer-switcher__check-mark-container",
   arrowContainer: "esri-layer-switcher__arrow-container",
   dropDownList: "esri-layer-switcher__layer-dropdown-list",
@@ -56,14 +49,7 @@ const CSS = {
   mediaLayerIcon: "esri-photo-centric-media-layer-icon",
   arrowButtonContainer: "esri-layer-switcher__arrow-button-container",
   dropDownMapCentric: "esri-layer-switcher__dropdown-map-centric",
-  dropdownList: "esri-layer-switcher-dropdown-list",
-  icons: {
-    upArrowIcon: "icon-ui-up-arrow ",
-    downArrowIcon: "icon-ui-down-arrow",
-    flushIcon: "icon-ui-flush",
-    layersIcon: "icon-ui-layers",
-    checkMark: "esri-icon-check-mark"
-  }
+  dropdownList: "esri-layer-switcher-dropdown-list"
 };
 
 @subclass("LayerSwitcher")
@@ -73,124 +59,114 @@ class LayerSwitcher extends Widget {
   }
 
   // _dropDownIsOpen
-  private _dropDownIsOpen: boolean = null;
+  private _dropDownIsOpen: boolean | null = null;
 
   @property()
-  @renderable()
-  appMode: string = null;
+  appMode: string | null = null;
 
   // view
   @aliasOf("viewModel.view")
   @property()
-  view: __esri.MapView = null;
+  view: __esri.MapView | null = null;
 
   // featureLayerCollection
   @aliasOf("viewModel.featureLayerCollection")
   @property()
-  featureLayerCollection: __esri.Collection<__esri.FeatureLayer> = null;
+  featureLayerCollection: __esri.Collection<__esri.FeatureLayer> | null = null;
 
   // mapCentricViewModel
   @aliasOf("viewModel.mapCentricViewModel")
   @property()
-  mapCentricViewModel: MapCentricViewModel = null;
+  mapCentricViewModel: MapCentricViewModel | null = null;
 
   // selectedLayer
   @aliasOf("viewModel.selectedLayer")
   @property()
-  selectedLayer: __esri.FeatureLayer = null;
+  selectedLayer: __esri.FeatureLayer | null = null;
 
   // selectedLayer
   @aliasOf("viewModel.selectedLayerId")
   @property()
-  selectedLayerId: string = null;
+  selectedLayerId: string | null = null;
+
+  @aliasOf("viewModel.applySharedTheme")
+  applySharedTheme: boolean;
+
+  @aliasOf("viewModel.sharedTheme")
+  sharedTheme;
+
+  @aliasOf("viewModel.groupLayerData")
+  groupLayerData: __esri.Collection<__esri.GroupLayer> | null = null;
+
+  @property()
+  @messageBundle(`${import.meta.env.BASE_URL}assets/t9n/Components/LayerSwitcher/resources`)
+  messages: typeof LayerSwitcher_t9n | null = null;
 
   // viewModel
   @property({
     type: LayerSwitcherViewModel
   })
-  @renderable()
   viewModel: LayerSwitcherViewModel = new LayerSwitcherViewModel();
+
+  @aliasOf("viewModel.customTheme")
+  customTheme;
 
   render() {
     const layers = this._renderLayerItems();
-    const arrowIcon = {
-      [CSS.icons.upArrowIcon]: this._dropDownIsOpen,
-      [CSS.icons.downArrowIcon]: !this._dropDownIsOpen
-    };
+    const groupLayerItems = this._renderGroupLayerItems();
+    const tables = this._renderTableItems();
     const selectedLayerTitle = this.get("selectedLayer.title") as string;
     const title =
       selectedLayerTitle && selectedLayerTitle.length > 30
         ? `${selectedLayerTitle.split("").slice(0, 30).join("")}...`
         : selectedLayerTitle;
     const layerTitleToDisplay = title ? title : null;
+    const theme = this.viewModel.getThemeButtonColor("primary", "primary");
     return (
       <div class={CSS.base}>
         {this.appMode === "photo-centric" ? (
           <button
+            styles={theme}
             bind={this}
             onclick={this._toggleLayerDropdown}
             onkeydown={this._toggleLayerDropdown}
-            class={this.classes(
-              CSS.selectLayerDropDown,
-              CSS.layerSwitcherPhotoCentric
-            )}
+            class={this.classes(CSS.selectLayerDropDown, CSS.layerSwitcherPhotoCentric)}
             tabIndex={0}
           >
-            <svg class={this.classes(CSS.svg, CSS.mediaLayerIcon)}>
-              <g>
-                <path d="M8.1,1.7L0.1,6.3L8.1,11L16,6.3L8.1,1.7z M2.9,6.3l5.2-3l5.2,3l-5.2,3L2.9,6.3z" />
-                <polygon points="8.1,11.6 2.7,8.5 0.1,10 8.1,14.5 16,10 13.4,8.5" />
-              </g>
-            </svg>
-
-            <span
-              class={this.classes(
-                CSS.dropDownArrowIcon,
-                arrowIcon,
-                CSS.icons.flushIcon
-              )}
-            />
+            <calcite-icon icon="layers" scale="s" />
+            <calcite-icon icon={this._dropDownIsOpen ? "chevron-up" : "chevron-down"} scale="s" />
           </button>
         ) : (
           <div class={CSS.dropDownMapCentric}>
             {layerTitleToDisplay ? (
               <div
                 key={"layer-switcher-dropdown"}
-                class={this.classes(
-                  CSS.selectLayerDropDown,
-                  CSS.layerSwitcherMapCentric
-                )}
+                class={this.classes(CSS.selectLayerDropDown, CSS.layerSwitcherMapCentric)}
+                styles={{
+                  ...this.viewModel.getTheme("secondary", "secondary"),
+                  border: "none"
+                }}
               >
-                <span class={CSS.svg}>
-                  <svg class={CSS.svg}>
-                    <g>
-                      <path d="M8.1,1.7L0.1,6.3L8.1,11L16,6.3L8.1,1.7z M2.9,6.3l5.2-3l5.2,3l-5.2,3L2.9,6.3z" />
-                      <polygon points="8.1,11.6 2.7,8.5 0.1,10 8.1,14.5 16,10 13.4,8.5 	" />
-                    </g>
-                  </svg>
-                </span>
-                <span class={CSS.selectLayerDropDownTitle}>
-                  {layerTitleToDisplay}
-                </span>
+                <calcite-icon icon="layers" scale="s" />
+                <span class={CSS.selectLayerDropDownTitle}>{layerTitleToDisplay}</span>
               </div>
             ) : null}
             {this.featureLayerCollection &&
-            this.featureLayerCollection.length > 1 ? (
+            this.featureLayerCollection.length > 1 &&
+            this.featureLayerCollection.filter((layer) => layer.visible).length > 0 ? (
               <div class={CSS.arrowButtonContainer}>
                 <button
+                  styles={this.viewModel.getThemeButtonColor("primary", "primary")}
                   bind={this}
                   onclick={this._toggleLayerDropdown}
                   onkeydown={this._toggleLayerDropdown}
                   class={CSS.arrowContainer}
-                  title={i18n.selectLayerToViewAttachments}
+                  title={this.messages?.selectLayerToViewAttachments}
                   tabIndex={0}
                 >
-                  <span
-                    class={this.classes(
-                      CSS.dropDownArrowIcon,
-                      arrowIcon,
-                      CSS.icons.flushIcon
-                    )}
+                  <calcite-icon
+                    icon={this._dropDownIsOpen ? "chevron-up" : "chevron-down"}
+                    scale="s"
                   />
                 </button>
               </div>
@@ -200,7 +176,9 @@ class LayerSwitcher extends Widget {
 
         {this._dropDownIsOpen ? (
           <div key={CSS.dropdownList} class={CSS.dropDownList}>
+            {groupLayerItems}
             {layers}
+            {tables}
           </div>
         ) : null}
       </div>
@@ -218,33 +196,98 @@ class LayerSwitcher extends Widget {
   }
 
   private _renderLayerItems(): any {
+    if (!this.featureLayerCollection) return;
+
+    return (
+      <div class={CSS.groupLayerItem}>
+        {this.featureLayerCollection
+          .filter((layer) => !layer.isTable)
+          .filter((layer) => !(layer as any)?.parent)
+          .every((featureLayer) => !featureLayer.visible) ? null : (
+          <div key="group-layer-title-container" class={CSS.groupLayerTitleContainer}>
+            {this.messages?.layers}
+          </div>
+        )}
+        {this.featureLayerCollection.toArray().map((featureLayer: any) => {
+          const groupLayers = this.view?.map.allLayers.filter(
+            (layer) => layer.type === "group"
+          ) as __esri.Collection<__esri.GroupLayer>;
+          const groupLayer = groupLayers?.find(
+            (groupLayer: __esri.GroupLayer) => groupLayer.layers.indexOf(featureLayer) !== -1
+          );
+          if (groupLayer) {
+            return;
+          }
+          if (featureLayer.isTable) {
+            return;
+          }
+          return this._renderLayerItem(featureLayer);
+        })}
+      </div>
+    );
+  }
+
+  private _renderTableItems(): any {
     if (!this.featureLayerCollection) {
       return;
     }
-    return this.featureLayerCollection
-      .toArray()
-      .map((featureLayer: __esri.FeatureLayer) => {
-        return this._renderLayerItem(featureLayer);
-      });
+    const tables = this.featureLayerCollection.toArray().filter((layer) => layer.isTable);
+    return tables.length > 0 ? (
+      <div class={CSS.groupLayerItem}>
+        <div class={CSS.groupLayerTitleContainer}>{this.messages?.tables}</div>
+        {tables
+          .filter((layer) => layer.isTable)
+          .map((featureLayer: any) => {
+            return this._renderLayerItem(featureLayer);
+          })}
+      </div>
+    ) : null;
   }
 
-  private _renderLayerItem(featureLayer: __esri.FeatureLayer): any {
+  private _renderGroupLayerItems(): any {
+    return this.groupLayerData?.toArray().map((groupLayerDataItem) => {
+      const childLayers = this.featureLayerCollection?.filter(
+        (featureLayer) => featureLayer.get("parent.id") === groupLayerDataItem.id
+      ) as __esri.Collection<__esri.FeatureLayer>;
+      return (
+        <div class={CSS.groupLayerItem}>
+          {childLayers?.length > 0 ? (
+            <div key="group-layer-item-label" class={CSS.groupLayerTitleContainer}>
+              {groupLayerDataItem.title}
+            </div>
+          ) : null}
+          {childLayers.toArray().map((childLayer) => {
+            return this._renderLayerItem(childLayer, true);
+          })}
+        </div>
+      );
+    });
+  }
+
+  private _renderLayerItem(featureLayer: __esri.FeatureLayer, isChild?: boolean): any {
     const title = featureLayer && featureLayer.title;
     const layerItemTitle = title ? title : null;
+    const childStyles = {
+      [CSS.childLayerFeatureTitleContainer]: isChild
+    };
+    if (!featureLayer.visible) {
+      return;
+    }
     return (
       <div
-        bind={this}
         class={CSS.layerItem}
-        onclick={this._setLayer}
-        onkeydown={this._setLayer}
+        onclick={this._setLayer.bind(this, featureLayer)}
+        onkeydown={this._setLayer.bind(this, featureLayer)}
         data-layer-item={featureLayer}
         tabIndex={0}
         role="button"
       >
-        <div class={CSS.featureLayerTitleContainer}>{layerItemTitle}</div>
+        <div class={this.classes(CSS.featureLayerTitleContainer, childStyles)}>
+          {layerItemTitle}
+        </div>
         {this.selectedLayer && this.selectedLayer.id === featureLayer.id ? (
           <div key={`${featureLayer.id}`} class={CSS.checkMarkContainer}>
-            <span class={CSS.icons.checkMark}></span>
+            <calcite-icon icon="check" scale="s" />
           </div>
         ) : null}
       </div>
@@ -252,23 +295,29 @@ class LayerSwitcher extends Widget {
   }
 
   @accessibleHandler()
-  private async _setLayer(event: Event): Promise<void> {
-    if (
-      this.mapCentricViewModel &&
-      this.mapCentricViewModel.featureContentPanelIsOpen
-    ) {
-      this.set("mapCentricViewModel.featureContentPanelIsOpen", false);
+  private _setLayer(featureLayer: __esri.FeatureLayer): void {
+    if (this.mapCentricViewModel?.appMode === "map-centric") {
+      featureLayer.when(async () => {
+        try {
+          const extentRes = await featureLayer.queryExtent();
+          await this.view?.goTo(extentRes);
+        } catch (err) {
+          console.error(err);
+        } finally {
+          if (this.mapCentricViewModel?.featureContentPanelIsOpen) {
+            this.set("mapCentricViewModel.featureContentPanelIsOpen", false);
+          }
+          this.viewModel.setLayer(featureLayer);
+          this._dropDownIsOpen = false;
+          this.scheduleRender();
+        }
+      });
+    } else {
+      this.viewModel.setLayer(featureLayer);
+      this._dropDownIsOpen = false;
+      this.scheduleRender();
     }
-    const node = event.currentTarget as HTMLElement;
-    const featureLayer = node["data-layer-item"] as __esri.FeatureLayer;
-    const extent = await featureLayer.queryExtent();
-    if (extent) {
-      await this.view.goTo(extent);
-    }
-    this.viewModel.setLayer(featureLayer);
-    this._dropDownIsOpen = false;
-    this.scheduleRender();
   }
 }
 
-export = LayerSwitcher;
+export default LayerSwitcher;

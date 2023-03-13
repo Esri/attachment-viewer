@@ -1,0 +1,65 @@
+{
+  "appid": "",
+  "type": "webmap",
+  "webmap": "default",
+  "portalUrl": "https://arcgis.com",
+  "oauthappid": "",
+  "proxyUrl": "",
+  "googleAnalytics": false,
+  "googleAnalyticsKey": null,
+  "googleAnalyticsConsent": false,
+  "googleAnalyticsConsentMsg": null,
+  "localDefaultValues": {},
+  "mapA11yDesc": null,
+  "enableHeaderBackground": false,
+  "enableHeaderColor": false,
+  "headerBackground": null,
+  "headerColor": null,
+  "photoCentricMobileMapExpanded": true,
+  "applySharedTheme": false,
+  "attachmentLayer": null,
+  "helperServices": {
+    "geometry": {
+      "url": null
+    },
+    "printTask": {
+      "url": null
+    },
+    "elevationSync": {
+      "url": null
+    },
+    "geocode": [
+      {
+        "url": null
+      }
+    ]
+  },
+  "telemetry": {
+    "name": "attachmentviewer",
+    "version": "1.0",
+    "prod": {
+      "amazon": {
+        "userPoolID": "us-east-1:8c41b2dc-7563-403d-ba64-673b103debce",
+        "app": {
+          "id": "977e9b0602bb446d8f2fa5a50489d053"
+        }
+      }
+    },
+    "dev": {
+      "amazon": {
+        "userPoolID": "us-east-1:7345bcf2-bffa-4849-a379-a83178f63eef",
+        "app": {
+          "id": "eadf587070d04c86b747a938cc655e76"
+        }
+      }
+    },
+    "qa": {
+      "amazon": {
+        "userPoolID": "us-east-1:7345bcf2-bffa-4849-a379-a83178f63eef",
+        "app": {
+          "id": "74ec952cdae444389057fbae08043476"
+        }
+      }
+    }
+  }
+}

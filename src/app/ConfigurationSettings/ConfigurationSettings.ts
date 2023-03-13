@@ -1,9 +1,9 @@
-import { property, subclass } from "esri/core/accessorSupport/decorators";
-import Accessor = require("esri/core/Accessor");
-import { ApplicationConfig } from "../application-base-js/interfaces";
+import { property, subclass } from "@arcgis/core/core/accessorSupport/decorators";
+import { IExtentSelectorOutput } from "../interfaces/interfaces";
+import ConfigurationSettingsBase from "templates-common-library/baseClasses/configurationSettingsBase";
 
 @subclass("app.ConfigurationSettings")
-class ConfigurationSettings extends Accessor {
+class ConfigurationSettings extends ConfigurationSettingsBase {
   @property()
   webmap: string;
 
@@ -20,7 +20,10 @@ class ConfigurationSettings extends Accessor {
   appLayout: string;
 
   @property()
-  applySharedTheme: boolean = null;
+  applySharedTheme: boolean | null = null;
+
+  @property()
+  theme: "light" | "dark";
 
   @property()
   customCSS: string;
@@ -35,13 +38,25 @@ class ConfigurationSettings extends Accessor {
   download: boolean;
 
   @property()
+  extentSelector: boolean;
+
+  @property()
+  extentSelectorConfig: IExtentSelectorOutput;
+
+  @property()
   fullScreen: boolean;
 
   @property()
-  headerBackground: any;
+  headerBackground: string;
 
   @property()
-  headerColor: any;
+  headerColor: string;
+
+  @property()
+  enableHeaderBackground: boolean;
+
+  @property()
+  enableHeaderColor: boolean;
 
   @property()
   home: boolean;
@@ -74,9 +89,6 @@ class ConfigurationSettings extends Accessor {
   onboardingImage: string;
 
   @property()
-  onlyDisplayFeaturesWithAttachments: boolean;
-
-  @property()
   order: string;
 
   @property()
@@ -104,38 +116,45 @@ class ConfigurationSettings extends Accessor {
   zoomLevel: string;
 
   @property()
-  withinConfigurationExperience: boolean =
-    window.location !== window.parent.location;
+  thumbnailFormat: "stretch" | "fit" | "crop";
 
-  _storageKey = "config-values";
-  _draft: ApplicationConfig = null;
-  _draftMode: boolean = false;
-  constructor(params?: ApplicationConfig) {
-    super(params);
-    this._draft = params?.draft;
-    this._draftMode = params?.mode === "draft";
-  }
-  initialize() {
-    if (this.withinConfigurationExperience || this._draftMode) {
-      // Apply any draft properties
-      if (this._draft) {
-        Object.assign(this, this._draft);
-      }
+  @property()
+  thumbnailHeight: number;
 
-      window.addEventListener(
-        "message",
-        function (e) {
-          this._handleConfigurationUpdates(e);
-        }.bind(this),
-        false
-      );
-    }
-  }
+  @property()
+  googleAnalytics: boolean;
 
-  _handleConfigurationUpdates(e) {
-    if (e?.data?.type === "cats-app") {
-      Object.assign(this, e.data);
-    }
-  }
+  @property()
+  googleAnalyticsKey: string;
+
+  @property()
+  googleAnalyticsConsent: boolean;
+
+  @property()
+  googleAnalyticsConsentMsg: string;
+
+  @property()
+  mapA11yDesc: string;
+
+  @property()
+  onlyDisplayFeaturesWithAttachments: boolean;
+
+  @property()
+  locateWidget: boolean;
+
+  @property()
+  applyEffectToNonActiveLayers: boolean;
+
+  @property()
+  nonActiveLayerEffects;
+
+  @property()
+  attributeEditing: boolean;
+
+  @property()
+  customTheme: any;
+
+  @property()
+  hideAttributePanel: boolean;
 }
-export = ConfigurationSettings;
+export default ConfigurationSettings;

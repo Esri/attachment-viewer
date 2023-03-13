@@ -1,0 +1,12 @@
+{
+  "licenseError": {
+    "message": "Váš účet nezahŕňa licenciu na použitie Configurable Apps, ktoré nie sú verejné. Požiadajte správcu vašej organizácie, aby vám priradil typ používateľa, ktorý zahŕňa aplikácie Essential Apps alebo doplnkovú licenciu Essential Apps.",
+    "title": "Nelicencované"
+  },
+  "originError": {
+    "message": "Aplikácia, ku ktorej sa snažíte pristúpiť, nepochádza z URL, ktorú ste poskytli",
+    "close": "Zatvoriť",
+    "options": "Rozšírené možnosti",
+    "linkMessage": "Pokračovať na"
+  }
+}

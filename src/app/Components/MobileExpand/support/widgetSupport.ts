@@ -1,5 +1,5 @@
 /*
-  Copyright 2020 Esri
+  Copyright 2023 Esri
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
@@ -11,15 +11,14 @@
   limitations under the License.​
 */
 
-import _WidgetBase = require("dijit/_WidgetBase");
-import Widget = require("esri/widgets/Widget");
+import Widget from "@arcgis/core/widgets/Widget";
 
 export function isWidget(value: any): value is Widget {
   // duck-type check
   return value && typeof value.render === "function";
 }
 
-export function isWidgetBase(value: any): value is _WidgetBase {
+export function isWidgetBase(value: any) {
   // duck-type check
   return (
     value &&

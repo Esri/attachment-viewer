@@ -1,0 +1,12 @@
+{
+  "licenseError": {
+    "message": "Hesabınız herkese açık olmayan Configurable Apps kullanmak için lisanslandırılmamış. Lütfen kuruluş yöneticinizden Essential Apps veya eklenti Essential Apps lisansı içeren bir kullanıcı türü atamasını isteyin.",
+    "title": "Lisanslı Değil"
+  },
+  "originError": {
+    "message": "Erişim sağlamaya çalıştığınız uygulama, sağladığınız URL'den kaynaklanmıyor",
+    "close": "Kapat",
+    "options": "Gelişmiş seçenekler",
+    "linkMessage": "'e devam edin"
+  }
+}

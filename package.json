@@ -1,47 +1,39 @@
 {
   "name": "attachment-viewer",
-  "version": "0.0.1",
-  "description": "Provide an immersive experience to review locations, feature information and photos with geographic locations (as attachments or files) in an easy to understand way for the viewer.",
-  "author": "Ryan Libed",
-  "license": "SEE LICENSE IN license.txt",
-  "main": "./index.html",
-  "repository": {
-    "type": "git",
-    "url": ""
-  },
-  "keywords": [
-    "Esri",
-    "esrijs",
-    "ArcGIS",
-    "gis",
-    "JavaScript",
-    "TypeScript"
-  ],
-  "devDependencies": {
-    "@esri/application-base-js": "0.0.5",
-    "@types/arcgis-js-api": "^4.14.0",
-    "autoprefixer": "^6.3.6",
-    "cpx": "^1.5.0",
-    "dojo-typings": "^1.11.9",
-    "grunt": "^1.3.0",
-    "grunt-contrib-jshint": "^1.1.0",
-    "grunt-contrib-watch": "^1.1.0",
-    "grunt-postcss": "^0.8.0",
-    "grunt-sass": "^2.1.0",
-    "grunt-tslint": "^5.0.2",
-    "node-sass": "^4.13.1",
-    "npm-run-all": "^4.1.5",
-    "postcss-normalize-charset": "^1.1.0",
-    "tslint": "^5.20.1",
-    "typescript": "^3.9.3"
-  },
+  "private": false,
+  "version": "0.0.0",
+  "type": "module",
   "scripts": {
-    "start": "npm-run-all --parallel watch:grunt watch:ts",
-    "watch:grunt": "grunt watch",
-    "watch:ts": "tsc --watch",
-    "lint": "grunt lint"
+    "start": "npm run mkdirT9nAssets && npm run copy && vite",
+    "build": "npm run mkdirT9nAssets && npm run copy && tsc && vite build",
+    "deploy": "npm run build",
+    "copy": "npm run copyArcGISCoreAssets && npm run copyCalciteComponentsAssets && npm run copyInstantAppsComponentsAssets && npm run copyT9n",
+    "copyArcGISCoreAssets": "ncp node_modules/@arcgis/core/assets public/assets",
+    "copyCalciteComponentsAssets": "ncp node_modules/@esri/calcite-components/dist/calcite/assets public/assets",
+    "copyInstantAppsComponentsAssets": "ncp node_modules/@esri/instant-apps-components/dist/assets public/assets/assets",
+    "copyT9n": "ncp src/t9n public/assets/t9n",
+    "mkdirT9nAssets": "mkdirp public/assets && mkdirp public/assets/t9n && mkdirp public/assets/components && mkdirp public/assets/components/t9n && ncp ./src/t9n ./public/assets/t9n",
+    "preview": "vite preview",
+    "check:prettier": "prettier --check 'src'",
+    "fix:prettier": "prettier --write 'src'"
+  },
+  "devDependencies": {
+    "@types/node": "^18.11.9",
+    "mkdirp": "^1.0.4",
+    "ncp": "^2.0.0",
+    "sass": "^1.56.1",
+    "typescript": "^4.6.4",
+    "vite": "^3.2.3",
+    "vite-tsconfig-paths": "^3.5.2"
   },
   "dependencies": {
-    "tslib": "^2.0.0"
+    "@arcgis/core": "^4.26.5",
+    "@esri/arcgis-html-sanitizer": "^3.0.1",
+    "@esri/calcite-components": "1.0.7",
+    "@esri/instant-apps-components": "^1.0.0-beta.47",
+    "@types/iv-viewer": "^2.0.1",
+    "iv-viewer": "^2.0.1",
+    "resize-observer-polyfill": "^1.5.1",
+    "templates-common-library": "0.0.168-esm"
   }
 }

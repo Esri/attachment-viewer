@@ -1,0 +1,12 @@
+{
+  "licenseError": {
+    "message": "Uw account heeft geen licentie voor het gebruik van configureerbare apps die niet openbaar zijn. Vraag uw de beheerder van uw organisatie om u een user type toe te wijzen die Essential Apps of een add-on Essential Apps-licentie bevat.",
+    "title": "Geen licentie"
+  },
+  "originError": {
+    "message": "De applicatie die u probeert te openen, is niet afkomstig van de URL die u hebt ingevoerd",
+    "close": "Sluiten",
+    "options": "Geavanceerde opties",
+    "linkMessage": "Ga door naar"
+  }
+}
