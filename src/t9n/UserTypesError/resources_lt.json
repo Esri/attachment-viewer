@@ -1,0 +1,12 @@
+{
+  "licenseError": {
+    "message": "Jūsų paskyra nelicencijuota naudoti ne viešas Configurable Apps. Kreipkitės į organizacijos administratorių, kad paskirtų jums naudotojo tipą, kuris turi svarbiausias programėles, arba suteiktų jums papildomą svarbiausių programėlių licenciją.",
+    "title": "Nelicencijuota"
+  },
+  "originError": {
+    "message": "Programėlė, kurią bandote pasiekti, nėra pasiekiama naudojant jūsų nurodytą URL",
+    "close": "Uždaryti",
+    "options": "Papildomi nustatymai",
+    "linkMessage": "Tęsti pereinant į"
+  }
+}

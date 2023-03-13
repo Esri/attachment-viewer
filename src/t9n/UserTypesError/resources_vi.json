@@ -1,0 +1,12 @@
+{
+  "licenseError": {
+    "message": "Tài khoản của bạn không được cấp phép để sử dụng Các Ứng dụng có thể Cấu hình chưa được chia sẻ công khai. Vui lòng yêu cầu quản trị viên của tổ chức bạn gán cho bạn loại người dùng nào có bao gồm các ứng dụng thiết yếu hoặc có giấy phép sử dụng các ứng dụng thiết yếu bổ sung.",
+    "title": "Không được Cấp phép"
+  },
+  "originError": {
+    "message": "Ứng dụng bạn đang cố gắng truy cập không có nguồn gốc từ URL bạn đã cung cấp",
+    "close": "Đóng",
+    "options": "Các tùy chọn nâng cao",
+    "linkMessage": "Tiếp tục tới"
+  }
+}

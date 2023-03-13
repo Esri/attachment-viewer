@@ -1,0 +1,12 @@
+{
+  "licenseError": {
+    "message": "Sua conta não está licenciada para utilizar Configurable Apps que não sejam públicos. Solicite ao administrador da sua organização que lhe atribua um tipo de usuário que inclua Essential Apps ou uma licença complementar do Essential Apps.",
+    "title": "Não Licenciado"
+  },
+  "originError": {
+    "message": "O aplicativo que você está tentando acessar não se origina da URL fornecida.",
+    "close": "Fechar",
+    "options": "Opções avançadas",
+    "linkMessage": "Prosseguir para"
+  }
+}

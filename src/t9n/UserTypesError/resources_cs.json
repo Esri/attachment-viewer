@@ -1,0 +1,12 @@
+{
+  "licenseError": {
+    "message": "Váš účet nevlastní licenci k používání Configurable Apps, které nejsou veřejné. Požádejte prosím správce své organizace, aby vám přidělil typ uživatele, jehož součástí jsou základní aplikace nebo doplňková licence základních aplikací.",
+    "title": "Chybí licence"
+  },
+  "originError": {
+    "message": "Aplikace, ke které se snažíte získat přístup, nepochází z adresy URL, kterou jste zadali",
+    "close": "Zavřít",
+    "options": "Pokročilé možnosti",
+    "linkMessage": "Pokračujte na"
+  }
+}

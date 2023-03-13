@@ -1,62 +1,70 @@
-import { eachAlways } from "esri/core/promiseUtils";
-import { esriWidgetProps } from "../interfaces/interfaces";
-import MobileExpand = require("../Components/MobileExpand");
-import { ApplicationConfig } from "ApplicationBase/interfaces";
+import { eachAlways } from "@arcgis/core/core/promiseUtils";
+import { esriWidgetProps, IBranchingConditionalOutput } from "../interfaces/interfaces";
+import MobileExpand from "../Components/MobileExpand";
+import { ApplicationConfig } from "templates-common-library/interfaces/applicationBase";
+import { createSearch } from "templates-common-library/functionality/search";
+import PhotoCentric from "../Components/PhotoCentric";
+import MapCentric from "../Components/MapCentric";
 
-export async function addSearch(props: esriWidgetProps) {
+export async function addSearch(props: esriWidgetProps, messageBundle): Promise<any> {
   const { view, portal, config, propertyName } = props;
   const { search, searchConfiguration, searchOpenAtStart } = config;
   const modules = await eachAlways([
-    import("esri/widgets/Search"),
-    import("esri/layers/FeatureLayer"),
-    import("esri/widgets/Expand")
+    import("@arcgis/core/widgets/Search"),
+    import("@arcgis/core/layers/FeatureLayer"),
+    import("@arcgis/core/widgets/Expand")
   ]);
-  const [Search, FeatureLayer, Expand] = modules.map(module => module.value);
-  const node = view.ui.find("searchExpand") as __esri.Expand;
+  const [Search, FeatureLayer, Expand] = modules.map((module) => module.value);
+  const node = view?.ui.find("searchExpand") as __esri.Expand;
   if (!Search || !FeatureLayer || !Expand) {
     return;
   }
   if (!search) {
     if (node) {
-      view.ui.remove(node);
+      view?.ui.remove(node);
     }
     return;
   }
   if (propertyName === "searchOpenAtStart" && node) {
     node.expanded = searchOpenAtStart;
-  } else if (
-    propertyName === "search" ||
-    (propertyName === "searchConfiguration" && node)
-  ) {
+  } else if (propertyName === "search" || (propertyName === "searchConfiguration" && node)) {
     if (node) {
-      view.ui.remove(node);
+      view?.ui.remove(node);
     }
-    const sources = searchConfiguration?.sources;
-    if (sources) {
-      sources.forEach(source => {
-        if (source?.layer?.url) {
-          source.layer = new FeatureLayer.default(source?.layer?.url);
-        }
+
+    const content = view && portal ? createSearch(view, portal, searchConfiguration) : null;
+
+    const constraints = view?.constraints as any;
+
+    const geometry = constraints?.geometry;
+    if (geometry) {
+      content?.sources.forEach((source) => {
+        source.filter = {
+          geometry
+        };
+      });
+    } else {
+      content?.sources.forEach((source) => {
+        source.filter;
       });
     }
-    const content = new Search.default({
-      view,
-      portal,
-      includeDefaultSources: true,
-      ...searchConfiguration
-    });
+
     const searchExpand = new Expand.default({
       expanded: searchOpenAtStart,
       id: "searchExpand",
       content,
       mode: "floating",
-      view
+      view,
+      expandTooltip: messageBundle.expandLabels.search,
+      collapseTooltip: messageBundle.expandLabels.search
     });
-    view.ui.add({
+    view?.ui.add({
       component: searchExpand,
       position: "top-left",
       index: 0
     });
+
+    return content;
   }
 }
 
@@ -64,14 +72,14 @@ export async function addZoom(props: esriWidgetProps) {
   const { view, portal, config } = props;
   const { mapZoom } = config;
 
-  const modules = await eachAlways([import("esri/widgets/Zoom")]);
+  const modules = await eachAlways([import("@arcgis/core/widgets/Zoom")]);
 
-  const [Zoom] = modules.map(module => module.value);
+  const [Zoom] = modules.map((module) => module.value);
 
-  const node = view.ui.find("mobileExpand") as MobileExpand;
+  const node = view?.ui.find("mobileExpand") as MobileExpand;
   const content = node.get("content") as __esri.Collection<__esri.Expand>;
 
-  const zoomNode = content.find(contentItem => {
+  const zoomNode = content.find((contentItem) => {
     return contentItem.id === "zoomWidget";
   });
 
@@ -95,13 +103,13 @@ export async function addHome(props: esriWidgetProps) {
   const { view, portal, config } = props;
   const { home } = config;
 
-  const modules = await eachAlways([import("esri/widgets/Home")]);
+  const modules = await eachAlways([import("@arcgis/core/widgets/Home")]);
 
-  const [Home] = modules.map(module => module.value);
+  const [Home] = modules.map((module) => module.value);
 
-  const node = view.ui.find("mobileExpand") as MobileExpand;
+  const node = view?.ui.find("mobileExpand") as MobileExpand;
   const content = node.get("content") as __esri.Collection<__esri.Expand>;
-  const homeNode = content.find(contentItem => {
+  const homeNode = content.find((contentItem) => {
     return contentItem.id === "homeWidget";
   });
   if (!home) {
@@ -120,20 +128,17 @@ export async function addHome(props: esriWidgetProps) {
   }
 }
 
-export async function addLegend(props: esriWidgetProps) {
+export async function addLegend(props: esriWidgetProps, messageBundle) {
   const { view, config } = props;
   const { legend } = config;
 
-  const modules = await eachAlways([
-    import("esri/widgets/Legend"),
-    import("esri/widgets/Expand")
-  ]);
+  const modules = await eachAlways([import("@arcgis/core/widgets/Legend"), import("@arcgis/core/widgets/Expand")]);
 
-  const [Legend, Expand] = modules.map(module => module.value);
+  const [Legend, Expand] = modules.map((module) => module.value);
 
-  const node = view.ui.find("mobileExpand") as MobileExpand;
+  const node = view?.ui.find("mobileExpand") as MobileExpand;
   const content = node.get("content") as __esri.Collection<__esri.Expand>;
-  const legendNode = content.find(contentItem => {
+  const legendNode = content.find((contentItem) => {
     return contentItem.id === "legendWidget";
   });
   if (!legend) {
@@ -152,27 +157,26 @@ export async function addLegend(props: esriWidgetProps) {
       content: legendWidget,
       mode: "floating",
       id: "legendWidget",
-      group: "top-right"
+      group: "top-right",
+      expandTooltip: messageBundle.expandLabels.legend,
+      collapseTooltip: messageBundle.expandLabels.legend
     });
 
     node.content.splice(2, 0, legendExpand);
   }
 }
 
-export async function addLayerList(props: esriWidgetProps) {
+export async function addLayerList(props: esriWidgetProps, messageBundle): Promise<any> {
   const { view, config } = props;
   const { layerList } = config;
 
-  const modules = await eachAlways([
-    import("esri/widgets/LayerList"),
-    import("esri/widgets/Expand")
-  ]);
+  const modules = await eachAlways([import("@arcgis/core/widgets/LayerList"), import("@arcgis/core/widgets/Expand")]);
 
-  const [LayerList, Expand] = modules.map(module => module.value);
+  const [LayerList, Expand] = modules.map((module) => module.value);
 
-  const node = view.ui.find("mobileExpand") as MobileExpand;
+  const node = view?.ui.find("mobileExpand") as MobileExpand;
   const content = node.get("content") as __esri.Collection<__esri.Expand>;
-  const layerListNode = content.find(contentItem => {
+  const layerListNode = content.find((contentItem) => {
     return contentItem.id === "layerlistWidget";
   });
   if (!layerList) {
@@ -186,14 +190,16 @@ export async function addLayerList(props: esriWidgetProps) {
       view
     }) as __esri.LayerList;
 
-    const legendExpand = new Expand.default({
+    const layerListExpand = new Expand.default({
       view,
       content: layerList,
       mode: "floating",
       id: "layerlistWidget",
-      group: "top-right"
+      group: "top-right",
+      expandTooltip: messageBundle.expandLabels.layerList,
+      collapseTooltip: messageBundle.expandLabels.layerList
     });
-    node.content.splice(3, 0, legendExpand);
+    node.content.splice(3, 0, layerListExpand);
     return layerList;
   }
 }
@@ -202,13 +208,13 @@ export async function addFullScreen(props: esriWidgetProps) {
   const { view, config } = props;
   const { fullScreen } = config;
 
-  const modules = await eachAlways([import("esri/widgets/Fullscreen")]);
+  const modules = await eachAlways([import("@arcgis/core/widgets/Fullscreen")]);
 
-  const [FullScreen] = modules.map(module => module.value);
+  const [FullScreen] = modules.map((module) => module.value);
 
-  const node = view.ui.find("mobileExpand") as MobileExpand;
+  const node = view?.ui.find("mobileExpand") as MobileExpand;
   const content = node.get("content") as __esri.Collection<__esri.Expand>;
-  const fullScreenNode = content.find(contentItem => {
+  const fullScreenNode = content.find((contentItem) => {
     return contentItem.id === "fullScreenWidget";
   });
   if (!fullScreen) {
@@ -227,21 +233,50 @@ export async function addFullScreen(props: esriWidgetProps) {
   }
 }
 
-export async function addSketch(props: esriWidgetProps) {
+export async function addLocateWidget(props: esriWidgetProps) {
+  const { view, config } = props;
+  const { locateWidget } = config;
+
+  const modules = await eachAlways([import("@arcgis/core/widgets/Locate")]);
+
+  const [Locate] = modules.map((module) => module.value);
+
+  const node = view?.ui.find("mobileExpand") as MobileExpand;
+  const content = node.get("content") as __esri.Collection<__esri.Expand>;
+  const locateWidgetNode = content.find((contentItem) => {
+    return contentItem.id === "locateWidget";
+  });
+  if (!locateWidget) {
+    if (locateWidgetNode) {
+      content.remove(locateWidgetNode);
+    }
+  }
+
+  if (locateWidget) {
+    const locateWidget = new Locate.default({
+      view,
+      id: "locateWidget"
+    });
+
+    node.content.splice(5, 0, locateWidget);
+  }
+}
+
+export async function addSketch(props: esriWidgetProps, messageBundle) {
   const { view, config } = props;
   const { selectFeatures } = config;
 
   const modules = await eachAlways([
-    import("esri/widgets/Sketch"),
-    import("esri/widgets/Expand"),
-    import("esri/layers/GraphicsLayer")
+    import("@arcgis/core/widgets/Sketch"),
+    import("@arcgis/core/widgets/Expand"),
+    import("@arcgis/core/layers/GraphicsLayer")
   ]);
 
-  const [Sketch, Expand, GraphicsLayer] = modules.map(module => module.value);
+  const [Sketch, Expand, GraphicsLayer] = modules.map((module) => module.value);
 
-  const node = view.ui.find("mobileExpand") as MobileExpand;
+  const node = view?.ui.find("mobileExpand") as MobileExpand;
   const content = node.get("content") as __esri.Collection<__esri.Expand>;
-  const sketchWidget = content.find(contentItem => {
+  const sketchWidget = content.find((contentItem) => {
     return contentItem.id === "sketchWidget";
   });
   if (!selectFeatures) {
@@ -250,18 +285,16 @@ export async function addSketch(props: esriWidgetProps) {
     }
   }
   if (selectFeatures) {
-    const existingGraphicsLayer = view.map.findLayerById(
-      "av-sketchGraphicsLayer"
-    );
+    const existingGraphicsLayer = view?.map.findLayerById("av-sketchGraphicsLayer");
 
-    let graphicsLayer = null;
+    let graphicsLayer;
 
     if (!existingGraphicsLayer) {
       graphicsLayer = new GraphicsLayer.default({
         id: "av-sketchGraphicsLayer"
       });
 
-      view.map.layers.unshift(graphicsLayer);
+      view?.map.layers.unshift(graphicsLayer);
     } else {
       graphicsLayer = existingGraphicsLayer;
     }
@@ -270,11 +303,15 @@ export async function addSketch(props: esriWidgetProps) {
       layer: graphicsLayer,
       view: view,
       availableCreateTools: ["rectangle"],
-      defaultUpdateOptions: {
-        toggleToolOnClick: false,
-        enableRotation: false
+      visibleElements: {
+        settingsMenu: false,
+        undoRedoMenu: false,
+        selectionTools: {
+          ["lasso-selection"]: false
+        }
       },
-      iconClass: "custom-sketch"
+      iconClass: "custom-sketch",
+      creationMode: "update"
     });
 
     sketch.viewModel.updateOnGraphicClick = false;
@@ -284,7 +321,9 @@ export async function addSketch(props: esriWidgetProps) {
       content: sketch,
       mode: "floating",
       id: "sketchWidget",
-      group: "top-right"
+      group: "top-right",
+      expandTooltip: messageBundle.expandLabels.sketch,
+      collapseTooltip: messageBundle.expandLabels.sketch
     });
 
     node.content.splice(5, 0, sketchExpand);
@@ -300,24 +339,15 @@ export async function toggleAppMode(
   if (props.propertyName === "appLayout") {
     const appMode = appProps.appMode;
     if (appMode === "photo-centric") {
-      document
-        .getElementById("app-container")
-        .classList.remove("esri-map-centric");
+      (document.getElementById("app-container") as HTMLDivElement).classList.remove("esri-map-centric");
     } else {
-      document
-        .getElementById("app-container")
-        .classList.remove("esri-photo-centric");
+      (document.getElementById("app-container") as HTMLDivElement).classList.remove("esri-photo-centric");
     }
   }
 
   const { config } = props;
   const { appLayout } = config;
 
-  const modules = await eachAlways([
-    import("../Components/PhotoCentric"),
-    import("../Components/MapCentric")
-  ]);
-  const [PhotoCentric, MapCentric] = modules.map(module => module.value);
   if (appLayout === "photo-centric") {
     if (document.body.clientWidth > 830) {
       appProps.view.padding = {
@@ -327,7 +357,8 @@ export async function toggleAppMode(
         right: 0
       };
     }
-    return new PhotoCentric.default({
+    appProps.view.popup.close();
+    return new PhotoCentric({
       ...appProps,
       photoCentricMobileMapExpanded
     });
@@ -338,7 +369,7 @@ export async function toggleAppMode(
       left: 0,
       right: 0
     };
-    return new MapCentric.default({
+    return new MapCentric({
       ...appProps
     });
   }

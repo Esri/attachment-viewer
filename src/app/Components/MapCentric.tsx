@@ -1,4 +1,4 @@
-// Copyright 2020 Esri
+// Copyright 2023 Esri
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -9,49 +9,42 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.​
 
-// esri.core
-import {
-  subclass,
-  property,
-  aliasOf
-} from "esri/core/accessorSupport/decorators";
-import watchUtils = require("esri/core/watchUtils");
+import { subclass, property, aliasOf } from "@arcgis/core/core/accessorSupport/decorators";
 
-// esri.widgets
 import {
   accessibleHandler,
-  renderable,
   tsx,
-  storeNode
-} from "esri/widgets/support/widget";
-import Widget = require("esri/widgets/Widget");
+  storeNode,
+  messageBundle
+} from "@arcgis/core/widgets/support/widget";
+import Widget from "@arcgis/core/widgets/Widget";
 
-// nls
-import i18n from "dojo/i18n!./MapCentric/nls/resources";
-import i18nCommon from "dojo/i18n!../nls/common";
-
-// utils
 import { autoLink } from "./utils/urlUtils";
+
 import { attachToNode } from "./utils/utils";
+import { focusNode } from "./utils/focusUtils";
 
-// AppData
-import MapCentricData = require("./MapCentric/MapCentricData");
-import AttachmentViewerData = require("./AttachmentViewer/AttachmentViewerData");
+import MapCentricData from "./MapCentric/MapCentricData";
+import AttachmentViewerData from "./AttachmentViewer/AttachmentViewerData";
 
-// MapCentricViewModel
-import MapCentricViewModel = require("./MapCentric/MapCentricViewModel");
+import MapCentricViewModel from "./MapCentric/MapCentricViewModel";
 
-// Share
-import Share = require("./Share");
+import LayerSwitcher from "./LayerSwitcher";
 
-// LayerSwitcher
-import LayerSwitcher = require("./LayerSwitcher");
+import ImageViewer from "iv-viewer";
+import "iv-viewer/dist/iv-viewer.css";
 
-// ImageViewer
-import ImageViewer = require("ImageViewer");
+import { NavItem, AttachmentData } from "../interfaces/interfaces";
 
-// interfaces
-import { VNode, NavItem, AttachmentData } from "../interfaces/interfaces";
+import { when, watch, on } from "@arcgis/core/core/reactiveUtils";
+
+import ResizeObserver from "resize-observer-polyfill";
+import Sanitizer from "@esri/arcgis-html-sanitizer";
+import { createSanitizerInstance } from "templates-common-library/functionality/securityUtils";
+
+import Common_t9n from "../../t9n/Common/common.json";
+import MapCentric_t9n from "../../t9n/Components/MapCentric/resources.json";
+import RelatedFeatures from "./RelatedFeatures/RelatedFeatures";
 
 // ----------------------------------
 //
@@ -62,6 +55,7 @@ import { VNode, NavItem, AttachmentData } from "../interfaces/interfaces";
 const CSS = {
   // general
   base: "esri-map-centric",
+
   content: "esri-map-centric__content",
   expandCollapseContainer: "esri-map-centric__expand-collapse-container",
   desktopContent: "esri-map-centric__desktop-content",
@@ -69,25 +63,14 @@ const CSS = {
   // mobile
   mobile: "esri-map-centric__mobile",
   mobileContent: "esri-map-centric__mobile-content",
-  // header
-  header: "esri-map-centric__header",
-  headerText: "esri-map-centric__header-text",
-  headerContainer: "esri-map-centric__title-header-container",
-  titleInfoContainer: "esri-map-centric__title-info-container",
-  // share widget
-  shareWidgetContainer: "esri-photo-centric__share-widget-container",
-  shareLocationWidget: "esri-photo-centric__share-location-widget",
-  // onboarding
-  onboarding: "esri-map-centric__onboarding",
   onboardingOverlay: "esri-map-centric__onboarding-overlay",
+  onboardingOverlayDark: "esri-map-centric__onboarding-overlay--dark",
   onboardingContent: "esri-map-centric__onboarding-content",
   onboardingContentContainer: "esri-map-centric__onboarding-content-container",
   onboardingStartButtonContainer: "esri-map-centric__start-button-container",
   onboardingStartButton: "esri-map-centric__start-button",
   onboardingMain: "esri-map-centric__main-onboarding",
-  onboardingTrayContentContainer:
-    "esri-map-centric__onboarding-tray-content-container",
-  onboardingIcon: "esri-map-centric__onboarding-icon",
+  onboardingTrayContentContainer: "esri-map-centric__onboarding-tray-content-container",
   onboardingOpen: "esri-map-centric--onboarding-open",
   onboardingWelcomeContent: "esri-map-centric__onboarding-welcome-content",
   // map
@@ -102,8 +85,7 @@ const CSS = {
   imageThumbnail: "esri-map-centric__image-thumbnail",
   attachmentCountContainer: "esri-map-centric__attachment-count-container",
   attachmentCount: "esri-map-centric__attachment-count",
-  featureContentGalleryContainer:
-    "esri-map-centric__gallery-feature-content-container",
+  featureContentGalleryContainer: "esri-map-centric__gallery-feature-content-container",
   multipleLayers: "esri-map-centric--multiple-layers",
   backToGalleryContainer: "esri-map-centric__back-layer-container",
   backToGallery: "esri-map-centric__back-to-gallery",
@@ -129,7 +111,6 @@ const CSS = {
   downloadIconTextContainer: "esri-map-centric__download-icon-text-container",
   downloadIcon: "esri-map-centric__download-icon",
   videoContainer: "esri-map-centric__video-container",
-  fadeImage: "esri-map-centric--fade-image",
   imageDesktop: "esri-map-centric__media--desktop",
   closeFeatureContainer: "esri-map-centric__close-feature-content",
   // pagination
@@ -137,8 +118,7 @@ const CSS = {
   paginationTextContainer: "esri-photo-centric__pagination-text-container",
   // loader
   widgetLoader: "esri-widget__loader esri-map-centric__loader",
-  animationLoader:
-    "esri-widget__loader-animation esri-map-centric__loader-animation",
+  animationLoader: "esri-widget__loader-animation esri-map-centric__loader-animation",
   spinner: "esri-map-centric__spinner",
   loaderContainer: "esri-map-centric__loader-container",
   loadingText: "esri-map-centric__loading-text",
@@ -152,9 +132,11 @@ const CSS = {
   attachmentScroll: "esri-map-centric__attachment-scroll",
   // feature content
   featureContent: "esri-map-centric__feature-content",
+  featureContentExpanded: "esri-map-centric__feature-content--expanded",
+  featureContentNoRelatedFeatures: "esri-map-centric__feature-content--no-related-features",
+  featureContentHasRelatedFeatures: "esri-map-centric__feature-content--has-related-features",
   featureContentTitleContainer: "esri-map-centric__title-container",
-  featureContentPanelContainer:
-    "esri-map-centric__feature-content-panel-container",
+  featureContentPanelContainer: "esri-map-centric__feature-content-panel-container",
   featureContentLoader: "esri-map-centric__feature-content-loader",
   featureContentTitle: "esri-map-centric__feature-content-title",
   featureLayerTitle: "esri-map-centric__feature-layer-title",
@@ -167,13 +149,20 @@ const CSS = {
   otherAttachmentsList: "esri-map-centric__other-attachment-types",
   featureContentInfo: "esri-map-centric__feature-content-info",
   attributeContent: "esri-map-centric__attribute-content",
-  fade: "esri-map-centric--fade",
   featureContentPanelOpen: "esri-map-centric--feature-content-panel-open",
-  featureContentPanelLayerSwitcher:
-    "esri-map-centric--feature-content-panel-layer-switcher",
-  featureTitleZoomContainer: "esri-map-centric__feature-title-zoom-container",
+  featureContentPanelLayerSwitcher: "esri-map-centric--feature-content-panel-layer-switcher",
+  featureContentHeader: "esri-map-centric__feature-content-header",
+  featureContentHeaderExpanded:
+    "esri-map-centric__feature-content-header--feature-content-expanded",
   featureZoomToContainer: "esri-map-centric__zoom-to-container",
   featureContentContainer: "esri-map-centric__feature-content-container",
+  featureContentContainerExpanded:
+    "esri-map-centric__feature-content-container--feature-content-expanded",
+  minimize: "esri-map-centric__minimize",
+  expand: "esri-map-centric__expand",
+  attrEdit: "esri-map-centric__attribute-edit-button",
+  attrEditModalFooterButtonContainer:
+    "esri-map-centric__attribute-edit-modal-footer-button-container",
   // mobile
   mobileBody: "esri-map-centric__mobile-body",
   mobileNav: "esri-map-centric__mobile-nav",
@@ -181,8 +170,7 @@ const CSS = {
   mobileNavItemSelected: "esri-map-centric__nav-item--selected",
   mobileOnboardingGallery: "esri-map-centric__mobile-onboarding-gallery",
   mobileMedia: "esri-map-centric__mobile-media",
-  mobileNavItemOnboardingDisabled:
-    "esri-map-centric__mobile-nav-item--onboarding-disabled",
+  mobileNavItemOnboardingDisabled: "esri-map-centric__mobile-nav-item--onboarding-disabled",
   // fullAttachment
   fullMediaContainer: "esri-map-centric__full-media-container",
   expandMediaContainer: "esri-map-centric__expand-media-container",
@@ -210,37 +198,16 @@ const CSS = {
     multipleAttachmentsIcon: "esri-map-centric__multiple-attachments-icon",
     video: "esri-map-centric__video-svg",
     expandAttachment: "esri-map-centric__expand-attachment"
-  },
-  // calcite icons
-  icons: {
-    downloadIcon: "icon-ui-download",
-    zoomInIcon: "icon-ui-zoom-in-magnifying-glass",
-    leftArrow: "icon-ui-left",
-    rightArrow: "icon-ui-right",
-    upArrow: "icon-ui-up-arrow",
-    downArrow: "icon-ui-down-arrow",
-    button: "btn",
-    buttonFill: "btn-fill",
-    descriptionIcon: "icon-ui-description",
-    closeIcon: "icon-ui-close",
-    flush: "icon-ui-flush",
-    loadingIcon: "esri-icon-loading-indicator",
-    rotating: "esri-rotating",
-    upArrowCircled: "esri-icon-up-arrow-circled",
-    expandImageIcon: "icon-ui-zoom-out-fixed",
-    minusIcon: "esri-icon-minus",
-    plusIcon: "esri-icon-plus",
-    backArrow: "esri-icon-left-arrow",
-    backArrowRTL: "esri-icon-right-arrow"
   }
 };
 
 const WIDGET_KEY_PARTIAL = "esri-map-centric";
 
-function buildKey(element: string, index?: number): string {
+function buildKey(element: string, index?: number): string | undefined {
   if (index === undefined) {
     return `${WIDGET_KEY_PARTIAL}__${element}`;
   }
+  return;
 }
 
 @subclass("MapCentric")
@@ -248,244 +215,238 @@ class MapCentric extends Widget {
   constructor(value?: any) {
     super(value);
   }
-  // ----------------------------------
-  //
-  //  Private Variables
-  //
-  // ----------------------------------
-  private _currentMobileScreen: string = null;
-  private _expandAttachmentNode: HTMLElement = null;
-  private _featureContentAvailable: boolean = null;
+  private _currentMobileScreen: string | null = null;
+  private _expandAttachmentNode: HTMLElement | null = null;
+  private _featureContentAvailable: boolean | null = null;
   private _fullAttachmentContainerIsOpen = false;
-  private _fullScreenCloseNode: HTMLElement = null;
+  private _fullScreenCloseNode: HTMLElement | null = null;
   private _imageViewer: any = null;
   private _imageViewerSet = false;
-  private _imageZoomLoaded: boolean = null;
+  private _imageZoomLoaded: boolean | null = null;
   private _layerDoesNotSupportAttachments = false;
-  private _mediaViewerContainer: HTMLElement = null;
-  private _mediaViewerContainerFullAttachment: HTMLElement = null;
-  private _onboardingPanelIsOpen: boolean = null;
-  private _triggerScrollElement: HTMLElement = null;
-  private _zoomSliderNode: HTMLInputElement = null;
+  private _mediaViewerContainerFullAttachment: HTMLElement | null = null;
+  private _onboardingPanelIsOpen: boolean | null = null;
+  private _triggerScrollElement: HTMLElement | null = null;
+  private _onboardingButtonDesktop: HTMLElement | null = null;
+  private _featureContentExpanded: boolean = false;
+  private _resizeObserver = new ResizeObserver(() => this.scheduleRender());
+  private _zoomSlider;
+  private _header;
 
-  // ----------------------------------
-  //
-  //  Properties
-  //
-  // ----------------------------------
+  @aliasOf("viewModel.applicationItem")
+  applicationItem: __esri.PortalItem | null = null;
 
-  @property()
-  @renderable()
-  applySharedTheme: boolean = null;
+  @aliasOf("viewModel.applySharedTheme")
+  applySharedTheme: boolean | null = null;
 
-  // addressEnabled
   @aliasOf("viewModel.addressEnabled")
   @property()
-  @renderable()
-  addressEnabled: boolean = null;
+  addressEnabled: boolean | null = null;
 
-  // appMode
   @aliasOf("viewModel.appMode")
-  @renderable()
   @property()
-  appMode: string = null;
+  appMode: string | null = null;
 
-  // attachmentIndex
   @aliasOf("viewModel.attachmentIndex")
   @property()
-  attachmentIndex: number = null;
+  attachmentIndex: number | null = null;
 
-  // attachmentLayer
   @aliasOf("viewModel.attachmentLayer")
   @property()
   attachmentLayer: any = null;
 
-  // attachmentLayers
   @aliasOf("viewModel.attachmentLayers")
   @property()
-  @renderable()
   attachmentLayers: any = null;
 
-  // attachmentViewerDataCollection
   @aliasOf("viewModel.attachmentViewerDataCollection")
   @property()
-  attachmentViewerDataCollection: __esri.Collection<
-    AttachmentViewerData
-  > = null;
+  attachmentViewerDataCollection: __esri.Collection<AttachmentViewerData> | null = null;
 
-  // currentImageUrl
   @aliasOf("viewModel.currentImageUrl")
   @property()
-  currentImageUrl: string = null;
+  currentImageUrl: string | null = null;
 
-  // defaultObjectId
+  @aliasOf("viewModel.customTheme")
+  customTheme: any = null;
+
   @aliasOf("viewModel.defaultObjectId")
   @property()
-  defaultObjectId: number = null;
+  defaultObjectId: number | null = null;
 
-  // showOnboardingOnStart
   @property()
   showOnboardingOnStart = true;
 
-  // downloadEnabled
   @aliasOf("viewModel.downloadEnabled")
   @property()
-  @renderable()
-  downloadEnabled: boolean = null;
+  downloadEnabled: boolean | null = null;
 
-  // docDirection
   @property()
-  docDirection: string = null;
+  docDirection: string | null = null;
 
-  // featureContentPanelIsOpen
   @aliasOf("viewModel.featureContentPanelIsOpen")
-  @renderable()
   @property()
-  featureContentPanelIsOpen: boolean = null;
+  featureContentPanelIsOpen: boolean | null = null;
 
-  // graphicsLayer
   @aliasOf("viewModel.graphicsLayer")
   @property()
-  graphicsLayer: __esri.GraphicsLayer = null;
+  graphicsLayer: __esri.GraphicsLayer | null = null;
 
-  // imageDirectionEnabled
-  @renderable()
+  @aliasOf("viewModel.imageDirectionEnabled")
+  imageDirectionEnabled: boolean | null = null;
+
   @property()
-  imageDirectionEnabled: boolean = null;
+  imagePanZoomEnabled: boolean | null = null;
 
-  // imageIsLoaded
-  @aliasOf("viewModel.imageIsLoaded")
-  @property()
-  imageIsLoaded: boolean = null;
-
-  // imagePanZoomEnabled
-  @property()
-  @renderable()
-  imagePanZoomEnabled: boolean = null;
-
-  // layerSwitcher
   @aliasOf("viewModel.layerSwitcher")
   @property()
-  layerSwitcher: LayerSwitcher = null;
+  layerSwitcher: LayerSwitcher | null = null;
 
-  // mapCentricSketchQueryExtent
   @aliasOf("viewModel.mapCentricSketchQueryExtent")
   @property()
-  mapCentricSketchQueryExtent: __esri.Extent = null;
+  mapCentricSketchQueryExtent: __esri.Extent | null = null;
 
-  // mapCentricTooltipEnabled
   @aliasOf("viewModel.mapCentricTooltipEnabled")
   @property()
-  mapCentricTooltipEnabled: boolean = null;
+  mapCentricTooltipEnabled: boolean | null = null;
 
-  // onboardingButtonText
   @property()
-  onboardingButtonText: string = null;
+  onboardingButtonText: string | null = null;
 
-  // onboardingContent
   @property()
   onboardingContent: any = null;
 
-  // onboardingIsEnabled
   @property()
-  @renderable()
   onboardingIsEnabled = true;
 
-  // onlyDisplayFeaturesWithAttachmentsIsEnabled
-  @aliasOf("viewModel.onlyDisplayFeaturesWithAttachmentsIsEnabled")
-  @property()
-  onlyDisplayFeaturesWithAttachmentsIsEnabled: boolean = null;
-
-  // order
   @aliasOf("viewModel.order")
   @property()
-  @renderable()
-  order: string = null;
+  order: string | null = null;
 
-  // sharedTheme
-  @property()
+  @aliasOf("viewModel.sharedTheme")
   sharedTheme: any = null;
 
-  // searchWidget
   @aliasOf("viewModel.searchWidget")
   @property()
-  searchWidget: __esri.Search = null;
+  searchWidget: __esri.Search | null = null;
 
-  // selectFeaturesEnabled
   @aliasOf("viewModel.selectFeaturesEnabled")
   @property()
-  selectFeaturesEnabled: boolean = null;
+  selectFeaturesEnabled: boolean | null = null;
 
-  // selectedAttachmentViewerData
   @aliasOf("viewModel.selectedAttachmentViewerData")
-  @renderable()
   @property()
-  selectedAttachmentViewerData: MapCentricData = null;
+  selectedAttachmentViewerData: MapCentricData | null = null;
 
-  // selectedLayerId
-  @aliasOf("viewModel.selectedLayerId")
-  @property()
-  selectedLayerId: string = null;
-
-  // shareLocationWidget
-  @aliasOf("viewModel.shareLocationWidget")
-  @property()
-  shareLocationWidget: Share = null;
-
-  // sketchWidget
   @aliasOf("viewModel.sketchWidget")
   @property()
-  sketchWidget: __esri.Sketch = null;
+  sketchWidget: __esri.Sketch | null = null;
 
-  // socialSharingEnabled
   @aliasOf("viewModel.socialSharingEnabled")
   @property()
-  @renderable()
-  socialSharingEnabled: boolean = null;
+  socialSharingEnabled: boolean | null = null;
 
-  // supportedAttachmentTypes
   @aliasOf("viewModel.supportedAttachmentTypes")
   @property()
-  supportedAttachmentTypes: string[] = null;
+  supportedAttachmentTypes: string[] | null = null;
 
-  // title
+  @aliasOf("viewModel.token")
+  @property()
+  token: string | null = null;
+
+  @property()
+  thumbnailFormat: "stretch" | "fit" | "crop" = "stretch";
+
+  @property()
+  thumbnailHeight: number | null = null;
+
   @aliasOf("viewModel.title")
   @property()
-  @renderable()
-  title: string = null;
+  title: string | null = null;
 
-  // view
   @aliasOf("viewModel.view")
   @property()
-  view: __esri.MapView = null;
+  view: __esri.MapView | null = null;
 
-  // withinConfigurationExperience
   @aliasOf("viewModel.withinConfigurationExperience")
   @property()
-  withinConfigurationExperience: boolean = null;
+  withinConfigurationExperience: boolean | null = null;
 
-  // viewModel
-  @renderable(["viewModel.state", "viewModel.mapCentricState"])
-  @property({
-    type: MapCentricViewModel
-  })
+  @property()
+  mapA11yDesc: string;
+
+  @aliasOf("viewModel.headerBackground")
+  headerBackground: string;
+
+  @aliasOf("viewModel.headerColor")
+  headerColor: string;
+
+  @aliasOf("viewModel.enableHeaderBackground")
+  enableHeaderBackground: boolean;
+
+  @aliasOf("viewModel.enableHeaderColor")
+  enableHeaderColor: boolean;
+
+  @property()
   viewModel: MapCentricViewModel = new MapCentricViewModel();
 
-  // zoomLevel
   @aliasOf("viewModel.zoomLevel")
   @property()
-  zoomLevel: string = null;
+  zoomLevel: string | null = null;
 
   @aliasOf("viewModel.highlightedFeature")
   @property()
   highlightedFeature = null;
+
+  @property()
+  theme: "light" | "dark" = "light";
+
+  @property()
+  @messageBundle(`${import.meta.env.BASE_URL}assets/t9n/Components/MapCentric/resources`)
+  mapCentricMessages: typeof MapCentric_t9n | null = null;
+
+  @property()
+  @messageBundle(`${import.meta.env.BASE_URL}assets/t9n/Common/common`)
+  commonMessages: typeof Common_t9n | null = null;
+
+  @aliasOf("viewModel.relatedFeatures")
+  relatedFeatures: RelatedFeatures | null = null;
+
+  @aliasOf("viewModel.onlyDisplayFeaturesWithAttachments")
+  onlyDisplayFeaturesWithAttachments = null;
+
+  @aliasOf("viewModel.applyEffectToNonActiveLayers")
+  applyEffectToNonActiveLayers: boolean | null = null;
+
+  @aliasOf("viewModel.nonActiveLayerEffects")
+  nonActiveLayerEffects = null;
+
+  @aliasOf("viewModel.attributeEditing")
+  attributeEditing: boolean | null = null;
+
+  @aliasOf("viewModel.attrEditError")
+  attrEditError: HTMLCalciteAlertElement | null = null;
+
+  @aliasOf("viewModel.attrEditModal")
+  attrEditModal: HTMLCalciteModalElement | null = null;
+
+  @aliasOf("viewModel.queryParams")
+  queryParams;
+
+  @property()
+  zoomSliderNode: HTMLCalciteSliderElement | null = null;
+
+  @property()
+  hideAttributePanel: boolean;
+
+  private _sanitizer = createSanitizerInstance(Sanitizer);
 
   postInitialize() {
     if (this.onboardingIsEnabled) {
       this.own([this._handleOnboarding()]);
     } else {
       if (document.body.clientWidth < 813) {
-        this._currentMobileScreen = "media";
+        this._currentMobileScreen = "images";
         this.scheduleRender();
       }
     }
@@ -494,67 +455,130 @@ class MapCentric extends Widget {
       this._galleryScrollTopOnFeatureRemoval(),
       this._watchAttachmentData(),
       this._scrollGalleryToTopOnAttachmentRemoval(),
-      this._watchSelectedFeature()
+      this._watchSelectedFeature(),
+      watch(
+        () => this.selectedAttachmentViewerData,
+        () => this.scheduleRender()
+      ),
+      watch(
+        () => this.layerSwitcher?.selectedLayer,
+        () => {
+          if (this.featureContentPanelIsOpen) {
+            this.featureContentPanelIsOpen = false;
+            this.currentImageUrl = null;
+            this.set("viewModel.selectedAttachmentViewerData.attachmentIndex", 0);
+            this.set("selectedAttachmentViewerData.selectedFeatureAddress", null);
+            this.set("selectedAttachmentViewerData.selectedFeature", null);
+            this.viewModel.closeTooltipPopup();
+          }
+        }
+      ),
+      when(
+        () => !this.featureContentPanelIsOpen,
+        () => {
+          this._featureContentExpanded = false;
+          this.viewModel.errorMessage = null;
+          this.scheduleRender();
+        },
+        { initial: true }
+      ),
+      when(
+        () => this.viewModel?.state === "editing",
+        () => {
+          when(
+            () => this.viewModel?.state === "ready",
+            () => {
+              (this.attrEditModal as HTMLCalciteModalElement).open = false;
+            },
+            {
+              once: true
+            }
+          );
+        }
+      ),
+      when(
+        () => this.attrEditError,
+        () => {
+          this.attrEditError?.addEventListener("calciteAlertClose", () => {
+            (this.attrEditError as HTMLCalciteAlertElement).innerHTML = "";
+            this.viewModel.errorMessage = null;
+          });
+        },
+        { once: true }
+      ),
+      when(
+        () => this.viewModel?.errorMessage,
+        () => {
+          const msg = document.createElement("div");
+          msg.setAttribute("slot", "message");
+          msg.innerText = `${this.viewModel.errorMessage} ${this.commonMessages?.editAttributes?.notSaved}`;
+          this.attrEditError?.appendChild(msg);
+          this.attrEditError?.setAttribute("active", "");
+        }
+      ),
+      when(
+        () => this.zoomSliderNode,
+        () => {
+          this.zoomSliderNode?.addEventListener("calciteSliderInput", (e: any) => {
+            if (this._imageViewer) this._imageViewer.zoom(e.target.value);
+          });
+        },
+        { once: true }
+      )
     ]);
     if (this.addressEnabled) {
       this.own([this._watchSelectedFeatureAddress()]);
     }
 
-    this.own(
-      watchUtils.whenFalse(this, "imagePanZoomEnabled", () => {
-        if (this._imageViewer) {
-          this._imageViewer.destroy();
-          this._imageViewer = null;
-          this._imageViewerSet = false;
-          this._imageZoomLoaded = false;
+    this.own([
+      when(
+        () => !this.imagePanZoomEnabled,
+        () => {
+          if (this._imageViewer) {
+            this._imageViewer.destroy();
+            this._imageViewer = null;
+            this._imageViewerSet = false;
+            this._imageZoomLoaded = false;
+          }
         }
-      })
+      )
+    ]);
+  }
+
+  destroy(): void {
+    this.viewModel?.destroy();
+  }
+
+  private _handleOnboarding(): __esri.WatchHandle {
+    return when(
+      () => this.view,
+      () => {
+        if (this.showOnboardingOnStart) {
+          this._onboardingPanelIsOpen = true;
+          if (document.body.clientWidth < 813) {
+            this._currentMobileScreen = "information";
+          }
+        } else {
+          this._handleOnboardingOnVisitDisabled();
+        }
+        this.scheduleRender();
+      },
+      { once: true, initial: true }
     );
   }
 
-  // _handleOnboarding
-  private _handleOnboarding(): __esri.WatchHandle {
-    return watchUtils.whenOnce(this, "view", () => {
-      if (this.showOnboardingOnStart) {
-        this._handleOnboardingOnInitialVisit();
-      } else {
-        this._handleOnboardingOnVisitDisabled();
-      }
-      this.scheduleRender();
-    });
-  }
-
-  // _handleOnboardingOnInitialVisit
-  private _handleOnboardingOnInitialVisit(): void {
-    if (localStorage.getItem("firstTimeUseApp")) {
-      this._onboardingPanelIsOpen = false;
-      if (document.body.clientWidth < 813) {
-        this._currentMobileScreen = "media";
-      }
-    } else {
-      this._onboardingPanelIsOpen = true;
-      if (document.body.clientWidth < 813) {
-        this._currentMobileScreen = "description";
-      }
-      localStorage.setItem("firstTimeUseApp", `${Date.now()}`);
-    }
-  }
-
-  // _handleOnboardingOnVisitDisabled
   private _handleOnboardingOnVisitDisabled(): void {
     this._onboardingPanelIsOpen = false;
     if (document.body.clientWidth < 813) {
-      this._currentMobileScreen = "media";
+      this._currentMobileScreen = "images";
     }
   }
 
-  // _handleAttachmentUrl
   private _handleAttachmentUrl(): __esri.WatchHandle {
-    return watchUtils.watch(
-      this,
-      [
-        "selectedAttachmentViewerData.selectedFeatureAttachments.attachments",
-        "selectedAttachmentViewerData.attachmentIndex"
+    return watch(
+      () => [
+        this.selectedAttachmentViewerData?.selectedFeatureAttachments?.attachments,
+        this.selectedAttachmentViewerData?.attachmentIndex
       ],
       () => {
         if (!this.selectedAttachmentViewerData) {
@@ -563,45 +587,39 @@ class MapCentric extends Widget {
         const attachment = this.viewModel.getCurrentAttachment();
         const attachmentUrl = attachment && (attachment.get("url") as string);
         this.currentImageUrl = this.viewModel.updateAttachmentUrlToHTTPS(
-          attachmentUrl
-        );
+          attachmentUrl as string
+        ) as string;
         this.scheduleRender();
-      }
+      },
+      { initial: true }
     );
   }
 
-  // _galleryScrollTopOnFeatureRemoval
   private _galleryScrollTopOnFeatureRemoval(): __esri.WatchHandle {
-    return watchUtils.watch(this, "layerSwitcher.selectedLayer", () => {
-      this._scrollGalleryToTop();
-    });
-  }
-
-  // _watchAttachmentData
-  private _watchAttachmentData(): __esri.WatchHandle {
-    return watchUtils.on(
-      this,
-      ["selectedAttachmentViewerData.attachmentDataCollection"],
-      "after-changes",
-      () => {
-        this.scheduleRender();
-      }
-    );
-  }
-
-  // _scrollGalleryToTopOnAttachmentRemoval
-  private _scrollGalleryToTopOnAttachmentRemoval(): __esri.WatchHandle {
-    return watchUtils.on(
-      this,
-      "selectedAttachmentViewerData.attachmentDataCollection",
-      "after-remove",
+    return watch(
+      () => this.layerSwitcher?.selectedLayer,
       () => {
         this._scrollGalleryToTop();
       }
     );
   }
 
-  // _scrollGalleryToTop
+  private _watchAttachmentData(): __esri.WatchHandle {
+    return on(
+      () => this.selectedAttachmentViewerData?.attachmentDataCollection,
+      "after-changes",
+      () => this.scheduleRender()
+    );
+  }
+
+  private _scrollGalleryToTopOnAttachmentRemoval(): __esri.WatchHandle {
+    return on(
+      () => this.selectedAttachmentViewerData?.attachmentDataCollection,
+      "after-remove",
+      () => this._scrollGalleryToTop()
+    );
+  }
+
   private _scrollGalleryToTop(): void {
     const isIE =
       navigator.userAgent.indexOf("MSIE") !== -1 ||
@@ -614,41 +632,21 @@ class MapCentric extends Widget {
     }
   }
 
-  // _watchSelectedFeature
   private _watchSelectedFeature(): __esri.WatchHandle {
-    return watchUtils.watch(
-      this,
-      "selectedAttachmentViewerData.selectedFeature",
-      () => {
-        this.scheduleRender();
-      }
+    return watch(
+      () => this.selectedAttachmentViewerData?.selectedFeature,
+      () => this.scheduleRender()
     );
   }
 
-  // _watchSelectedFeatureAddress
   private _watchSelectedFeatureAddress(): __esri.WatchHandle {
-    return watchUtils.watch(
-      this,
-      "selectedAttachmentViewerData.selectedFeatureAddress",
-      () => {
-        this.scheduleRender();
-      }
+    return watch(
+      () => this.selectedAttachmentViewerData?.selectedFeatureAddress,
+      () => this.scheduleRender()
     );
   }
 
-  // ----------------------------------
-  //
-  //  END OF WATCH UTILITY METHODS
-  //
-  // ----------------------------------
-
-  // ----------------------------------
-  //
-  //  START OF RENDER METHODS
-  //
-  // ----------------------------------
-
-  render(): VNode {
+  render(): any {
     const header = this._renderHeader();
     const fullAttachment = this._renderFullAttachmentContainer();
     const content = this._renderContent();
@@ -656,8 +654,15 @@ class MapCentric extends Widget {
     const isMobile = clientWidth < 813;
     const mobile = isMobile ? this._renderMobile() : null;
     const mobileNav = isMobile ? this._renderMobileNav() : null;
+    const attrModal = this.attributeEditing ? this._renderAttributeEditModal() : null;
     return (
-      <div class={CSS.base}>
+      <div
+        bind={this}
+        afterCreate={(node) => {
+          this._resizeObserver.observe(node);
+        }}
+        class={CSS.base}
+      >
         {header}
         {isMobile ? (
           <div class={CSS.mobileBody}>
@@ -665,17 +670,38 @@ class MapCentric extends Widget {
             {mobileNav}
           </div>
         ) : (
-          <div key={buildKey("desktop")} class={CSS.desktopContent}>
+          <div
+            key={buildKey("desktop")}
+            styles={
+              this._header
+                ? {
+                    height: `calc(100% - ${this._header?.offsetHeight}px)`
+                  }
+                : {}
+            }
+            class={CSS.desktopContent}
+          >
             {fullAttachment}
             {content}
           </div>
         )}
+        {this.attributeEditing ? (
+          <calcite-alert
+            bind={this}
+            afterCreate={storeNode}
+            data-node-ref="attrEditError"
+            auto-dismiss="true"
+            auto-dismiss-duration="medium"
+            kind="danger"
+            icon="exclamation-mark-triangle-f"
+          />
+        ) : null}
+        {attrModal}
       </div>
     );
   }
 
-  // _renderMobile
-  private _renderMobile(): VNode {
+  private _renderMobile(): any {
     const mobileContent = this._renderMobileContent();
     return (
       <div key={buildKey("mobile")} class={CSS.mobile}>
@@ -684,8 +710,7 @@ class MapCentric extends Widget {
     );
   }
 
-  // _renderMobileNav
-  private _renderMobileNav(): VNode {
+  private _renderMobileNav(): any {
     const mobileNavItems = this._renderMobileNavItems();
     return (
       <div key={buildKey("mobile-nav")} class={CSS.mobileNav}>
@@ -694,27 +719,26 @@ class MapCentric extends Widget {
     );
   }
 
-  // _renderMobileNavItems
-  private _renderMobileNavItems(): VNode {
+  private _renderMobileNavItems(): any {
     const navObjects = this._generateNavObjects();
-    return navObjects.map(navItem => {
-      return this._renderMobileNavItem(navItem);
+    return navObjects.map((navItem, navItemIndex) => {
+      const isLast = navObjects.length - 1 === navItemIndex;
+      return this._renderMobileNavItem(navItem, isLast);
     });
   }
 
-  // _renderMobileContent
-  private _renderMobileContent(): VNode {
+  private _renderMobileContent(): any {
     const mapView = this._renderMapView();
     const mobileOnboarding = this._renderMobileOnboarding();
     const mobileMedia = this._renderMobileMedia();
     return (
       <div class={CSS.mobileContent}>
         {mapView}
-        {this._currentMobileScreen === "maps" ? null : (
+        {this._currentMobileScreen === "map" ? null : (
           <div class={CSS.mobileOnboardingGallery}>
-            {this._currentMobileScreen === "description"
+            {this._currentMobileScreen === "information"
               ? mobileOnboarding
-              : this._currentMobileScreen === "media"
+              : this._currentMobileScreen === "images"
               ? mobileMedia
               : null}
           </div>
@@ -723,8 +747,7 @@ class MapCentric extends Widget {
     );
   }
 
-  // _renderMobileMedia
-  private _renderMobileMedia(): VNode {
+  private _renderMobileMedia(): any {
     const featureContentPanel = this._renderFeatureContentPanel();
     const featureGallery = this._renderFeatureGallery();
     const layerSwitcher = this._renderLayerSwitcher();
@@ -737,20 +760,24 @@ class MapCentric extends Widget {
     );
   }
 
-  // _renderMobileOnboarding
-  private _renderMobileOnboarding(): VNode {
+  private _renderMobileOnboarding(): any {
     const onboardingWelcomeContent = this._renderOnboardingWelcomeContent();
+    const onboardingOverlayDark = {
+      [CSS.onboardingOverlayDark]: this.theme === "dark"
+    };
     return (
-      <div key={buildKey("mobile-onboarding")} class={CSS.onboardingOverlay}>
-        <div class={CSS.onboardingContentContainer}>
-          {onboardingWelcomeContent}
+      <focus-trap>
+        <div
+          key={buildKey("mobile-onboarding")}
+          class={this.classes(CSS.onboardingOverlay, onboardingOverlayDark)}
+        >
+          <div class={CSS.onboardingContentContainer}>{onboardingWelcomeContent}</div>
         </div>
-      </div>
+      </focus-trap>
     );
   }
 
-  // _renderMobileNavItem
-  private _renderMobileNavItem(navItem: NavItem): VNode {
+  private _renderMobileNavItem(navItem: NavItem, isLast: boolean): any {
     const { type, iconClass } = navItem;
     const mobileNavItemSelected = {
       [CSS.mobileNavItemSelected]: type === this._currentMobileScreen
@@ -758,6 +785,7 @@ class MapCentric extends Widget {
     const mobileNavItemOnboardingDisabled = {
       [CSS.mobileNavItemOnboardingDisabled]: !this.onboardingIsEnabled
     };
+    const buttonTheme = this.viewModel.getThemeButtonColor("accent", "accent");
     return (
       <div
         bind={this}
@@ -770,94 +798,118 @@ class MapCentric extends Widget {
         )}
         data-nav-item={type}
         role="button"
+        styles={{
+          ...buttonTheme,
+          border: "none",
+          borderRight: isLast ? "none" : buttonTheme?.border
+        }}
       >
-        <span class={this.classes(iconClass, CSS.icons.flush)} />
+        <calcite-icon
+          styles={{
+            ...buttonTheme,
+            border: "none"
+          }}
+          icon={iconClass}
+          scale="s"
+        ></calcite-icon>
       </div>
     );
   }
 
-  // _renderHeader
-  private _renderHeader(): VNode {
+  private _renderHeader(): any {
+    const {
+      applySharedTheme,
+      sharedTheme,
+      customTheme,
+      viewModel,
+      enableHeaderBackground,
+      headerBackground,
+      enableHeaderColor,
+      headerColor
+    } = this;
     const title =
-      document.body.clientWidth < 830 && this.title.length > 40
-        ? `${this.title.split("").slice(0, 35).join("")}...`
+      document.body.clientWidth < 830 && (this.title as string).length > 40
+        ? `${(this.title as string).split("").slice(0, 35).join("")}...`
         : this.title;
-    const shareWidget =
-      this.socialSharingEnabled &&
-      this.shareLocationWidget &&
-      document.body.clientWidth > 830
-        ? this._renderShareWidget()
-        : null;
+    const theme = viewModel.getTheme("primary", "primary");
 
-    const sharedTheme = this.applySharedTheme
-      ? {
-          background: this.sharedTheme?.background,
-          color: this.sharedTheme?.text,
-          paddingLeft: "10px"
-        }
-      : {
-          background: "",
-          color: "",
-          paddingLeft: "15px"
-        };
+    const logo =
+      this.customTheme?.applySharedTheme && this.sharedTheme?.logo
+        ? this.sharedTheme.logo
+        : this.customTheme?.logo
+        ? this.customTheme.logo
+        : "";
+    const logoLink =
+      ((applySharedTheme && !customTheme) || customTheme?.preset === "shared") &&
+      sharedTheme?.logoLink
+        ? sharedTheme.logoLink
+        : customTheme?.logoLink
+        ? customTheme.logoLink
+        : "";
+
+    const fontFamily = customTheme?.font ?? "var(--calcite-sans-family)";
+    if (enableHeaderBackground && headerBackground && !theme.backgroundColor) {
+      theme.backgroundColor = headerBackground;
+    }
+    if (enableHeaderColor && headerColor && !theme.color) {
+      theme.color = headerColor;
+    }
     return (
-      <header styles={sharedTheme} class={CSS.header}>
-        <div class={CSS.headerContainer}>
-          {this?.applySharedTheme ? (
-            this.sharedTheme?.logoLink ? (
-              <a
-                class="esri-attachment-viewer__logo-link"
-                href={this.sharedTheme.logoLink}
-                target="_blank"
-              >
-                {this.sharedTheme?.logo ? (
-                  <img class={CSS.logo} src={this.sharedTheme?.logo} alt="" />
-                ) : null}
-              </a>
-            ) : this.sharedTheme?.logo ? (
-              <img class={CSS.logo} src={this.sharedTheme?.logo} alt="" />
-            ) : null
-          ) : null}
-          <div class={CSS.titleInfoContainer}>
-            <h1 class={CSS.headerText}>{title}</h1>
-            {this.onboardingIsEnabled && document.body.clientWidth > 830 ? (
-              <div
-                bind={this}
-                onclick={this._toggleOnboardingPanel}
-                onkeydown={this._toggleOnboardingPanel}
-                class={CSS.onboardingIcon}
-                title={i18n.viewDetails}
-                tabIndex={0}
-              >
-                <span
-                  class={this.classes(
-                    CSS.icons.descriptionIcon,
-                    CSS.icons.flush
-                  )}
-                />
-              </div>
-            ) : null}
-          </div>
-        </div>
-        <div class={CSS.shareWidgetContainer}>{shareWidget}</div>
-      </header>
+      <instant-apps-header
+        bind={this}
+        afterCreate={storeNode}
+        data-node-ref="_header"
+        style={`--calcite-ui-icon: ${theme?.color};`}
+        logo-image={`${logo}${logo && this.token ? `?token=${this.token}` : ""}`}
+        logo-link={logoLink}
+        title-text={title}
+        background-color={theme?.backgroundColor}
+        text-color={theme?.color}
+        onInfoIsOpenChanged={() => {
+          this._toggleOnboardingPanel();
+        }}
+        info-is-open={`${
+          document.body.clientWidth > 915 && this.onboardingIsEnabled && this._onboardingPanelIsOpen
+        }`}
+        info-button={`${document.body.clientWidth > 915 && this.onboardingIsEnabled}`}
+        logo-scale={customTheme?.logoScale ? customTheme.logoScale : "m"}
+        font-family={fontFamily}
+      >
+        {this._renderSocialShare()}
+      </instant-apps-header>
     );
   }
 
-  // _renderShareWidget
-  private _renderShareWidget(): VNode {
-    return (
-      <div
-        class={CSS.shareLocationWidget}
-        bind={this.shareLocationWidget.container}
-        afterCreate={attachToNode}
-        afterUpdate={attachToNode}
+  private _renderSocialShare(): any {
+    const theme = this.viewModel.getTheme("primary", "primary");
+    return this.socialSharingEnabled && document.body.clientWidth > 915 ? (
+      <instant-apps-social-share
+        style={`--instant-apps-social-share-popover-button-icon-color: ${
+          theme?.color ? theme.color : "var(--calcite-ui-text-1)"
+        };${
+          this.customTheme?.appFont ? ` font-family: ${this.customTheme?.appFont} !important;` : ""
+        }`}
+        bind={this}
+        afterCreate={storeNode}
+        afterUpdate={(node: HTMLInstantAppsSocialShareElement) => {
+          const url = node.shareUrl;
+          if (!url) return;
+          const urlObj = new URL(url);
+          for (const prop in this.queryParams) {
+            urlObj.searchParams.set(prop, `${this.queryParams[prop]}`);
+          }
+          node.shareUrl = urlObj.href;
+        }}
+        data-node-ref="_socialShare"
+        share-button-color="inverse"
+        view={this.view}
+        slot="actions-end"
+        auto-update-share-url="false"
       />
-    );
+    ) : null;
   }
 
-  // _renderContent
-  private _renderContent(): VNode {
+  private _renderContent(): any {
     const mapViewContainer = this._renderMapViewContainer();
     const sidePanel = this._renderSidePanel();
     const onboarding = this._renderOnboarding();
@@ -870,8 +922,46 @@ class MapCentric extends Widget {
     );
   }
 
-  // _renderSidePanel
-  private _renderSidePanel(): VNode {
+  private _renderAttributeEditModal(): any {
+    const featureWidgetTitle = this.get("viewModel.featureWidget.title");
+
+    return (
+      <calcite-modal
+        key="esri-av--map-centric-attr-edit"
+        bind={this}
+        data-node-ref="attrEditModal"
+        afterCreate={storeNode}
+        width="s"
+        no-padding="true"
+        class={this.theme === "dark" ? "calcite-mode-dark" : "calcite-mode-light"}
+      >
+        <h3 slot="header">{featureWidgetTitle ? featureWidgetTitle : ""}</h3>
+        <div slot="content">{this.viewModel.featureFormWidget?.render()}</div>
+        <calcite-button
+          bind={this}
+          onclick={this._closeAttrEditPanel}
+          onkeydown={this._closeAttrEditPanel}
+          appearance="outline"
+          slot="secondary"
+          width={document.body.clientWidth > 813 ? "auto" : "full"}
+        >
+          {this.commonMessages?.cancel}
+        </calcite-button>
+        <calcite-button
+          bind={this}
+          onclick={this._saveAttributeEdits}
+          onkeydown={this._saveAttributeEdits}
+          slot="primary"
+          loading={this.viewModel.state === "editing" ? true : false}
+          width={document.body.clientWidth > 813 ? "auto" : "full"}
+        >
+          {this.commonMessages?.save}
+        </calcite-button>
+      </calcite-modal>
+    );
+  }
+
+  private _renderSidePanel(): any {
     const layerSwitcher = this._renderLayerSwitcher();
     const galleryContentPanelContainer = this._renderFeatureGalleryContentPanelContainer();
     return (
@@ -882,13 +972,9 @@ class MapCentric extends Widget {
     );
   }
 
-  // _renderLayerSwitcher
-  private _renderLayerSwitcher(): VNode {
+  private _renderLayerSwitcher(): any {
     return (
-      <div
-        key={buildKey("back-layer-container")}
-        class={CSS.backToGalleryContainer}
-      >
+      <div key={buildKey("back-layer-container")} class={CSS.backToGalleryContainer}>
         {this.featureContentPanelIsOpen ? (
           <div
             bind={this}
@@ -896,13 +982,16 @@ class MapCentric extends Widget {
             onkeydown={this._closeFeatureContent}
             tabIndex={0}
             class={CSS.backToGallery}
-            title={i18nCommon.back}
+            title={this.commonMessages?.back}
           >
-            {this.docDirection === "ltr" ? (
-              <span class={CSS.icons.backArrow}></span>
-            ) : (
-              <span class={CSS.icons.backArrowRTL}></span>
-            )}
+            <calcite-icon
+              icon={this.docDirection === "ltr" ? "arrow-left" : "arrow-right"}
+              scale="s"
+              styles={{
+                ...this.viewModel.getThemeButtonColor("secondary", "secondary"),
+                border: "none"
+              }}
+            />
           </div>
         ) : null}
         <div
@@ -914,49 +1003,47 @@ class MapCentric extends Widget {
     );
   }
 
-  // _renderFeatureGalleryContentPanelContainer
-  private _renderFeatureGalleryContentPanelContainer(): VNode {
+  private _renderFeatureGalleryContentPanelContainer(): any {
     const featureGallery = this._renderFeatureGallery();
     const featureContentPanel = this._renderFeatureContentPanel();
     const multipleLayers = {
-      [CSS.multipleLayers]:
-        this.get("attachmentViewerDataCollection.length") > 1
+      [CSS.multipleLayers]: (this.get("attachmentViewerDataCollection.length") as number) > 1
     };
     return (
-      <div
-        class={this.classes(CSS.featureContentGalleryContainer, multipleLayers)}
-      >
+      <div class={this.classes(CSS.featureContentGalleryContainer, multipleLayers)}>
         {featureGallery}
         {featureContentPanel}
       </div>
     );
   }
 
-  // _renderOnboarding
-  private _renderOnboarding(): VNode {
+  private _renderOnboarding(): any {
     const onboardingIsOpen = {
       [CSS.onboardingOpen]: this._onboardingPanelIsOpen
     };
-    const onboarding = this._onboardingPanelIsOpen
-      ? this._renderOnboardingPanel()
-      : null;
+    const onboarding = this._onboardingPanelIsOpen ? this._renderOnboardingPanel() : null;
     return (
       <div
         key={buildKey("onboarding-container")}
         class={this.classes(CSS.onboardingMain, onboardingIsOpen)}
       >
-        {onboarding}
+        <focus-trap>{onboarding}</focus-trap>
       </div>
     );
   }
 
-  // _renderOnboardingPanel
-  private _renderOnboardingPanel(): VNode {
+  private _renderOnboardingPanel(): any {
     const onboardingWelcomeContent = this._renderOnboardingWelcomeContent();
     const onboardingStartButton = this._renderOnboardingStartButton();
     return (
-      <div class={CSS.onboardingOverlay}>
-        <div class={CSS.onboardingContentContainer}>
+      <div bind={this} onclick={this._disableOnboardingPanel} class={CSS.onboardingOverlay}>
+        <div
+          bind={this}
+          onclick={(e: Event) => {
+            e.stopPropagation();
+          }}
+          class={CSS.onboardingContentContainer}
+        >
           {onboardingWelcomeContent}
           {onboardingStartButton}
         </div>
@@ -964,49 +1051,74 @@ class MapCentric extends Widget {
     );
   }
 
-  // _renderOnboardingWelcomeContent
-  private _renderOnboardingWelcomeContent(): VNode {
+  private _renderOnboardingWelcomeContent(): any {
     return (
-      <div
-        class={CSS.onboardingWelcomeContent}
-        key={buildKey("onboarding-welcome")}
-      >
+      <div class={CSS.onboardingWelcomeContent} key={buildKey("onboarding-welcome")}>
         {this.onboardingContent.render()}
       </div>
     );
   }
 
-  // _renderOnboardingStartButton
-  private _renderOnboardingStartButton(): VNode {
+  private _renderOnboardingStartButton(): any {
     const buttonText = this.onboardingButtonText
       ? this.onboardingButtonText
-      : i18n.start;
+      : this.commonMessages?.form?.ok;
+    const buttonTheme = this.viewModel.getThemeButtonColor("primary", "primary");
+    const styles = `
+    button {
+      --calcite-ui-brand: ${buttonTheme?.backgroundColor ? buttonTheme.backgroundColor : "#0079c1"};
+      --calcite-ui-brand-hover: ${
+        buttonTheme?.backgroundColor ? buttonTheme.backgroundColor : "#0079c1"
+      };
+      --calcite-ui-brand-press: ${
+        buttonTheme?.backgroundColor ? buttonTheme.backgroundColor : "#0079c1"
+      };
+      --calcite-ui-text-inverse: ${buttonTheme?.color ? buttonTheme.color : "#ffffff"};
+    }
+    `;
     return (
       <div class={CSS.onboardingStartButtonContainer}>
-        <button
+        <calcite-button
           bind={this}
           onclick={this._disableOnboardingPanel}
           onkeydown={this._disableOnboardingPanel}
           tabIndex={0}
-          class={this.classes(
-            CSS.onboardingStartButton,
-            CSS.icons.button,
-            CSS.icons.buttonFill
-          )}
+          class={CSS.onboardingStartButton}
+          afterCreate={(node) => {
+            const styleSheet = document.createElement("style");
+            styleSheet.id = "startButton";
+            styleSheet.innerHTML = this._sanitizer.sanitize(styles);
+            node.shadowRoot.appendChild(styleSheet);
+            if (document.activeElement !== node) {
+              const focusInterval = setInterval(() => {
+                node.focus();
+                if (document.activeElement === node) {
+                  clearInterval(focusInterval);
+                }
+              }, 50);
+            }
+          }}
+          afterUpdate={(node) => {
+            const styleSheet = node.shadowRoot.getElementById("startButton");
+            styleSheet.innerHTML = this._sanitizer.sanitize(styles);
+          }}
+          width="full"
         >
           {buttonText}
-        </button>
+        </calcite-button>
       </div>
     );
   }
 
-  // _renderFeatureGallery
-  private _renderFeatureGallery(): VNode {
+  private _renderFeatureGallery(): any {
     const attachmentDataCollectionLength = this.get(
       "selectedAttachmentViewerData.attachmentDataCollection.length"
     ) as number;
+    const noVisibleLayers = this.layerSwitcher?.featureLayerCollection?.every(
+      (layer) => !layer.visible
+    );
     const featureGalleryItems =
-      this.selectedAttachmentViewerData && attachmentDataCollectionLength > 0
+      this.selectedAttachmentViewerData && attachmentDataCollectionLength > 0 && !noVisibleLayers
         ? this._renderFeatureGalleryItems()
         : null;
     const featureObjectIdsLength = this.get(
@@ -1014,11 +1126,10 @@ class MapCentric extends Widget {
     ) as number;
 
     const layerSwitcherIsEnabled = {
-      [CSS.layerSwitcherMobile]:
-        this.get("attachmentViewerDataCollection.length") > 1
+      [CSS.layerSwitcherMobile]: (this.get("attachmentViewerDataCollection.length") as number) > 1
     };
     const loader =
-      featureObjectIdsLength > attachmentDataCollectionLength
+      featureObjectIdsLength > attachmentDataCollectionLength && !noVisibleLayers
         ? this._renderGalleryLoader()
         : null;
     return (
@@ -1027,10 +1138,7 @@ class MapCentric extends Widget {
         afterCreate={storeNode}
         data-node-ref="_triggerScrollElement"
         onscroll={this._triggerScrollQuery}
-        class={this.classes(
-          CSS.featureGalleryContainer,
-          layerSwitcherIsEnabled
-        )}
+        class={this.classes(CSS.featureGalleryContainer, layerSwitcherIsEnabled)}
       >
         {featureGalleryItems}
         {loader}
@@ -1038,18 +1146,15 @@ class MapCentric extends Widget {
     );
   }
 
-  // _renderGalleryLoader
-  private _renderGalleryLoader(): VNode {
+  private _renderGalleryLoader(): any {
     return (
       <div class={CSS.loaderContainer}>
-        <span class={CSS.loadingText}>{i18n.loading}...</span>
-        <div class={CSS.loaderGraphic} />
+        <calcite-loader scale="s" />
       </div>
     );
   }
 
-  //   _renderFeatureGalleryItems
-  private _renderFeatureGalleryItems(): VNode {
+  private _renderFeatureGalleryItems(): any {
     const attachmentDataCollection = this.get(
       "selectedAttachmentViewerData.attachmentDataCollection"
     ) as __esri.Collection<AttachmentData>;
@@ -1058,27 +1163,30 @@ class MapCentric extends Widget {
         {this.selectedAttachmentViewerData &&
           attachmentDataCollection
             .toArray()
-            .map(feature => this._renderFeatureGallleryItem(feature))}
+            .map((feature) => this._renderFeatureGallleryItem(feature))}
       </div>
     );
   }
 
-  //   _renderFeatureGallleryItem
-  private _renderFeatureGallleryItem(attachmentContent: any): VNode {
+  private _renderFeatureGallleryItem(attachmentContent: any): any {
     if (!attachmentContent) {
       return;
     }
     const { attachments, objectId } = attachmentContent;
     const thumbnailContainer = this._renderThumbnailContainer(attachments);
-    const attachmentUrl =
-      attachments && attachments.length > 0 ? attachments[0].url : null;
+    const attachmentUrl = attachments && attachments.length > 0 ? attachments[0].url : null;
     const multSVGIcon =
-      attachments && attachments.length > 1
-        ? this._renderMultipleSVGIcon(objectId)
-        : null;
+      attachments && attachments.length > 1 ? this._renderMultipleSVGIcon(objectId) : null;
     const featureTitle = this._renderFeatureTitle(objectId);
+    const styles =
+      !isNaN(this.thumbnailHeight as number) && this.thumbnailHeight !== null
+        ? {
+            height: `${this.thumbnailHeight}px`
+          }
+        : {};
     return (
       <div
+        styles={styles}
         key={buildKey(`gallery-item-${attachmentUrl}`)}
         bind={this}
         class={CSS.featureGalleryGridItem}
@@ -1086,7 +1194,7 @@ class MapCentric extends Widget {
         onmouseleave={this._closeToolTipPopup}
         onclick={this._selectGalleryItem}
         onkeydown={this._selectGalleryItem}
-        data-object-id={objectId}
+        data-object-id={`${objectId}`}
         tabIndex={this.featureContentPanelIsOpen ? -1 : 0}
       >
         <div class={CSS.featureGalleryItem}>
@@ -1098,11 +1206,8 @@ class MapCentric extends Widget {
     );
   }
 
-  // _renderMultipleSVGIcon
-  private _renderMultipleSVGIcon(objectId: number): VNode {
-    const layerId = this.get(
-      "selectedAttachmentViewerData.layerData.featureLayer.id"
-    ) as string;
+  private _renderMultipleSVGIcon(objectId: number): any {
+    const layerId = this.get("selectedAttachmentViewerData.layerData.featureLayer.id") as string;
     return (
       <div
         key={buildKey(`mult-svg-icon-${layerId}-${objectId}`)}
@@ -1126,22 +1231,15 @@ c0.6,0,1.1,0.5,1.1,1.1v14.8C23.8,16.8,23.3,17.3,22.6,17.3z"
     );
   }
 
-  // _renderFeatureTitle
-  private _renderFeatureTitle(objectId: number): VNode {
+  private _renderFeatureTitle(objectId: number): any {
     const titleText = this._processTitle(objectId);
     return <div class={CSS.featureContentTitleContainer}>{titleText}</div>;
   }
 
-  // _renderThumbnailContainer
-  private _renderThumbnailContainer(attachments: any): VNode {
+  private _renderThumbnailContainer(attachments: any): any {
     const attachment = attachments[0];
     const contentType = attachment && attachment.contentType;
-    const imageAttachmentTypes = [
-      "image/jpeg",
-      "image/jpg",
-      "image/png",
-      "image/gif"
-    ];
+    const imageAttachmentTypes = ["image/jpeg", "image/jpg", "image/png", "image/gif"];
 
     const isImage = imageAttachmentTypes.indexOf(contentType) !== -1;
 
@@ -1160,13 +1258,18 @@ c0.6,0,1.1,0.5,1.1,1.1v14.8C23.8,16.8,23.3,17.3,22.6,17.3z"
         ? this.viewModel.updateAttachmentUrlToHTTPS(attachment.url)
         : null;
 
+    const fit = {
+      ["esri-map-centric__image-thumbnail--fit"]: this.thumbnailFormat === "fit"
+    };
+
+    const crop = {
+      ["esri-map-centric__image-thumbnail--crop"]: this.thumbnailFormat === "crop"
+    };
+
     return (
       <div class={CSS.thumbnailContainer}>
         {!attachments || (attachments && attachments.length === 0) ? (
-          <div
-            key={buildKey("no-attachments-container")}
-            class={CSS.noAttachmentsContainer}
-          >
+          <div key={buildKey("no-attachments-container")} class={CSS.noAttachmentsContainer}>
             <svg class={CSS.svg.noAttachments}>
               <g>
                 <g>
@@ -1193,10 +1296,14 @@ c0.6,0,1.1,0.5,1.1,1.1v14.8C23.8,16.8,23.3,17.3,22.6,17.3z"
         ) : isImage ? (
           <img
             bind={this}
-            class={CSS.imageThumbnail}
-            src={attachmentUrl}
-            afterCreate={this._fadeInImage}
-            afterUpdate={this._fadeInImage}
+            class={this.classes(CSS.imageThumbnail, fit, crop)}
+            src={
+              attachmentUrl
+                ? attachmentUrl?.indexOf("?") === -1
+                  ? `${attachmentUrl}?w=200`
+                  : `${attachmentUrl}&w=200`
+                : ""
+            }
             alt=""
           />
         ) : isPDF ? (
@@ -1214,15 +1321,9 @@ c0.6,0,1.1,0.5,1.1,1.1v14.8C23.8,16.8,23.3,17.3,22.6,17.3z"
     );
   }
 
-  // _renderPDFThumbnailContainer
-  private _renderPDFThumbnailContainer(): VNode {
+  private _renderPDFThumbnailContainer(): any {
     return (
-      <div
-        class={this.classes(
-          CSS.pdfContainer,
-          "esri-map-centric__pointer-events-none"
-        )}
-      >
+      <div class={this.classes(CSS.pdfContainer, "esri-map-centric__pointer-events-none")}>
         <svg
           class={this.classes(
             CSS.pdfThumbnailIconContainer,
@@ -1242,8 +1343,7 @@ c0.6,0,1.1,0.5,1.1,1.1v14.8C23.8,16.8,23.3,17.3,22.6,17.3z"
     );
   }
 
-  // _renderFeatureContentPanel
-  private _renderFeatureContentPanel(): VNode {
+  private _renderFeatureContentPanel(): any {
     const mediaViewerDesktop = this._renderMediaViewerDesktop();
     const featureInfo = this._renderFeatureInfoPanel();
     const featureContentPanelIsOpen = {
@@ -1251,8 +1351,7 @@ c0.6,0,1.1,0.5,1.1,1.1v14.8C23.8,16.8,23.3,17.3,22.6,17.3z"
     };
     const featureContentPanelLayerSwitcher = {
       [CSS.featureContentPanelLayerSwitcher]:
-        this.attachmentViewerDataCollection &&
-        this.attachmentViewerDataCollection.length > 1
+        this.attachmentViewerDataCollection && this.attachmentViewerDataCollection.length > 1
     };
     return (
       <div
@@ -1267,42 +1366,42 @@ c0.6,0,1.1,0.5,1.1,1.1v14.8C23.8,16.8,23.3,17.3,22.6,17.3z"
           featureContentPanelLayerSwitcher
         )}
       >
-        {mediaViewerDesktop}
+        {!this._featureContentExpanded ? mediaViewerDesktop : null}
         {featureInfo}
+        {this.relatedFeatures?.render()}
       </div>
     );
   }
 
-  // _renderMediaViewerDesktop
-  private _renderMediaViewerDesktop(): VNode {
+  private _renderMediaViewerDesktop(): any {
     const mediaContainer = this._renderMediaContainer();
     const expandAttachment =
       this.viewModel.mapCentricState !== "querying" &&
       this.selectedAttachmentViewerData &&
-      this.selectedAttachmentViewerData.selectedFeatureAttachments &&
-      this.selectedAttachmentViewerData.selectedFeatureAttachments.attachments
-        .length > 0
+      this.selectedAttachmentViewerData?.selectedFeatureAttachments &&
+      (this.selectedAttachmentViewerData?.selectedFeatureAttachments?.attachments
+        ?.length as number) > 0
         ? this._renderExpandAttachment()
         : null;
     return (
-      <div class={CSS.mediaViewerDesktop}>
+      <div key="esri-av-map-centric--media-viewer-desktop" class={CSS.mediaViewerDesktop}>
         {expandAttachment}
         {mediaContainer}
       </div>
     );
   }
 
-  // _renderExpandAttachmentIconContainer
-  private _renderExpandAttachment(): VNode {
+  private _renderExpandAttachment(): any {
     return (
       <button
         bind={this}
         onclick={this._expandAttachment}
         onkeydown={this._expandAttachment}
-        storeNode="_expandAttachmentNode"
+        afterCreate={storeNode}
+        data-node-ref="_expandAttachmentNode"
         tabIndex={!this.featureContentPanelIsOpen ? -1 : 0}
         class={CSS.expandMediaContainer}
-        title={i18n.viewInFullScreen}
+        title={this.mapCentricMessages?.viewInFullScreen}
       >
         <svg class={CSS.svg.expandAttachment}>
           <g>
@@ -1314,8 +1413,7 @@ c0.6,0,1.1,0.5,1.1,1.1v14.8C23.8,16.8,23.3,17.3,22.6,17.3z"
     );
   }
 
-  // _renderMediaContainer
-  private _renderMediaContainer(): VNode {
+  private _renderMediaContainer(): any {
     if (!this.selectedAttachmentViewerData) {
       return;
     }
@@ -1323,7 +1421,8 @@ c0.6,0,1.1,0.5,1.1,1.1v14.8C23.8,16.8,23.3,17.3,22.6,17.3z"
     return (
       <div class={CSS.mediaViewerSection}>
         {this._layerDoesNotSupportAttachments ? (
-          <div class={CSS.layerNotSupported}>{i18n.notSupported}</div>
+          // HARDCODED IN EN
+          <div class={CSS.layerNotSupported}>Selected layer does not support attachments</div>
         ) : (
           mediaViewerParentContainer
         )}
@@ -1331,84 +1430,54 @@ c0.6,0,1.1,0.5,1.1,1.1v14.8C23.8,16.8,23.3,17.3,22.6,17.3z"
     );
   }
 
-  // _renderMediaViewerParentContainer
-  private _renderMediaViewerParentContainer(): VNode {
+  private _renderMediaViewerParentContainer(): any {
     const downloadEnabled = {
       [CSS.downloadEnabled]: !this.viewModel.downloadEnabled
     };
 
     const attachment = this.viewModel.getCurrentAttachment();
 
-    const attachmentLoader =
-      !this.imageIsLoaded || this.viewModel.mapCentricState === "querying"
-        ? this._renderAttachmentLoader()
-        : null;
-
     const mediaViewerContainer = this._renderMediaViewerContainer();
     const imageDirection = this._fullAttachmentContainerIsOpen
       ? this.imageDirectionEnabled
-        ? this._renderImageDirection(attachment)
+        ? this._renderImageDirection(attachment as __esri.AttachmentInfo)
         : null
       : null;
 
-    const attachmentScrollNode = this._renderAttachmentScrollContainer();
-    const attachmentScroll = !this._fullAttachmentContainerIsOpen
-      ? attachmentScrollNode
-      : null;
     return (
-      <div
-        key={buildKey("image-container")}
-        class={this.classes(downloadEnabled, CSS.mediaViewer)}
-      >
-        {attachmentLoader}
+      <div key={buildKey("image-container")} class={this.classes(downloadEnabled, CSS.mediaViewer)}>
         {mediaViewerContainer}
         {imageDirection}
-        {/* {this._fullAttachmentContainerIsOpen ? null : attachmentScroll} */}
         {this._renderAttachmentScrollContainer()}
       </div>
     );
   }
 
-  // _renderAttachmentLoader
-  private _renderAttachmentLoader(): VNode {
-    return (
-      <div class={CSS.widgetLoader} key={buildKey("base-loader")}>
-        <span
-          class={CSS.animationLoader}
-          role="presentation"
-          aria-label={i18n.loadingImages}
-        />
-      </div>
-    );
-  }
-
-  // _renderMediaViewerContainer
-  private _renderMediaViewerContainer(): VNode {
+  private _renderMediaViewerContainer(): any {
     const { currentImageUrl } = this;
     const attachment = this.viewModel.getCurrentAttachment();
     const contentType = attachment && (attachment.get("contentType") as string);
 
     const video =
       contentType && contentType.indexOf("video") !== -1
-        ? this._renderVideo(currentImageUrl)
+        ? this._renderVideo(currentImageUrl as string)
         : null;
 
     const isIE =
-      navigator.userAgent.indexOf("MSIE") !== -1 ||
-      navigator.appVersion.indexOf("Trident/") > -1;
+      navigator.userAgent.indexOf("MSIE") !== -1 || navigator.appVersion.indexOf("Trident/") > -1;
 
     const pdf =
       contentType && contentType.indexOf("pdf") !== -1 && !isIE
-        ? this._renderPdf(currentImageUrl)
+        ? this._renderPdf(currentImageUrl as string)
         : null;
 
     const image =
-      this.supportedAttachmentTypes.indexOf(contentType) !== -1 &&
-      contentType.indexOf("pdf") === -1 &&
-      contentType.indexOf("mov") === -1 &&
-      contentType.indexOf("mp4") === -1 &&
-      contentType.indexOf("gif") === -1 &&
-      contentType.indexOf("quicktime") === -1
+      this.supportedAttachmentTypes?.indexOf(contentType as string) !== -1 &&
+      contentType?.indexOf("pdf") === -1 &&
+      contentType?.indexOf("mov") === -1 &&
+      contentType?.indexOf("mp4") === -1 &&
+      contentType?.indexOf("gif") === -1 &&
+      contentType?.indexOf("quicktime") === -1
         ? currentImageUrl
           ? this.imagePanZoomEnabled && this._fullAttachmentContainerIsOpen
             ? null
@@ -1417,13 +1486,7 @@ c0.6,0,1.1,0.5,1.1,1.1v14.8C23.8,16.8,23.3,17.3,22.6,17.3z"
         : null;
 
     const gif =
-      contentType && contentType.indexOf("gif") !== -1
-        ? this._renderCurrentImage()
-        : null;
-
-    const mediaContainerLoading = {
-      [CSS.mediaContainerLoading]: !this.imageIsLoaded
-    };
+      contentType && contentType.indexOf("gif") !== -1 ? this._renderCurrentImage() : null;
 
     const attachmentsLength = this.get(
       "selectedAttachmentViewerData.selectedFeatureAttachments.attachments.length"
@@ -1434,7 +1497,7 @@ c0.6,0,1.1,0.5,1.1,1.1v14.8C23.8,16.8,23.3,17.3,22.6,17.3z"
         bind={this}
         afterCreate={storeNode}
         data-node-ref="_mediaViewerContainer"
-        class={this.classes(mediaContainerLoading, CSS.mediaContainer)}
+        class={CSS.mediaContainer}
       >
         {video || pdf || image || gif ? (
           <div
@@ -1453,48 +1516,36 @@ c0.6,0,1.1,0.5,1.1,1.1v14.8C23.8,16.8,23.3,17.3,22.6,17.3z"
             {pdf}
             {gif}
           </div>
-        ) : attachmentsLength === 0 &&
-          this.viewModel.mapCentricState !== "querying" ? (
-          <div
-            key={buildKey("no-attachments-container")}
-            class={CSS.noAttachmentsContainer}
-          >
-            <svg
-              class={CSS.svg.media}
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 16 16"
-            >
+        ) : attachmentsLength === 0 && this.viewModel.mapCentricState !== "querying" ? (
+          <div key={buildKey("no-attachments-container")} class={CSS.noAttachmentsContainer}>
+            <svg class={CSS.svg.media} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
               <path d="M1 2v12h14V2zm13 11H2V3h12zm-1-1H3v-1h10zM3 8.678l.333-.356a.3.3 0 0 1 .445 0 .3.3 0 0 0 .444 0l2.242-2.39a.3.3 0 0 1 .423-.021l2.255 2.005a.299.299 0 0 0 .39.01l1.361-.915a.3.3 0 0 1 .41.032L13 8.678V10H3zM11.894 9l-.89-.859-.846.565a1.299 1.299 0 0 1-1.68-.043L6.732 7.11 4.958 9zm-.644-4.5a.75.75 0 1 1-.75-.75.75.75 0 0 1 .75.75z" />
             </svg>
 
-            <span class={CSS.noAttachmentsText}>{i18n.noAttachmentsFound}</span>
+            <span class={CSS.noAttachmentsText}>{this.mapCentricMessages?.noAttachmentsFound}</span>
           </div>
         ) : null}
       </div>
     );
   }
 
-  // _renderCurrentImage
-  private _renderCurrentImage(): VNode {
-    const fadeImage = {
-      [CSS.fadeImage]: !this.imageIsLoaded
-    };
+  private _renderCurrentImage(): any {
+    const url = this.currentImageUrl
+      ? this.currentImageUrl?.indexOf("?") === -1
+        ? `${this.currentImageUrl}?w=600`
+        : `${this.currentImageUrl}&w=600`
+      : "";
     return (
       <img
         bind={this}
         key={buildKey(`image-desktop-${this.currentImageUrl}`)}
-        class={this.classes(CSS.imageDesktop, fadeImage)}
-        src={this.currentImageUrl}
-        afterCreate={this._fadeInImage}
-        afterUpdate={this._fadeInImage}
-        onload={this._fadeInImage}
-        alt={name}
+        class={CSS.imageDesktop}
+        src={url}
       />
     );
   }
 
-  // _renderVideo
-  private _renderVideo(currentImageUrl: string): VNode {
+  private _renderVideo(currentImageUrl: string): any {
     return (
       <video
         bind={this}
@@ -1506,13 +1557,13 @@ c0.6,0,1.1,0.5,1.1,1.1v14.8C23.8,16.8,23.3,17.3,22.6,17.3z"
         <source src={currentImageUrl} type="video/quicktime" />
         <source src={currentImageUrl} type="video/ogg" />
         <source src={currentImageUrl} type="video/mov" />
-        {i18n.doesNotSupportVideo}
+        {/* Hardcoded in EN */}
+        Your browser does not support the video tag.
       </video>
     );
   }
 
-  // _renderPdf
-  private _renderPdf(currentImageUrl: string): VNode {
+  private _renderPdf(currentImageUrl: string): any {
     return (
       <iframe
         class={CSS.pdf}
@@ -1523,23 +1574,19 @@ c0.6,0,1.1,0.5,1.1,1.1v14.8C23.8,16.8,23.3,17.3,22.6,17.3z"
     );
   }
 
-  // _renderAttachmentScrollContainer
-  private _renderAttachmentScrollContainer(): VNode {
+  private _renderAttachmentScrollContainer(): any {
     const attachments = this.get(
       "selectedAttachmentViewerData.selectedFeatureAttachments.attachments"
     ) as __esri.Collection<__esri.AttachmentInfo>;
 
     const attachment = this.viewModel.getCurrentAttachment();
-    const imageDirection = this._renderImageDirection(attachment);
+    const imageDirection = this._renderImageDirection(attachment as __esri.AttachmentInfo);
     const download = this._renderDownload();
     const attachmentScroll = this._renderAttachmentScroll();
     return (
       <div key={buildKey("attachment-scroll")} class={CSS.attachmentNumber}>
         {attachments && attachments.length > 0 ? (
-          <div
-            key={buildKey("download-attachment")}
-            class={CSS.downloadIconTextContainer}
-          >
+          <div key={buildKey("download-attachment")} class={CSS.downloadIconTextContainer}>
             {attachmentScroll}
             {imageDirection}
           </div>
@@ -1549,8 +1596,7 @@ c0.6,0,1.1,0.5,1.1,1.1v14.8C23.8,16.8,23.3,17.3,22.6,17.3z"
     );
   }
 
-  // _renderAttachmentScroll
-  private _renderAttachmentScroll(): VNode {
+  private _renderAttachmentScroll(): any {
     const { selectedAttachmentViewerData } = this;
     if (!selectedAttachmentViewerData) {
       return;
@@ -1564,67 +1610,51 @@ c0.6,0,1.1,0.5,1.1,1.1v14.8C23.8,16.8,23.3,17.3,22.6,17.3z"
           bind={this}
           onclick={this._previousImage}
           onkeydown={this._previousImage}
-          disabled={
-            this._onboardingPanelIsOpen ||
-            (attachments && attachments.length < 2)
-              ? true
-              : false
-          }
+          disabled={attachments && attachments.length < 2 ? true : false}
           tabIndex={0}
           class={CSS.leftArrowContainer}
-          title={i18n.previousAttachment}
+          title={this.mapCentricMessages?.previousAttachment}
         >
-          {this.docDirection === "rtl" ? (
-            <span class={this.classes(CSS.icons.rightArrow, CSS.icons.flush)} />
-          ) : (
-            <span class={this.classes(CSS.icons.leftArrow, CSS.icons.flush)} />
-          )}
+          <calcite-icon
+            icon={this.docDirection === "rtl" ? "chevron-right" : "chevron-left"}
+            scale="s"
+          />
         </button>
         <span class={CSS.attachmentNumberText}>
-          {`${currentIndex} / ${totalNumberOfAttachments}`}
+          {`${currentIndex} ${this.mapCentricMessages?.of} ${totalNumberOfAttachments}`}
         </span>
         <button
           bind={this}
           onclick={this._nextImage}
           onkeydown={this._nextImage}
-          disabled={
-            this._onboardingPanelIsOpen ||
-            (attachments && attachments.length < 2)
-              ? true
-              : false
-          }
+          disabled={attachments && attachments.length < 2 ? true : false}
           tabIndex={0}
           class={CSS.rightArrowContainer}
-          title={i18n.nextAttachment}
+          title={this.mapCentricMessages?.nextAttachment}
         >
-          {this.docDirection === "rtl" ? (
-            <span class={this.classes(CSS.icons.leftArrow, CSS.icons.flush)} />
-          ) : (
-            <span class={this.classes(CSS.icons.rightArrow, CSS.icons.flush)} />
-          )}
+          <calcite-icon
+            icon={this.docDirection === "rtl" ? "chevron-left" : "chevron-right"}
+            scale="s"
+          />
         </button>
       </div>
     );
   }
 
-  // _renderImageDirection
-  private _renderImageDirection(attachment: __esri.AttachmentInfo): VNode {
+  private _renderImageDirection(attachment: __esri.AttachmentInfo): any {
     const imageDirectionValue = this.imageDirectionEnabled
       ? this.viewModel.getGPSInformation(attachment)
       : null;
     return imageDirectionValue ? (
       this.docDirection === "ltr" ? (
-        <div
-          key={buildKey("gps-image-direction")}
-          class={CSS.gpsImageDirection}
-        >
+        <div key={buildKey("gps-image-direction")} class={CSS.gpsImageDirection}>
           {this._fullAttachmentContainerIsOpen ? (
             <span class={CSS.imageDirectionDegrees}>
-              {i18n.gpsImageDirection}: {`${imageDirectionValue}`}&deg;
+              {this.mapCentricMessages?.gpsImageDirection}: {`${imageDirectionValue}`}&deg;
             </span>
           ) : null}
           <div
-            title={`${i18n.gpsImageDirection}: ${imageDirectionValue}\u00B0`}
+            title={`${this.mapCentricMessages?.gpsImageDirection}: ${imageDirectionValue}\u00B0`}
             class={CSS.imageDirection}
           >
             <svg
@@ -1646,12 +1676,9 @@ c6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z"
           </div>
         </div>
       ) : (
-        <div
-          key={buildKey("gps-image-direction")}
-          class={CSS.gpsImageDirection}
-        >
+        <div key={buildKey("gps-image-direction")} class={CSS.gpsImageDirection}>
           <div
-            title={`${i18n.gpsImageDirection}: ${imageDirectionValue}\u00B0`}
+            title={`${this.mapCentricMessages?.gpsImageDirection}: ${imageDirectionValue}\u00B0`}
             class={CSS.imageDirection}
           >
             <svg
@@ -1677,7 +1704,7 @@ c6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z"
                 key={buildKey("map-centric-gps-image-direction")}
                 class={CSS.imageDirectionDegrees}
               >
-                <div>{i18n.gpsImageDirection}: </div>
+                <div>{this.mapCentricMessages?.gpsImageDirection}: </div>
                 <div>{`${imageDirectionValue}`}&deg;</div>
               </div>
             ) : (
@@ -1685,7 +1712,7 @@ c6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z"
                 key={buildKey("map-centric-gps-image-direction")}
                 class={CSS.imageDirectionDegrees}
               >
-                <div>{i18n.gpsImageDirection}: </div>
+                <div>{this.mapCentricMessages?.gpsImageDirection}: </div>
                 <div>{`${imageDirectionValue}`}&deg;</div>
               </div>
             )
@@ -1695,8 +1722,7 @@ c6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z"
     ) : null;
   }
 
-  // _renderDownload
-  private _renderDownload(): VNode {
+  private _renderDownload(): any {
     const attachment = this.viewModel.getCurrentAttachment();
     const contentType = attachment && (attachment.get("contentType") as string);
     const download =
@@ -1705,95 +1731,56 @@ c6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z"
       contentType.indexOf("gif") === -1 &&
       contentType.indexOf("pdf") === -1 &&
       this.viewModel.downloadEnabled
-        ? this.viewModel.state === "downloading"
-          ? this._renderDownloadSpinner()
-          : this._renderDownloadButton()
+        ? this._renderDownloadButton()
         : null;
     return download;
   }
 
-  // _renderDownloadSpinner
-  private _renderDownloadSpinner(): VNode {
-    return (
-      <div class={CSS.downloadIconContainer}>
-        <span
-          class={this.classes(
-            CSS.icons.loadingIcon,
-            CSS.icons.rotating,
-            CSS.spinner
-          )}
-          role="presentation"
-        />
-      </div>
-    );
-  }
-
-  // _renderDownloadButton
-  private _renderDownloadButton(): VNode {
+  private _renderDownloadButton(): any {
     const attachment = this.viewModel.getCurrentAttachment();
     return (
       <button
-        class={this.classes(
-          CSS.downloadIconContainer,
-          CSS.downloadButtonDesktop
-        )}
+        class={this.classes(CSS.downloadIconContainer, CSS.downloadButtonDesktop)}
         bind={this}
         onclick={this._downloadImage}
         onkeydown={this._downloadImage}
         data-image-url={this.currentImageUrl}
-        data-image-name={attachment.name}
-        title={i18n.download}
-        disabled={this.imageIsLoaded ? false : true}
+        data-image-name={attachment?.name}
+        title={this.mapCentricMessages?.download}
       >
-        <span
-          class={this.classes(
-            CSS.icons.downloadIcon,
-            CSS.icons.flush,
-            CSS.downloadIcon
-          )}
-        />
+        <calcite-icon scale="m" icon="download"></calcite-icon>
       </button>
     );
   }
 
-  // _renderFeatureInfoPanel
-  private _renderFeatureInfoPanel(): VNode {
+  private _renderFeatureInfoPanel(): any {
     const featureWidget = this.get("viewModel.featureWidget") as __esri.Feature;
 
     const featureWidgetContent =
-      featureWidget &&
-      (featureWidget.get("viewModel.content") as __esri.Content[]);
+      featureWidget && (featureWidget.get("viewModel.content") as __esri.Content[]);
 
     const fieldsInfoContent =
       (featureWidget &&
         featureWidgetContent &&
-        featureWidgetContent.filter(contentItem => {
-          const fieldInfos = contentItem.get(
-            "fieldInfos"
-          ) as __esri.FieldInfo[];
-          return (
-            contentItem.type === "fields" && fieldInfos && fieldInfos.length > 0
-          );
+        featureWidgetContent.filter((contentItem) => {
+          const fieldInfos = contentItem.get("fieldInfos") as __esri.FieldInfo[];
+          return contentItem.type === "fields" && fieldInfos && fieldInfos.length > 0;
         })) ||
       [];
 
     const mediaInfoContent =
       (featureWidget &&
         featureWidgetContent &&
-        featureWidgetContent.filter(contentItem => {
-          const mediaInfos = contentItem.get(
-            "mediaInfos"
-          ) as __esri.MediaInfo[];
-          return (
-            contentItem.type === "media" && mediaInfos && mediaInfos.length > 0
-          );
+        featureWidgetContent.filter((contentItem) => {
+          const mediaInfos = contentItem.get("mediaInfos") as __esri.MediaInfo[];
+          return contentItem.type === "media" && mediaInfos && mediaInfos.length > 0;
         })) ||
       [];
 
     const fieldsInfoText =
       (featureWidget &&
         featureWidgetContent &&
-        featureWidgetContent.filter(contentItem => {
+        featureWidgetContent.filter((contentItem) => {
           return contentItem.type === "text";
         })) ||
       [];
@@ -1807,15 +1794,12 @@ c6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z"
       }
     }
 
-    const featureContentHeader = this._renderFeatureContentHeader();
     const address = this._renderFeatureContentAddress();
     const unsupportedAttachmentTypesLength = this.get(
       "selectedAttachmentViewerData.unsupportedAttachmentTypes.length"
-    );
+    ) as number;
     const unsupportedAttachmentTypes =
-      unsupportedAttachmentTypesLength > 0
-        ? this._renderUnsupportedAttachmentTypes()
-        : null;
+      unsupportedAttachmentTypesLength > 0 ? this._renderUnsupportedAttachmentTypes() : null;
 
     if (this._featureContentAvailable === null) {
       if (
@@ -1828,29 +1812,65 @@ c6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z"
 
     const featureTotal =
       this.selectedAttachmentViewerData &&
-      (this.selectedAttachmentViewerData.get(
-        "featureObjectIds.length"
-      ) as number);
+      (this.selectedAttachmentViewerData.get("featureObjectIds.length") as number);
     const { mapCentricState } = this.viewModel;
+    const featureContentRelatedFeatures = {
+      [CSS.featureContentNoRelatedFeatures]: this.relatedFeatures?.relatedFeatures?.length === 0
+    };
+    const featureContentHeader = this._renderFeatureContentHeader();
+
+    const layerId = this.get("selectedAttachmentViewerData.layerData.featureLayer.id");
+    const objectIdField = this.get(
+      "selectedAttachmentViewerData.layerData.featureLayer.objectIdField"
+    ) as string;
+    const attributes = this.get("selectedAttachmentViewerData.selectedFeature.attributes");
+    const objectId = attributes && attributes[objectIdField];
+    const featureWidgetTitle = this.get("viewModel.featureWidget.title");
+    const title = featureWidgetTitle && featureWidgetTitle !== "null" ? featureWidgetTitle : "";
+    const featureContentExpanded = {
+      [CSS.featureContentExpanded]: this._featureContentExpanded
+    };
+    const featureContentContainerContentExpanded = {
+      [CSS.featureContentContainerExpanded]: this._featureContentExpanded
+    };
+    const featureContentPanelHasRelatedFeatures = {
+      [CSS.featureContentHasRelatedFeatures]:
+        (this.relatedFeatures?.relatedFeatures?.length as number) > 0
+    };
     return (
-      <div class={CSS.featureContent}>
-        {mapCentricState === "waitingForContent" ||
-        mapCentricState === "querying" ? (
+      <div
+        class={this.classes(
+          CSS.featureContent,
+          featureContentExpanded,
+          featureContentRelatedFeatures,
+          featureContentPanelHasRelatedFeatures
+        )}
+      >
+        {featureContentHeader}
+        {mapCentricState === "waitingForContent" || mapCentricState === "querying" ? (
           <div class={CSS.featureContentLoader}>
             <div class={CSS.loaderGraphic} />
-            <div>{i18n.loading}...</div>
+            <div>{this.mapCentricMessages?.loading}...</div>
           </div>
         ) : (
-          <div class={CSS.featureContentContainer}>
-            {featureContentHeader}
+          <div
+            class={this.classes(
+              CSS.featureContentContainer,
+              featureContentContainerContentExpanded
+            )}
+          >
+            <div
+              key={buildKey(`feature-content-title-${layerId}-${objectId}`)}
+              class={CSS.featureContentTitle}
+            >
+              <h2 class={CSS.featureLayerTitle}>{title}</h2>
+            </div>
             {this.addressEnabled ? address : null}
             {(fieldsInfoText && fieldsInfoText.length > 0) ||
             (mediaInfoContent && mediaInfoContent.length > 0) ||
             this._featureContentAvailable ? (
               <div>
-                {this._featureContentAvailable
-                  ? this._renderFeatureInfoContent()
-                  : null}
+                {this._featureContentAvailable ? this._renderFeatureInfoContent() : null}
                 {(mediaInfoContent && mediaInfoContent.length > 0) ||
                 (fieldsInfoText && fieldsInfoText.length > 0)
                   ? this._renderFeatureWidgetContent()
@@ -1868,40 +1888,62 @@ c6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z"
     );
   }
 
-  // _renderFeatureContentHeader
-  private _renderFeatureContentHeader(): VNode {
+  private _renderFeatureContentHeader(): any {
     const zoomTo = this._renderZoomTo();
-
-    const layerId = this.get(
-      "selectedAttachmentViewerData.layerData.featureLayer.id"
-    );
-    const objectIdField = this.get(
-      "selectedAttachmentViewerData.layerData.featureLayer.objectIdField"
-    ) as string;
-    const attributes = this.get(
-      "selectedAttachmentViewerData.selectedFeature.attributes"
-    );
-    const objectId = attributes && attributes[objectIdField];
-    const featureWidgetTitle = this.get("viewModel.featureWidget.title");
-    const title =
-      featureWidgetTitle && featureWidgetTitle !== "null"
-        ? featureWidgetTitle
-        : "";
+    const attrEdit =
+      this.attributeEditing && this.viewModel.verifyEditPermissions()
+        ? this._renderAttributeEdit()
+        : null;
+    const featureContentHeaderContentExpanded = {
+      [CSS.featureContentHeaderExpanded]: this._featureContentExpanded
+    };
+    const buttonTheme = this.viewModel.getThemeButtonColor("secondary", "secondary");
     return (
-      <div class={CSS.featureTitleZoomContainer}>
-        <div
-          key={buildKey(`feature-content-title-${layerId}-${objectId}`)}
-          class={CSS.featureContentTitle}
+      <div
+        class={this.classes(CSS.featureContentHeader, featureContentHeaderContentExpanded)}
+        styles={this.viewModel.getTheme("secondary", "secondary")}
+      >
+        <button
+          bind={this}
+          onclick={this._toggleFeatureContentExpand}
+          class={CSS.expand}
+          styles={{ ...buttonTheme, border: "none" }}
         >
-          <h2 class={CSS.featureLayerTitle}>{title}</h2>
+          <calcite-icon
+            icon={this._featureContentExpanded ? "chevron-down" : "chevron-up"}
+            scale="s"
+          />
+        </button>
+        <div class={CSS.featureZoomToContainer}>
+          {attrEdit}
+          {zoomTo}
         </div>
-        <div class={CSS.featureZoomToContainer}>{zoomTo}</div>
       </div>
     );
   }
 
-  // _renderZoomTo
-  private _renderZoomTo(): VNode {
+  private _renderAttributeEdit(): any {
+    const buttonTheme = this.viewModel.getThemeButtonColor("primary", "primary");
+    return (
+      <button
+        key="attr-edit-button"
+        bind={this}
+        class={CSS.attrEdit}
+        tabIndex={0}
+        onclick={this._openAttrEditPanel}
+        onkeydown={this._openAttrEditPanel}
+        title={this.mapCentricMessages?.openAttrEditPanel}
+        label={this.mapCentricMessages?.openAttrEditPanel}
+        styles={buttonTheme}
+      >
+        <calcite-icon scale="s" icon="pencil" />
+      </button>
+    );
+  }
+
+  private _renderZoomTo(): any {
+    const buttonTheme = this.viewModel.getThemeButtonColor("primary", "primary");
+
     return (
       <button
         bind={this}
@@ -1909,22 +1951,16 @@ c6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z"
         tabIndex={0}
         onclick={this._zoomTo}
         onkeydown={this._zoomTo}
-        title={i18n.zoomTo}
-        label={i18n.zoomTo}
+        title={this.mapCentricMessages?.zoomTo}
+        label={this.mapCentricMessages?.zoomTo}
+        styles={buttonTheme}
       >
-        <span
-          class={this.classes(
-            CSS.zoomToIcon,
-            CSS.icons.zoomInIcon,
-            CSS.icons.flush
-          )}
-        />
+        <calcite-icon scale="s" icon="magnifying-glass-plus" />
       </button>
     );
   }
 
-  // _renderFeatureContentAddress
-  private _renderFeatureContentAddress(): VNode {
+  private _renderFeatureContentAddress(): any {
     return (
       <h3 class={CSS.addressText}>
         {this.get("selectedAttachmentViewerData.selectedFeatureAddress")}
@@ -1932,39 +1968,29 @@ c6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z"
     );
   }
 
-  // _renderFeatureWidgetContent
-  private _renderFeatureWidgetContent(): VNode {
+  private _renderFeatureWidgetContent(): any {
     const featureWidget = this.get("viewModel.featureWidget") as __esri.Feature;
     return (
-      <div
-        key={buildKey("feture-widget-content")}
-        class={CSS.featureInfoContent}
-      >
+      <div key={buildKey("feture-widget-content")} class={CSS.featureInfoContent}>
         {featureWidget && featureWidget.render()}
       </div>
     );
   }
 
-  // _renderFeatureInfoContent
-  private _renderFeatureInfoContent(): VNode {
+  private _renderFeatureInfoContent(): any {
     const featureContentInfo =
-      this.selectedAttachmentViewerData &&
-      this.selectedAttachmentViewerData.selectedFeatureInfo
+      this.selectedAttachmentViewerData && this.selectedAttachmentViewerData.selectedFeatureInfo
         ? this._renderFeatureContentInfos()
         : null;
     return (
-      <div
-        key={buildKey("feature-info-content")}
-        class={CSS.featureInfoContent}
-      >
+      <div key={buildKey("feature-info-content")} class={CSS.featureInfoContent}>
         {featureContentInfo}
       </div>
     );
   }
 
-  // _renderFeatureContentInfos
-  private _renderFeatureContentInfos(): VNode {
-    const { selectedFeatureInfo } = this.selectedAttachmentViewerData;
+  private _renderFeatureContentInfos(): any {
+    const selectedFeatureInfo = this.selectedAttachmentViewerData?.selectedFeatureInfo;
     const featureContentInfos = selectedFeatureInfo.map(
       (contentInfo: any, contentInfoIndex: number) => {
         return this._renderFeatureContentInfo(contentInfo, contentInfoIndex);
@@ -1973,78 +1999,83 @@ c6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z"
     return <div>{featureContentInfos}</div>;
   }
 
-  // _renderFeatureContentInfo
-  private _renderFeatureContentInfo(
-    contentInfo: any,
-    contentInfoIndex: number
-  ): VNode {
-    const hyperlink = this.viewModel.getHyperLink(contentInfo);
-    const contentCheck =
-      contentInfo && contentInfo.content && contentInfo.content !== null;
+  private _renderFeatureContentInfo(contentInfo: any, contentInfoIndex: number): any {
+    const hyperlink = this.viewModel.isHyperlink(contentInfo);
+    const contentCheck = contentInfo && contentInfo.content && contentInfo.content !== null;
     const layerId = this._getLayerId();
-    const objectIdField = this.viewModel.getObjectIdField();
     const selectedFeature = this.get(
       "selectedAttachmentViewerData.selectedFeature"
     ) as __esri.Graphic;
+    const objectIdField = selectedFeature ? this.viewModel.getObjectIdField(selectedFeature) : null;
     const attributes = selectedFeature && selectedFeature.attributes;
     const objectId = attributes && objectIdField && attributes[objectIdField];
     const key = `feature-content-info-${layerId}-${contentInfo.attribute}-${contentInfo.content}-${objectId}-${contentInfoIndex}`;
     return (
       <div key={buildKey(key)} class={CSS.featureContentInfo}>
-        <h4 class={CSS.attributeHeading} innerHTML={contentInfo.attribute} />
+        <h4
+          class={CSS.attributeHeading}
+          innerHTML={this._sanitizer.sanitize(contentInfo.attribute)}
+        />
         {contentInfo && contentInfo.content && contentCheck ? (
           hyperlink ? (
             <p class={CSS.attributeContent}>
-              <div innerHTML={contentInfo.content.replace(hyperlink, "")} />
-              <span innerHTML={autoLink(hyperlink)} />
+              <div
+                innerHTML={this._sanitizer.sanitize(
+                  contentInfo.content.replace(contentInfo.content, "")
+                )}
+              />
+              <span
+                innerHTML={this._sanitizer.sanitize(
+                  autoLink(contentInfo.content, this.commonMessages)
+                )}
+              />
             </p>
           ) : contentInfo &&
             contentInfo.content &&
             typeof contentInfo.content === "string" &&
             contentInfo.content.trim() === "" ? (
-            <p>{i18n.noContentAvailable}</p>
+            <p>{this.mapCentricMessages?.noContentAvailable}</p>
           ) : (
-            <p class={CSS.attributeContent} innerHTML={contentInfo.content} />
+            <p
+              class={CSS.attributeContent}
+              innerHTML={this._sanitizer.sanitize(contentInfo.content)}
+            />
           )
         ) : (
-          <p>{i18n.noContentAvailable}</p>
+          <p>{this.mapCentricMessages?.noContentAvailable}</p>
         )}
       </div>
     );
   }
 
-  // _renderFeatureContentLoader
-  private _renderFeatureContentLoader(): VNode {
+  private _renderFeatureContentLoader(): any {
     return (
       <div key={buildKey("feature-content-loader")} class={CSS.widgetLoader}>
-        {i18n.loadingImages}
+        {this.mapCentricMessages?.loading}
       </div>
     );
   }
 
-  // _renderNoFeatureContentInfo
-  private _renderNoFeatureContentInfo(): VNode {
+  private _renderNoFeatureContentInfo(): any {
     return (
       <div key={buildKey("no-content")} class={CSS.noInfo}>
-        {i18n.noContentAvailable}
+        {this.mapCentricMessages?.noContentAvailable}
       </div>
     );
   }
 
-  // _renderUnsupportedAttachmentTypes
-  private _renderUnsupportedAttachmentTypes(): VNode {
+  private _renderUnsupportedAttachmentTypes(): any {
     const unsupportedAttachmentTypes = this._renderUnsupportedAttachmentTypesList();
     return (
       <div key={buildKey("other-attachment-types")}>
-        <h4 class={CSS.attributeHeading}>{i18n.otherAttachments}</h4>
+        <h4 class={CSS.attributeHeading}>{this.mapCentricMessages?.otherAttachments}</h4>
         {unsupportedAttachmentTypes}
       </div>
     );
   }
 
-  // _renderUnsupportedAttachmentTypesList
-  private _renderUnsupportedAttachmentTypesList(): VNode {
-    const otherAttachmentTypes = this.selectedAttachmentViewerData.unsupportedAttachmentTypes.map(
+  private _renderUnsupportedAttachmentTypesList(): any {
+    const otherAttachmentTypes = this.selectedAttachmentViewerData?.unsupportedAttachmentTypes?.map(
       (attachment: __esri.AttachmentInfo) => {
         return this._renderUnsupportedAttachmentType(attachment);
       }
@@ -2052,10 +2083,7 @@ c6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z"
     return <ul class={CSS.otherAttachmentsList}>{otherAttachmentTypes}</ul>;
   }
 
-  // _renderOtherAttachmentType
-  private _renderUnsupportedAttachmentType(
-    attachment: __esri.AttachmentInfo
-  ): VNode {
+  private _renderUnsupportedAttachmentType(attachment: __esri.AttachmentInfo): any {
     const { id, name, size } = attachment;
     return (
       <li key={buildKey(`other-attachment-${id}-${name}-${size}`)}>
@@ -2066,12 +2094,11 @@ c6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z"
     );
   }
 
-  // _renderFullAttachmentContainer
-  private _renderFullAttachmentContainer(): VNode {
+  private _renderFullAttachmentContainer(): any {
     const fullAttachmentNode = this._renderFullAttachmentNode();
     const attachment = this.viewModel.getCurrentAttachment();
     if (this.imagePanZoomEnabled) {
-      this._handleImagePanZoom(attachment);
+      this._handleImagePanZoom(attachment as __esri.AttachmentInfo);
     }
     const fullAttachmentContainerIsOpen = {
       [CSS.fullMediaContainerOpen]: this._fullAttachmentContainerIsOpen
@@ -2079,18 +2106,16 @@ c6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z"
     return (
       <div
         key={buildKey("full-image-container")}
-        class={this.classes(
-          CSS.fullMediaContainer,
-          fullAttachmentContainerIsOpen
-        )}
+        class={this.classes(CSS.fullMediaContainer, fullAttachmentContainerIsOpen)}
       >
-        {fullAttachmentNode}
+        <focus-trap inactive={this._fullAttachmentContainerIsOpen ? false : true}>
+          {fullAttachmentNode}
+        </focus-trap>
       </div>
     );
   }
 
-  // _renderFullAttachmentNode
-  private _renderFullAttachmentNode(): VNode {
+  private _renderFullAttachmentNode(): any {
     const attachment = this.viewModel.getCurrentAttachment();
     const contentType = attachment && (attachment.get("contentType") as string);
     const contentTypesToCheck = [
@@ -2100,7 +2125,7 @@ c6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z"
       "video/quicktime",
       "application/pdf"
     ];
-    const contentTypeCheck = contentTypesToCheck.indexOf(contentType) === -1;
+    const contentTypeCheck = contentTypesToCheck.indexOf(contentType as string) === -1;
 
     const zoomSlider = this._fullAttachmentContainerIsOpen
       ? this.imagePanZoomEnabled &&
@@ -2115,26 +2140,13 @@ c6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z"
 
     const attachmentScroll = this._renderAttachmentScrollContainer();
 
-    const attachmentLoader =
-      this.viewModel.state !== "querying" && !this.imageIsLoaded
-        ? this._renderAttachmentLoader()
-        : null;
-
-    const imageAttachmentTypes = [
-      "image/jpeg",
-      "image/jpg",
-      "image/png",
-      "image/gif"
-    ];
-
-    if (imageAttachmentTypes.indexOf(contentType) === -1) {
-      this.set("imageIsLoaded", true);
-    }
-
     return (
       <div class={CSS.mediaViewerSection}>
         {this._layerDoesNotSupportAttachments ? (
-          <div class={CSS.layerNotSupported}>{i18n.notSupported}</div>
+          <div class={CSS.layerNotSupported}>
+            {/* Hardcoded in EN */}
+            Selected layer does not support attachments
+          </div>
         ) : (
           <div class={CSS.mediaViewer}>
             <button
@@ -2144,20 +2156,14 @@ c6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z"
               onclick={this._expandAttachment}
               onkeydown={this._expandAttachment}
               class={CSS.closeFeatureContainer}
-              title={i18n.closeFullScreen}
+              title={this.mapCentricMessages?.closeFullScreen}
               tabIndex={
-                !this.featureContentPanelIsOpen ||
-                !this._fullAttachmentContainerIsOpen
-                  ? -1
-                  : 0
+                !this.featureContentPanelIsOpen || !this._fullAttachmentContainerIsOpen ? -1 : 0
               }
             >
-              <span
-                class={this.classes(CSS.icons.closeIcon, CSS.icons.flush)}
-              />
+              <calcite-icon scale="m" icon="x" />
             </button>
 
-            {attachmentLoader}
             <div
               bind={this}
               afterCreate={storeNode}
@@ -2175,78 +2181,51 @@ c6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z"
     );
   }
 
-  // _renderZoomSlider
-  private _renderZoomSlider(): VNode {
-    return (
-      <div class={CSS.zoomSlider}>
-        <button
-          bind={this}
-          onclick={this._zoomOutImage}
-          onkeydown={this._zoomOutImage}
-          tabIndex={0}
-          class={CSS.zoomSliderButton}
-          title={i18n.zoomOutImage}
-        >
-          <span class={this.classes(CSS.slideSymbol, CSS.icons.minusIcon)} />
-        </button>
-        <input
+  private _renderZoomSlider(): any {
+    if (!this._zoomSlider) {
+      this._zoomSlider = (
+        <calcite-slider
           bind={this}
           afterCreate={storeNode}
-          data-node-ref="_zoomSliderNode"
-          type="range"
+          data-node-ref="zoomSliderNode"
           min="100"
           max="500"
           step="10"
-          oninput={event => {
-            if (this._imageViewer) {
-              this._imageViewer.zoom(event.target.valueAsNumber);
-            }
-          }}
         />
-        <button
-          bind={this}
-          onclick={this._zoomInImage}
-          onkeydown={this._zoomInImage}
-          tabIndex={0}
-          class={CSS.zoomSliderButton}
-          title={i18n.zoomInImage}
-        >
-          <span class={this.classes(CSS.slideSymbol, CSS.icons.plusIcon)} />
-        </button>
-      </div>
-    );
+      );
+    }
+    return <div class={CSS.zoomSlider}>{this._zoomSlider}</div>;
   }
 
-  // _renderMapViewContainer
-  private _renderMapViewContainer(): VNode {
+  private _renderMapViewContainer(): any {
     const mapView = this._renderMapView();
     return <div class={CSS.mapViewContainer}>{mapView}</div>;
   }
 
-  // _renderMapView
-  private _renderMapView(): VNode {
+  private _renderMapView(): any {
     return (
-      <div
-        bind={this.view.container}
-        class={CSS.mapView}
-        afterCreate={attachToNode}
-      />
+      <div bind={this.view?.container} class={CSS.mapView} afterCreate={attachToNode}>
+        {this.mapA11yDesc ? (
+          <div
+            id="mapDescription"
+            class="sr-only"
+            afterCreate={() => {
+              (document.getElementById("mapDescription") as HTMLDivElement).innerHTML =
+                this._sanitizer.sanitize(this.mapA11yDesc);
+              const rootNode = document.getElementsByClassName("esri-view-surface");
+              this.view?.container.setAttribute("aria-describedby", "mapDescription");
+              for (let k = 0; k < rootNode.length; k++) {
+                rootNode[k].setAttribute("aria-describedby", "mapDescription");
+              }
+            }}
+          >
+            {this.mapA11yDesc}
+          </div>
+        ) : null}
+      </div>
     );
   }
 
-  // ----------------------------------
-  //
-  //  END OF RENDER NODE METHODS
-  //
-  // ----------------------------------
-  // ----------------------------------
-  //
-  //  START OF ACCESSIBLE HANDLERS
-  //
-  // ----------------------------------
-
-  // _toggleOnboardingPanel
-  @accessibleHandler()
   private _toggleOnboardingPanel(): void {
     if (this._onboardingPanelIsOpen) {
       this._onboardingPanelIsOpen = false;
@@ -2256,69 +2235,74 @@ c6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z"
     this.scheduleRender();
   }
 
-  // _disableOnboardingPanel
   @accessibleHandler()
   private _disableOnboardingPanel(): void {
     this._onboardingPanelIsOpen = false;
+    focusNode(this._onboardingButtonDesktop as HTMLElement);
     this.scheduleRender();
   }
 
-  // _selectGalleryItem
   @accessibleHandler()
   private _selectGalleryItem(event: Event): void {
     this.currentImageUrl = null;
     this.set("currentImageUrl", null);
     const node = event.currentTarget as HTMLElement;
-    const objectId = node["data-object-id"] as number;
-    this.viewModel.handleGalleryItem(objectId);
+    const objectId = node?.getAttribute("data-object-id") as string;
+    this.viewModel.handleGalleryItem(
+      parseInt(objectId),
+      this.selectedAttachmentViewerData as MapCentricData
+    );
     this.scheduleRender();
   }
 
-  // _zoomTo
   @accessibleHandler()
   private _zoomTo(): void {
     if (document.body.clientWidth < 813) {
-      this._currentMobileScreen = "maps";
+      this._currentMobileScreen = "map";
       this.scheduleRender();
     }
-    this.viewModel.zoomToMapCentric();
+    this.viewModel.zoomTo();
   }
 
-  // _previousImage
+  @accessibleHandler()
+  private _toggleFeatureContentExpand(): void {
+    this._featureContentExpanded = !this._featureContentExpanded;
+    this.scheduleRender();
+  }
+
+  @accessibleHandler()
+  private _openAttrEditPanel(): void {
+    (this.attrEditModal as HTMLCalciteModalElement).open = true;
+    this.scheduleRender();
+  }
+
+  @accessibleHandler()
+  private _closeAttrEditPanel(): void {
+    (this.attrEditModal as HTMLCalciteModalElement).open = false;
+    (this.viewModel.featureFormWidget as __esri.FeatureForm).feature = this.viewModel?.featureWidget
+      ?.graphic as __esri.Graphic;
+    this.scheduleRender();
+  }
+
   @accessibleHandler()
   private _previousImage(): void {
     this._disableImagePanZoom();
     this.viewModel.previousImage();
-    if (
-      (this.imagePanZoomEnabled && !this._fullAttachmentContainerIsOpen) ||
-      !this.imagePanZoomEnabled
-    ) {
-      this.set("imageIsLoaded", false);
-    }
     this.scheduleRender();
   }
 
-  // _nextImage
   @accessibleHandler()
   private _nextImage(): void {
     this._disableImagePanZoom();
     this.viewModel.nextImage();
-    if (
-      (this.imagePanZoomEnabled && !this._fullAttachmentContainerIsOpen) ||
-      !this.imagePanZoomEnabled
-    ) {
-      this.set("imageIsLoaded", false);
-    }
     this.scheduleRender();
   }
 
-  // _downloadImage
   @accessibleHandler()
   private _downloadImage(event: Event): void {
     this.viewModel.downloadImage(event);
   }
 
-  // _closeFeatureContent
   @accessibleHandler()
   private _closeFeatureContent(): void {
     this.featureContentPanelIsOpen = false;
@@ -2329,7 +2313,6 @@ c6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z"
     this.viewModel.closeTooltipPopup();
   }
 
-  // _expandAttachment
   @accessibleHandler()
   private _expandAttachment(): void {
     if (this._fullAttachmentContainerIsOpen) {
@@ -2339,6 +2322,7 @@ c6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z"
         this._imageViewer = null;
         this._imageViewerSet = false;
         this._imageZoomLoaded = false;
+        (this.zoomSliderNode as HTMLCalciteSliderElement).value = 0;
       }
       this._expandAttachmentNode && this._expandAttachmentNode.focus();
     } else {
@@ -2348,31 +2332,6 @@ c6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z"
     this.scheduleRender();
   }
 
-  // _zoomInImage
-  @accessibleHandler()
-  private _zoomInImage(): void {
-    if (this._imageViewer._state.zoomValue === 500) {
-      return;
-    }
-    const updatedZoomValue = this._imageViewer._state.zoomValue + 50;
-    this._imageViewer.zoom(updatedZoomValue);
-    this._zoomSliderNode.value = `${updatedZoomValue}`;
-    this.scheduleRender();
-  }
-
-  // _zoomOutImage
-  @accessibleHandler()
-  private _zoomOutImage(): void {
-    if (this._imageViewer._state.zoomValue === 0) {
-      return;
-    }
-    const updatedZoomValue = this._imageViewer._state.zoomValue - 50;
-    this._imageViewer.zoom(updatedZoomValue);
-    this._zoomSliderNode.value = `${updatedZoomValue}`;
-    this.scheduleRender();
-  }
-
-  // _handleContent
   @accessibleHandler()
   private _handleNavItem(event: Event): void {
     const node = event.currentTarget as HTMLElement;
@@ -2381,13 +2340,6 @@ c6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z"
     this.scheduleRender();
   }
 
-  // ----------------------------------
-  //
-  //  END OF ACCESSIBLE HANDLERS
-  //
-  // ----------------------------------
-
-  // _triggerScrollQuery
   private _triggerScrollQuery(): void {
     const { _triggerScrollElement } = this;
     if (!_triggerScrollElement) {
@@ -2395,29 +2347,19 @@ c6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z"
     }
     const { scrollTop, scrollHeight, offsetHeight } = _triggerScrollElement;
     if (scrollTop + 10 > scrollHeight - offsetHeight) {
-      this.viewModel.updateAttachmentDataMapCentric();
+      this.viewModel.updateAttachmentData();
     }
   }
 
-  // _fadeInImage
-  private _fadeInImage(imageElement: HTMLImageElement): void {
-    imageElement.onload = () => {
-      this.set("imageIsLoaded", true);
-      imageElement.style.opacity = "1";
-    };
-  }
-
-  // _processTitle
-  private _processTitle(objectId: number): void {
-    const featureWidget = this.get(
-      "view.popup.selectedFeatureWidget"
-    ) as __esri.Feature;
+  private _processTitle(objectId: number): string | null {
+    const featureWidget = this.get("view.popup.selectedFeatureWidget") as __esri.Feature;
     const attributes = featureWidget && featureWidget.get("graphic.attributes");
-    const objectIdField = this.viewModel.getObjectIdField();
+    const objectIdField = featureWidget?.graphic
+      ? this.viewModel.getObjectIdField(featureWidget.graphic)
+      : null;
 
-    const waitingForContent =
-      featureWidget && featureWidget.get("viewModel.waitingForContent");
-    let title = null;
+    const waitingForContent = featureWidget && featureWidget.get("viewModel.waitingForContent");
+    let title: string | null = null;
     if (attributes && objectIdField) {
       if (!waitingForContent && attributes[objectIdField] === objectId) {
         title = this.get("view.popup.title");
@@ -2427,23 +2369,20 @@ c6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z"
     }
     const featureTitle = title ? `${title}` : null;
     return featureTitle
-      ? title.length >= 30
-        ? `${title.split("").slice(0, 25).join("")}...`
+      ? (title as string)?.length >= 30
+        ? `${title?.split("").slice(0, 25).join("")}...`
         : title
       : null;
   }
 
-  // _openToolTipPopup
   private _openToolTipPopup(event: Event): void {
     this.viewModel.openTooltipPopup(event);
   }
 
-  // _closeToolTipPopup
   private _closeToolTipPopup(): void {
     this.viewModel.closeTooltipPopup();
   }
 
-  // _handleImagePanZoom
   private _handleImagePanZoom(attachment: __esri.AttachmentInfo): void {
     const contentType = attachment && (attachment.get("contentType") as string);
     const contentTypesToCheck = [
@@ -2455,11 +2394,7 @@ c6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z"
     ];
 
     const contentTypeCheck = contentTypesToCheck.indexOf(contentType) === -1;
-    if (
-      this.currentImageUrl &&
-      this._fullAttachmentContainerIsOpen &&
-      contentTypeCheck
-    ) {
+    if (this.currentImageUrl && this._fullAttachmentContainerIsOpen && contentTypeCheck) {
       if (this._mediaViewerContainerFullAttachment && !this._imageViewerSet) {
         if (this._imageViewer) {
           this._imageViewer.destroy();
@@ -2467,15 +2402,12 @@ c6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z"
           this._imageViewerSet = false;
           this._imageZoomLoaded = false;
         }
-        this._imageViewer = new ImageViewer(
-          this._mediaViewerContainerFullAttachment,
-          {
-            snapView: false,
-            zoomOnMouseWheel: false,
-            zoomValue: 100,
-            maxZoom: 500
-          }
-        );
+        this._imageViewer = new ImageViewer(this._mediaViewerContainerFullAttachment, {
+          snapView: false,
+          zoomOnMouseWheel: false,
+          zoomValue: 100,
+          maxZoom: 500
+        });
         this._imageViewerSet = true;
         this.scheduleRender();
       }
@@ -2488,37 +2420,35 @@ c6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z"
     }
   }
 
-  // _disableImagePanZoom
   private _disableImagePanZoom(): void {
     if (this.imagePanZoomEnabled) {
       this._imageViewer && this._imageViewer.destroy();
       this._imageViewer = null;
       this._imageViewerSet = false;
       this._imageZoomLoaded = false;
-      if (this._zoomSliderNode) {
-        this._zoomSliderNode.value = "0";
+      if (this.zoomSliderNode) {
+        this.zoomSliderNode.value = 0;
       }
     }
   }
 
-  // _generateNavObjects
   private _generateNavObjects(): NavItem[] {
-    const iconUi = "icon-ui-";
-    const navData = this.onboardingIsEnabled
-      ? ["description", "media", "maps"]
-      : ["media", "maps"];
-    return navData.map(navDataItem => {
+    const navData = this.onboardingIsEnabled ? ["information", "images", "map"] : ["images", "map"];
+    return navData.map((navDataItem) => {
       return {
         type: navDataItem,
-        iconClass: `${iconUi}${navDataItem}`
+        iconClass: navDataItem
       };
     });
   }
 
-  // _getLayerId
   private _getLayerId(): string {
     return this.get("selectedAttachmentViewerData.layerData.featureLayer.id");
   }
+
+  private _saveAttributeEdits(): void {
+    (this.viewModel.featureFormWidget as __esri.FeatureForm).submit();
+  }
 }
 
-export = MapCentric;
+export default MapCentric;

@@ -1,4 +1,4 @@
-// Copyright 2020 Esri
+// Copyright 2023 Esri
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -9,34 +9,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.​
 
-// dojo
-import i18n from "dojo/i18n!../nls/common";
-
 // esri.core.accessorSupport
-import {
-  aliasOf,
-  property,
-  subclass
-} from "esri/core/accessorSupport/decorators";
+import { aliasOf, property, subclass } from "@arcgis/core/core/accessorSupport/decorators";
 
 // esri.views
-import View = require("esri/views/View");
+import View from "@arcgis/core/views/View";
 
 // esri.widgets
-import Widget = require("esri/widgets/Widget");
+import Widget from "@arcgis/core/widgets/Widget";
 
 // esri.widgets.Expand
-import ExpandViewModel = require("esri/widgets/Expand/ExpandViewModel");
+import ExpandViewModel from "@arcgis/core/widgets/Expand/ExpandViewModel";
 
-import {
-  accessibleHandler,
-  renderable,
-  tsx
-} from "esri/widgets/support/widget";
+import { accessibleHandler, tsx, messageBundle } from "@arcgis/core/widgets/support/widget";
 
 import { isWidget } from "./MobileExpand/support/widgetSupport";
 
-import Collection = require("esri/core/Collection");
+import Collection from "@arcgis/core/core/Collection";
+
+import Common_t9n from "../../t9n/Common/common.json";
 
 const CSS = {
   base: "esri-expand esri-widget esri-mobile-expand",
@@ -105,7 +96,7 @@ class Expand extends Widget {
    * @default false
    */
   @aliasOf("viewModel.autoCollapse")
-  autoCollapse: boolean = null;
+  autoCollapse: boolean | null = null;
 
   // ----------------------------------
   //  collapseIconClass
@@ -124,7 +115,6 @@ class Expand extends Widget {
   // @property({
   //   dependsOn: ["content"]
   // })
-  // @renderable()
   // get collapseIconClass(): string {
   //   return CSS.collapseIcon;
   // }
@@ -150,7 +140,6 @@ class Expand extends Widget {
    * @default "Collapse" (English locale)
    */
   @property()
-  @renderable()
   collapseTooltip: string = "";
 
   // ----------------------------------
@@ -210,7 +199,6 @@ class Expand extends Widget {
    * @type {Node | string | module:esri/widgets/Widget}
    */
   @property()
-  @renderable()
   content: Collection<Expand> = new Collection();
 
   // ----------------------------------
@@ -226,8 +214,7 @@ class Expand extends Widget {
    * @default false
    */
   @aliasOf("viewModel.expanded")
-  @renderable()
-  expanded: boolean = null;
+  expanded: boolean | null = null;
 
   // ----------------------------------
   //  expandIconClass
@@ -246,7 +233,6 @@ class Expand extends Widget {
   // @property({
   //   dependsOn: ["content"]
   // })
-  // @renderable()
   // get expandIconClass(): string {
   //   return isWidget(this.content) ? this.content.iconClass : CSS.expandIcon;
   // }
@@ -272,16 +258,20 @@ class Expand extends Widget {
    * @default "Expand" (English locale)
    */
   @property()
-  @renderable()
   expandTooltip: string = "";
 
   @property()
-  @renderable()
-  expandIconClass: string = null;
+  expandIconClass: string | null = null;
 
   @property()
-  @renderable()
-  collapseIconClass: string = null;
+  collapseIconClass: string | null = null;
+
+  @property()
+  theme: "light" | "dark";
+
+  @property()
+  @messageBundle(`${import.meta.env.BASE_URL}assets/t9n/Common/common`)
+  commonMessages: typeof Common_t9n | null = null;
 
   // ----------------------------------
   //  group
@@ -319,7 +309,7 @@ class Expand extends Widget {
    * view.ui.add([expand1, expand2], "bottom-right");
    */
   @aliasOf("viewModel.group")
-  group: string = null;
+  group: string | null = null;
 
   // ----------------------------------
   //  iconNumber
@@ -335,7 +325,6 @@ class Expand extends Widget {
    * @type {number}
    */
   @property()
-  @renderable()
   iconNumber: number = 0;
 
   // ----------------------------------
@@ -358,7 +347,6 @@ class Expand extends Widget {
    * @type {string}
    */
   @property()
-  @renderable()
   mode: "auto" | "floating" | "drawer" = "auto";
 
   // ----------------------------------
@@ -373,8 +361,7 @@ class Expand extends Widget {
    * @type {(module:esri/views/MapView | module:esri/views/SceneView)}
    */
   @aliasOf("viewModel.view")
-  @renderable()
-  view: View = null;
+  view: View | null = null;
 
   // ----------------------------------
   //  viewModel
@@ -394,7 +381,6 @@ class Expand extends Widget {
   @property({
     type: ExpandViewModel
   })
-  @renderable("viewModel.state")
   viewModel: ExpandViewModel = new ExpandViewModel();
 
   // --------------------------------------------------------------------------
@@ -433,16 +419,9 @@ class Expand extends Widget {
   render() {
     const expanded = this.viewModel.expanded;
     const { mode } = this;
-    const expandTooltip = this.expandTooltip || i18n.expand;
-    const collapseTooltip = this.collapseTooltip || i18n.collapse;
+    const expandTooltip = this.expandTooltip || this.commonMessages?.expand;
+    const collapseTooltip = this.collapseTooltip || this.commonMessages?.collapse;
     const title = expanded ? collapseTooltip : expandTooltip;
-    const collapseIconClass = this.collapseIconClass;
-    const expandIconClass = this.expandIconClass;
-    const expandIconClasses = {
-      [CSS.iconExpanded]: expanded,
-      [collapseIconClass]: expanded,
-      [expandIconClass]: !expanded
-    };
 
     const containerExpanded = {
       [CSS.containerExpanded]: expanded
@@ -484,8 +463,11 @@ class Expand extends Widget {
     const hide = {
       ["esri-mobile-expand--hide"]: this.content.length === 0
     };
+
+    const theme = this.theme === "dark" ? "calcite-mode-dark" : "calcite-mode-light";
+
     return (
-      <div class={this.classes(CSS.base, baseClasses, hide)}>
+      <div class={this.classes(CSS.base, baseClasses, hide, theme)}>
         {this.content.length > 0
           ? [
               <div
@@ -522,11 +504,7 @@ class Expand extends Widget {
                   {expandedBadgeNumberNode}
                 </div>
                 <div
-                  class={this.classes(
-                    CSS.content,
-                    CSS.mobileExpandContent,
-                    contentClasses
-                  )}
+                  class={this.classes(CSS.content, CSS.mobileExpandContent, contentClasses)}
                   bind={this}
                 >
                   {content}
@@ -562,16 +540,9 @@ class Expand extends Widget {
       return null;
     });
     const expanded = this.viewModel.expanded;
-    const expandTooltip = this.expandTooltip || i18n.expand;
-    const collapseTooltip = this.collapseTooltip || i18n.collapse;
+    const expandTooltip = this.expandTooltip || this.commonMessages?.expand;
+    const collapseTooltip = this.collapseTooltip || this.commonMessages?.collapse;
     const title = expanded ? collapseTooltip : expandTooltip;
-    const collapseIconClass = this.collapseIconClass;
-    const expandIconClass = this.expandIconClass;
-    const expandIconClasses = {
-      [CSS.iconExpanded]: expanded,
-      [collapseIconClass]: expanded,
-      [expandIconClass]: !expanded
-    };
 
     const iconNumber = this.iconNumber;
 
@@ -627,11 +598,6 @@ class Expand extends Widget {
       </div>
     );
   }
-
-  private _attachToNode(this: HTMLElement, node: HTMLElement): void {
-    const content: HTMLElement = this;
-    node.appendChild(content);
-  }
 }
 
-export = Expand;
+export default Expand;

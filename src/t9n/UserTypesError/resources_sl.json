@@ -1,0 +1,12 @@
+{
+  "licenseError": {
+    "message": "Vaš račun ni licenciran za uporabo konfigurabilnih aplikacij, ki niso javne. Prosite administratorja v vaši organizaciji, da vam dodeli tip uporabnika, ki vsebuje osnovne aplikacije ali licenco za dodatne aplikacije.",
+    "title": "Ni licencirano"
+  },
+  "originError": {
+    "message": "Aplikacija, do katere želite dostopati, ne izvira iz navedenega URL-ja",
+    "close": "Zapri",
+    "options": "Napredne možnosti",
+    "linkMessage": "Nadaljuj na"
+  }
+}

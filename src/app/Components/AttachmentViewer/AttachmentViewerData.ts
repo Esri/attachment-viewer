@@ -1,4 +1,4 @@
-// Copyright 2020 Esri
+// Copyright 2023 Esri
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -10,40 +10,40 @@
 // limitations under the License.​
 
 // esri.core
-import Accessor = require("esri/core/Accessor");
+import Accessor from "@arcgis/core/core/Accessor";
 
 // esri.core.accessorSupport
-import { subclass, property } from "esri/core/accessorSupport/decorators";
+import { subclass, property } from "@arcgis/core/core/accessorSupport/decorators";
 
 // SelectedFeatureAttachments
-import SelectedFeatureAttachments = require("./SelectedFeatureAttachments");
+import SelectedFeatureAttachments from "./SelectedFeatureAttachments";
 
 // esri.core.Collection
-import Collection = require("esri/core/Collection");
+import Collection from "@arcgis/core/core/Collection";
 
 // AttachmentViewerLayerData
-import AttachmentViewerLayerData = require("./AttachmentViewerLayerData");
+import AttachmentViewerLayerData from "./AttachmentViewerLayerData";
 
 @subclass("AttachmentViewerData")
 class AttachmentViewerData extends Accessor {
   // attachments
   @property()
-  attachments: any = null;
+  attachments: { [oid: number]: __esri.AttachmentInfo[] } | null = null;
 
   @property()
-  defaultLayerExpression: string = null;
+  defaultLayerExpression: string | null = null;
 
   // featureLayerTitle
   @property()
-  featureLayerTitle: string = null;
+  featureLayerTitle: string | null = null;
 
   // layerData
   @property()
-  layerData: AttachmentViewerLayerData = null;
+  layerData: AttachmentViewerLayerData | null = null;
 
   // selectedFeature
   @property()
-  selectedFeature: __esri.Graphic = null;
+  selectedFeature: __esri.Graphic | null = null;
 
   // selectedFeatureInfo
   @property()
@@ -51,11 +51,11 @@ class AttachmentViewerData extends Accessor {
 
   // selectedFeatureAttachments
   @property()
-  selectedFeatureAttachments: SelectedFeatureAttachments = null;
+  selectedFeatureAttachments: SelectedFeatureAttachments | null = null;
 
   // selectedFeatureAddress
   @property()
-  selectedFeatureAddress: string = null;
+  selectedFeatureAddress: string | null = null;
 
   // unsupportedAttachmentTypes
   @property()
@@ -63,7 +63,7 @@ class AttachmentViewerData extends Accessor {
 
   // defaultObjectId
   @property()
-  defaultObjectId: number = null;
+  defaultObjectId: number | null = null;
 
   // attachmentIndex
   @property()
@@ -74,7 +74,7 @@ class AttachmentViewerData extends Accessor {
   featureObjectIds: Collection<number> = new Collection();
 
   @property()
-  sortField: string = null;
+  sortField: string | null = null;
 
   // objectIdIndex
   @property()
@@ -82,11 +82,11 @@ class AttachmentViewerData extends Accessor {
 
   // selectedLayerId
   @property()
-  selectedLayerId: string = null;
+  selectedLayerId: string | null = null;
 
   // layerFeatureIndex
   @property()
   layerFeatureIndex: number = 0;
 }
 
-export = AttachmentViewerData;
+export default AttachmentViewerData;

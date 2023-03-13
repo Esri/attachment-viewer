@@ -1,0 +1,12 @@
+{
+  "licenseError": {
+    "message": "Ditt konto har ingen licens för att använda konfigurerbara appar som inte är tillgängliga för allmänheten. Be din organisations administratör att tilldela dig en användartyp som omfattar Essential Apps eller en tilläggslicens för Essential Apps.",
+    "title": "Inte licensierad"
+  },
+  "originError": {
+    "message": "Den applikation du försöker öppna hämtas inte från den URL du angav",
+    "close": "Stäng",
+    "options": "Avancerade alternativ",
+    "linkMessage": "Fortsätt till"
+  }
+}

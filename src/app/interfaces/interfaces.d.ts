@@ -1,5 +1,5 @@
 /*
-  Copyright 2020 Esri
+  Copyright 2023 Esri
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
@@ -11,8 +11,8 @@
   limitations under the License.​
 */
 
-import Accessor = require("esri/core/Accessor");
-import { ApplicationConfig } from "../application-base-js/interfaces";
+import Accessor from "@arcgis/core/core/Accessor";
+import { ApplicationConfig } from "templates-common-library/interfaces/applicationBase";
 
 interface AttachmentViewerLayerData extends Accessor {
   featureLayer: __esri.FeatureLayer;
@@ -94,8 +94,8 @@ export interface MapCentricAttachmentsPromise {
 }
 
 export interface MapCentricLayerViewPromise {
-  attachments: any;
-  layerView: __esri.FeatureLayerView;
+  featureLayer: __esri.FeatureLayer;
+  layerView: __esri.FeatureLayerView | null;
 }
 
 export interface MapCentricAttachmentDataPromise {
@@ -119,4 +119,32 @@ export interface esriWidgetProps extends __esri.WidgetProperties {
   portal?: __esri.Portal;
   propertyName?: string;
   docDirection?: string;
+}
+
+export interface IExtentSelectorOutput {
+  constraints: __esri.MapViewConstraints;
+  mapRotation: number;
+}
+
+export interface RelatedFeatureWithAttachments {
+  [featureOID: number]: {
+    [relatedFeatureOID: number]: {
+      feature: __esri.Graphic;
+      attachments: __esri.AttachmentInfo;
+    };
+  };
+}
+
+export interface IBranchingConditionalOutput {
+  branchValue: "string";
+  branchOptionsFieldNames: string[];
+}
+
+export interface LayerSelectorOutput {
+  layers: LayerSelectorFieldsObj[];
+}
+
+export interface LayerSelectorFieldsObj {
+  fields: any[];
+  id: string;
 }

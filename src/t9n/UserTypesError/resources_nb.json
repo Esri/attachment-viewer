@@ -1,0 +1,12 @@
+{
+  "licenseError": {
+    "message": "Kontoen din har ikke lisens til å bruke konfigurerbare apper som ikke er offentlige. Be administratoren for organisasjonen om å tilordne deg en brukertype som omfatter Essential Apps eller en tilleggslisens for Essential Apps.",
+    "title": "Har ikke lisens"
+  },
+  "originError": {
+    "message": "Programmet du prøver å åpne, skriver seg ikke fra URL-en du har oppgitt.",
+    "close": "Lukk",
+    "options": "Avanserte alternativer",
+    "linkMessage": "Fortsett til"
+  }
+}

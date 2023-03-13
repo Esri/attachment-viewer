@@ -1,4 +1,4 @@
-// Copyright 2020 Esri
+// Copyright 2023 Esri
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -10,18 +10,18 @@
 // limitations under the License.​
 
 // esri.core
-import Accessor = require("esri/core/Accessor");
+import Accessor from "@arcgis/core/core/Accessor";
 
 // esri.core.accessorSupport
-import { subclass, property } from "esri/core/accessorSupport/decorators";
+import { subclass, property } from "@arcgis/core/core/accessorSupport/decorators";
 
 @subclass("SelectedFeatureAttachments")
 class SelectedFeatureAttachments extends Accessor {
   @property()
-  attachments: __esri.Collection<__esri.AttachmentInfo> = null;
+  attachments: __esri.Collection<__esri.AttachmentInfo> | null = null;
 
   @property()
-  currentIndex: number = null;
+  currentIndex: number | null = null;
 }
 
-export = SelectedFeatureAttachments;
+export default SelectedFeatureAttachments;

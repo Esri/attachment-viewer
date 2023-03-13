@@ -1,0 +1,11 @@
+{
+  "heading": "Delen",
+  "subHeading": "Deze kaart delen",
+  "urlTitle": "Esri ArcGIS - {title}",
+  "urlSummary": "Bekijk deze kaart - {summary}",
+  "widgetLabel": "Delen",
+  "clipboard": "Naar klembord kopiëren",
+  "sendLink": "Een koppeling verzenden",
+  "embedMap": "Kaart insluiten",
+  "copied": "Gekopieerd"
+}

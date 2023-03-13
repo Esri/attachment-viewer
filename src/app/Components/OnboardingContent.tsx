@@ -1,4 +1,4 @@
-// Copyright 2020 Esri
+// Copyright 2023 Esri
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -9,14 +9,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.​
 
-import { subclass, property } from "esri/core/accessorSupport/decorators";
-import Widget = require("esri/widgets/Widget");
+import { subclass, property } from "@arcgis/core/core/accessorSupport/decorators";
+import Widget from "@arcgis/core/widgets/Widget";
 
-import { ApplicationConfig } from "ApplicationBase/interfaces";
-import { renderable, tsx } from "esri/widgets/support/widget";
+import { ApplicationConfig } from "templates-common-library/interfaces/applicationBase";
+import { tsx, messageBundle } from "@arcgis/core/widgets/support/widget";
+import Sanitizer from "@esri/arcgis-html-sanitizer";
+import { createSanitizerInstance } from "templates-common-library/functionality/securityUtils";
 
-// nls
-import i18nPhotoCentric from "dojo/i18n!./PhotoCentric/nls/resources";
+import PhotoCentric_t9n from "../../t9n/Components/PhotoCentric/resources.json";
 
 const CSS = {
   title: "title-container",
@@ -32,22 +33,25 @@ class OnboardingContent extends Widget {
     super(params);
   }
   @property()
-  @renderable(["config.customOnboarding", "config.customOnboardingHTML"])
   config: ApplicationConfig;
 
   @property()
-  @renderable()
-  appMode: string = null;
+  appMode: string | null = null;
 
   @property()
-  withinConfigurationExperience: boolean = null;
+  withinConfigurationExperience: boolean | null = null;
+
+  @property()
+  @messageBundle(`${import.meta.env.BASE_URL}assets/t9n/Components/PhotoCentric/resources`)
+  photoCentricMessages: typeof PhotoCentric_t9n | null = null;
+
+  private _sanitizer = createSanitizerInstance(Sanitizer);
 
   render() {
     const { customOnboarding, customOnboardingHTML } = this.config;
     const onboardingContainer = {
       [CSS.onboardingContentContainer]: !customOnboarding
     };
-
     return customOnboarding ? (
       this.withinConfigurationExperience ? (
         <div
@@ -71,16 +75,14 @@ class OnboardingContent extends Widget {
       <div key="default-onboarding">
         <h2 key="default-onboarding-title">
           <span key="default-onboarding-span" style="color:#0079c1;">
-            {i18nPhotoCentric.welcome}
+            {this.photoCentricMessages?.welcome}
           </span>
         </h2>
-        <p key="default-onboarding-subtitle">{i18nPhotoCentric.subtitle}</p>
-        <p key="default-onboarding-int-heading">
-          {i18nPhotoCentric.instructionHeading}
-        </p>
+        <p key="default-onboarding-subtitle">{this.photoCentricMessages?.subtitle}</p>
+        <p key="default-onboarding-int-heading">{this.photoCentricMessages?.instructionHeading}</p>
         <ul key="default-onboarding-ul">
-          <li key="default-onboarding-li-1">{i18nPhotoCentric.stepOne}</li>
-          <li key="default-onboarding-li-2">{i18nPhotoCentric.stepTwo}</li>
+          <li key="default-onboarding-li-1">{this.photoCentricMessages?.stepOne}</li>
+          <li key="default-onboarding-li-2">{this.photoCentricMessages?.stepTwo}</li>
         </ul>
       </div>
     );
@@ -92,9 +94,9 @@ class OnboardingContent extends Widget {
     }
     const content = node.getAttribute("data-onboarding-html");
     const paragraph = document.createElement("p");
-    paragraph.innerHTML = content;
+    paragraph.innerHTML = this._sanitizer.sanitize(content);
     node.appendChild(paragraph);
   }
 }
 
-export = OnboardingContent;
+export default OnboardingContent;
