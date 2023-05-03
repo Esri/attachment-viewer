@@ -10,12 +10,7 @@
 // limitations under the License.​
 
 import { subclass, property, aliasOf } from "@arcgis/core/core/accessorSupport/decorators";
-import {
-  accessibleHandler,
-  tsx,
-  storeNode,
-  messageBundle
-} from "@arcgis/core/widgets/support/widget";
+import { accessibleHandler, tsx, storeNode, messageBundle } from "@arcgis/core/widgets/support/widget";
 import Widget from "@arcgis/core/widgets/Widget";
 import { watch, on, when } from "@arcgis/core/core/reactiveUtils";
 import PhotoCentricViewModel from "./PhotoCentric/PhotoCentricViewModel";
@@ -38,33 +33,35 @@ import Common_t9n from "../../t9n/Common/common.json";
 import PhotoCentric_t9n from "../../t9n/Components/PhotoCentric/resources.json";
 import OnboardingContent from "./OnboardingContent";
 
-const layerExpression = [{
-  id: "SunflowerValleyF2018_97",
-  title: "SunflowerValleyF2018",
-  operator: ' AND ',
-  expressions: [
-    {
-      id: 0,
-      name: 'StateWellN',
-      type: 'string',
-      field: 'StateWellN',
-      index: 0,
-    },
-    {
-      id: 4,
-      definitionExpression: "StateWellN = '25S18E15D001M'",
-      name: 'STATEWELL DEF',
-      index: 4,
-    },
-    {
-      id: 0,
-      name: 'CreationDate',
-      type: 'number',
-      field: 'CreationDate',
-      index: 0,
-    },
-  ],
-}];
+const layerExpression = [
+  {
+    id: "SunflowerValleyF2018_97",
+    title: "SunflowerValleyF2018",
+    operator: " AND ",
+    expressions: [
+      {
+        id: 0,
+        name: "StateWellN",
+        type: "string",
+        field: "StateWellN",
+        index: 0
+      },
+      {
+        id: 4,
+        definitionExpression: "StateWellN = '25S18E15D001M'",
+        name: "STATEWELL DEF",
+        index: 4
+      },
+      {
+        id: 0,
+        name: "CreationDate",
+        type: "number",
+        field: "CreationDate",
+        index: 0
+      }
+    ]
+  }
+];
 const CSS = {
   base: "esri-photo-centric",
   // onboarding
@@ -429,48 +426,36 @@ class PhotoCentric extends Widget {
 
           const layerSwitcher = this.layerSwitcher as LayerSwitcher as LayerSwitcher;
 
-          (this.layerSwitcher as LayerSwitcher as LayerSwitcher)?.featureLayerCollection?.forEach(
-            (layer) => {
-              layerVisibleWatcher.push(
-                watch(
-                  () => layer.visible,
-                  () => {
-                    const noVisibleLayers = layerSwitcher?.featureLayerCollection?.every(
-                      (layer) => !layer.visible
-                    );
+          (this.layerSwitcher as LayerSwitcher as LayerSwitcher)?.featureLayerCollection?.forEach((layer) => {
+            layerVisibleWatcher.push(
+              watch(
+                () => layer.visible,
+                () => {
+                  const noVisibleLayers = layerSwitcher?.featureLayerCollection?.every((layer) => !layer.visible);
 
-                    if (noVisibleLayers) {
-                      if (
-                        this.imagePanZoomEnabled &&
-                        this._imageViewer &&
-                        document.body.clientWidth > 830
-                      ) {
-                        this._imageViewer && this._imageViewer.destroy();
-                        this._imageViewer = null;
-                        this._imageViewerSet = false;
-                        this._imageZoomLoaded = false;
-                        if (this.zoomSliderNode) {
-                          this.zoomSliderNode.value = 100;
-                        }
+                  if (noVisibleLayers) {
+                    if (this.imagePanZoomEnabled && this._imageViewer && document.body.clientWidth > 830) {
+                      this._imageViewer && this._imageViewer.destroy();
+                      this._imageViewer = null;
+                      this._imageViewerSet = false;
+                      this._imageZoomLoaded = false;
+                      if (this.zoomSliderNode) {
+                        this.zoomSliderNode.value = 100;
                       }
-                    } else {
-                      const attachments = this.get(
-                        "selectedAttachmentViewerData.selectedFeatureAttachments.attachments"
-                      ) as __esri.Collection<__esri.AttachmentInfo>;
-                      const attachmentIndex = this.get(
-                        "selectedAttachmentViewerData.attachmentIndex"
-                      ) as number;
-
-                      const attachment = attachments?.getItemAt(
-                        attachmentIndex
-                      ) as __esri.AttachmentInfo;
-                      this._handlePanZoomForCurrentAttachment(attachment);
                     }
+                  } else {
+                    const attachments = this.get(
+                      "selectedAttachmentViewerData.selectedFeatureAttachments.attachments"
+                    ) as __esri.Collection<__esri.AttachmentInfo>;
+                    const attachmentIndex = this.get("selectedAttachmentViewerData.attachmentIndex") as number;
+
+                    const attachment = attachments?.getItemAt(attachmentIndex) as __esri.AttachmentInfo;
+                    this._handlePanZoomForCurrentAttachment(attachment);
                   }
-                )
-              );
-            }
-          );
+                }
+              )
+            );
+          });
 
           this.own([...layerVisibleWatcher]);
         }
@@ -536,9 +521,7 @@ class PhotoCentric extends Widget {
             const attachments = this.get(
               "selectedAttachmentViewerData.selectedFeatureAttachments.attachments"
             ) as __esri.Collection<__esri.AttachmentInfo>;
-            const attachmentIndex = this.get(
-              "selectedAttachmentViewerData.attachmentIndex"
-            ) as number;
+            const attachmentIndex = this.get("selectedAttachmentViewerData.attachmentIndex") as number;
 
             const attachment = attachments?.getItemAt(attachmentIndex) as __esri.AttachmentInfo;
 
@@ -631,7 +614,6 @@ class PhotoCentric extends Widget {
       "change",
       // () => this.scheduleRender()
       () => null
-
     );
   }
 
@@ -713,8 +695,7 @@ class PhotoCentric extends Widget {
         ? this.customTheme.logo
         : "";
     const logoLink =
-      ((applySharedTheme && !customTheme) || customTheme?.preset === "shared") &&
-      sharedTheme?.logoLink
+      ((applySharedTheme && !customTheme) || customTheme?.preset === "shared") && sharedTheme?.logoLink
         ? sharedTheme.logoLink
         : customTheme?.logoLink
         ? customTheme.logoLink
@@ -742,9 +723,7 @@ class PhotoCentric extends Widget {
           this._toggleOnboardingPanel();
         }}
         info-button={`${this.onboardingIsEnabled}`}
-        info-is-open={`${
-          document.body.clientWidth > 915 && this.onboardingIsEnabled && this.onboardingPanelIsOpen
-        }`}
+        info-is-open={`${document.body.clientWidth > 915 && this.onboardingIsEnabled && this.onboardingPanelIsOpen}`}
         logo-scale={customTheme?.logoScale ? customTheme.logoScale : "m"}
         font-family={fontFamily}
       >
@@ -753,34 +732,33 @@ class PhotoCentric extends Widget {
     );
   }
 
-  
   private _renderInstantAppsFilter(): any {
     this.view?.when(async () => {
-          const filterList = document.getElementById('filter-list');
-          if (filterList) {
-            filterList.view = this.view;
-            filterList.layerExpressions = layerExpression;
-          }
+      const filterList = document.getElementById("filter-list");
+      if (filterList) {
+        filterList.view = this.view;
+        filterList.layerExpressions = layerExpression;
+      }
     });
 
     return (
       <div>
-        <instant-apps-filter-list 
-        id="filter-list"
-        // openFilters={true}
-        layerExpressions={
-          layerExpression
-        } view={this.view?.map}>
-          <div class="filter-header" slot="filter-header-content"><calcite-icon scale="s" icon="filter"></calcite-icon>Filter List</div>
+        <instant-apps-filter-list
+          id="filter-list"
+          // openFilters={true}
+          layerExpressions={layerExpression}
+          view={this.view?.map}
+        >
+          <div class="filter-header" slot="filter-header-content">
+            <calcite-icon scale="s" icon="filter"></calcite-icon>Filter List
+          </div>
         </instant-apps-filter-list>
       </div>
-    )
+    );
   }
 
   private _renderSocialShare(): any {
-    const layerFeatures = this.get(
-      "selectedAttachmentViewerData.layerFeatures"
-    ) as __esri.Collection<__esri.Graphic>;
+    const layerFeatures = this.get("selectedAttachmentViewerData.layerFeatures") as __esri.Collection<__esri.Graphic>;
     const { socialSharingEnabled } = this;
     const { clientWidth } = document.body;
     const theme = this.viewModel.getTheme("primary", "primary");
@@ -788,9 +766,7 @@ class PhotoCentric extends Widget {
       <instant-apps-social-share
         style={`--instant-apps-social-share-popover-button-icon-color: ${
           theme?.color ? theme.color : "var(--calcite-ui-text-1)"
-        };${
-          this.customTheme?.appFont ? ` font-family: ${this.customTheme?.appFont} !important;` : ""
-        }`}
+        };${this.customTheme?.appFont ? ` font-family: ${this.customTheme?.appFont} !important;` : ""}`}
         bind={this}
         afterCreate={storeNode}
         afterUpdate={(node) => {
@@ -848,9 +824,9 @@ class PhotoCentric extends Widget {
     const mapView = this._renderMapView();
     const pagination = this._renderPagination();
     const expandCollapse = this._renderExpandCollapse();
-    const noVisibleLayers = (
-      this.layerSwitcher as LayerSwitcher as LayerSwitcher
-    )?.featureLayerCollection?.every((layer) => !layer.visible);
+    const noVisibleLayers = (this.layerSwitcher as LayerSwitcher as LayerSwitcher)?.featureLayerCollection?.every(
+      (layer) => !layer.visible
+    );
     const featureContentPanel = !noVisibleLayers ? this._renderFeatureContentPanel() : null;
 
     const { clientWidth } = document.body;
@@ -868,9 +844,7 @@ class PhotoCentric extends Widget {
     const mainPageBottomContainerCollapsed = {
       [CSS.mainPageBottomContainerCollapsed]: mobileCollapsed
     };
-    const minimizedFeatureContentPanel = desktopMinimized
-      ? this._renderMinimizedFeatureContentPanel()
-      : null;
+    const minimizedFeatureContentPanel = desktopMinimized ? this._renderMinimizedFeatureContentPanel() : null;
 
     const featureContentPanelMinimized = {
       [CSS.featureContentPanelMinimized]: desktopMinimized
@@ -911,9 +885,7 @@ class PhotoCentric extends Widget {
   private _renderMinimizedFeatureContentPanel(): VNode {
     const zoomTo = this._renderZoomTo();
     const attrEditButton =
-      this.attributeEditing && this.viewModel.verifyEditPermissions()
-        ? this._renderAttributeEditButton()
-        : null;
+      this.attributeEditing && this.viewModel.verifyEditPermissions() ? this._renderAttributeEditButton() : null;
     const theme = this.viewModel.getTheme("secondary", "secondary");
     const buttonTheme = this.viewModel.getThemeButtonColor("primary", "primary");
     return (
@@ -961,15 +933,14 @@ class PhotoCentric extends Widget {
   }
 
   private _renderPagination(): VNode {
-    const noVisibleLayers = (
-      this.layerSwitcher as LayerSwitcher as LayerSwitcher
-    )?.featureLayerCollection?.every((layer) => !layer.visible);
+    const noVisibleLayers = (this.layerSwitcher as LayerSwitcher as LayerSwitcher)?.featureLayerCollection?.every(
+      (layer) => !layer.visible
+    );
 
     const { selectedAttachmentViewerData } = this;
 
     const featureTotal =
-      selectedAttachmentViewerData &&
-      (selectedAttachmentViewerData.get("featureObjectIds.length") as number);
+      selectedAttachmentViewerData && (selectedAttachmentViewerData.get("featureObjectIds.length") as number);
 
     const leftButtonLayerSwitcherContainer = this._renderLeftButtonLayerSwitcherContainer();
 
@@ -994,9 +965,7 @@ class PhotoCentric extends Widget {
     const noVisibleLayers = (this.layerSwitcher as LayerSwitcher)?.featureLayerCollection?.every(
       (layer) => !layer.visible
     );
-    const featureLayerCollectionLen = this.get(
-      "layerSwitcher.featureLayerCollection.length"
-    ) as number;
+    const featureLayerCollectionLen = this.get("layerSwitcher.featureLayerCollection.length") as number;
     const layerSwitcherButton =
       featureLayerCollectionLen > 1 && !noVisibleLayers ? this._renderLayerSwitcherButton() : null;
 
@@ -1018,9 +987,7 @@ class PhotoCentric extends Widget {
     const noVisibleLayers = (this.layerSwitcher as LayerSwitcher)?.featureLayerCollection?.every(
       (layer) => !layer.visible
     );
-    const featureLayerCollectionLen = this.get(
-      "layerSwitcher.featureLayerCollection.length"
-    ) as number;
+    const featureLayerCollectionLen = this.get("layerSwitcher.featureLayerCollection.length") as number;
     const layerSwitcherButton =
       featureLayerCollectionLen > 1 && !noVisibleLayers && this.docDirection === "rtl"
         ? this._renderLayerSwitcherButton()
@@ -1050,10 +1017,7 @@ class PhotoCentric extends Widget {
         title={this.photoCentricMessages?.previousLocation}
         styles={theme}
       >
-        <calcite-icon
-          scale="m"
-          icon={this.docDirection === "ltr" ? "chevron-left" : "chevron-right"}
-        />
+        <calcite-icon scale="m" icon={this.docDirection === "ltr" ? "chevron-left" : "chevron-right"} />
       </button>
     );
   }
@@ -1070,10 +1034,7 @@ class PhotoCentric extends Widget {
         title={this.photoCentricMessages?.nextLocation}
         styles={theme}
       >
-        <calcite-icon
-          scale="m"
-          icon={this.docDirection === "rtl" ? "chevron-left" : "chevron-right"}
-        />
+        <calcite-icon scale="m" icon={this.docDirection === "rtl" ? "chevron-left" : "chevron-right"} />
       </button>
     );
   }
@@ -1111,10 +1072,7 @@ class PhotoCentric extends Widget {
         tabIndex={0}
         class={this.classes(CSS.expandCollapseContainer, darkBackground)}
       >
-        <calcite-icon
-          scale="m"
-          icon={this.photoCentricMobileMapExpanded ? "chevron-up" : "chevron-down"}
-        />
+        <calcite-icon scale="m" icon={this.photoCentricMobileMapExpanded ? "chevron-up" : "chevron-down"} />
       </div>
     );
   }
@@ -1144,19 +1102,13 @@ class PhotoCentric extends Widget {
   }
 
   private _renderOnboardingStartButton(): VNode {
-    const buttonText = this.onboardingButtonText
-      ? this.onboardingButtonText
-      : this.commonMessages?.form?.ok;
+    const buttonText = this.onboardingButtonText ? this.onboardingButtonText : this.commonMessages?.form?.ok;
     const buttonTheme = this.viewModel.getThemeButtonColor("primary", "primary");
     const styles = `
     button {
       --calcite-ui-brand: ${buttonTheme?.backgroundColor ? buttonTheme.backgroundColor : "#0079c1"};
-      --calcite-ui-brand-hover: ${
-        buttonTheme?.backgroundColor ? buttonTheme.backgroundColor : "#0079c1"
-      };
-      --calcite-ui-brand-press: ${
-        buttonTheme?.backgroundColor ? buttonTheme.backgroundColor : "#0079c1"
-      };
+      --calcite-ui-brand-hover: ${buttonTheme?.backgroundColor ? buttonTheme.backgroundColor : "#0079c1"};
+      --calcite-ui-brand-press: ${buttonTheme?.backgroundColor ? buttonTheme.backgroundColor : "#0079c1"};
       --calcite-ui-text-inverse: ${buttonTheme?.color ? buttonTheme.color : "#ffffff"};
     }
     `;
@@ -1228,10 +1180,7 @@ class PhotoCentric extends Widget {
 
     return (
       <div class={CSS.rightPanel}>
-        <div
-          key={buildKey("image-container")}
-          class={this.classes(downloadEnabled, CSS.photoViewer)}
-        >
+        <div key={buildKey("image-container")} class={this.classes(downloadEnabled, CSS.photoViewer)}>
           {mediaViewerContainer}
           {onboardingImage}
           {zoomSlider}
@@ -1246,17 +1195,14 @@ class PhotoCentric extends Widget {
       <div key={buildKey("no-attachments-container")} class={CSS.noAttachmentsContainer}>
         <calcite-icon icon="no-image" scale="l" />
 
-        <span class={CSS.noAttachmentsText}>
-          {this.photoCentricMessages?.noPhotoAttachmentsFound}
-        </span>
+        <span class={CSS.noAttachmentsText}>{this.photoCentricMessages?.noPhotoAttachmentsFound}</span>
       </div>
     );
   }
 
   private _renderMediaViewerContainer(attachment: __esri.AttachmentInfo): VNode {
     const hasOnboardingImage = {
-      [CSS.hasOnboardingImage]:
-        this.onboardingPanelIsOpen && this.onboardingImage && this.onboardingIsEnabled
+      [CSS.hasOnboardingImage]: this.onboardingPanelIsOpen && this.onboardingImage && this.onboardingIsEnabled
     };
 
     const { currentImageUrl } = this;
@@ -1288,8 +1234,7 @@ class PhotoCentric extends Widget {
     ) as __esri.Collection<__esri.AttachmentInfo>;
 
     const videoStyles = {
-      [CSS.attachmentIsVideo]:
-        attachment && attachment.contentType && attachment.contentType.indexOf("video") !== -1
+      [CSS.attachmentIsVideo]: attachment && attachment.contentType && attachment.contentType.indexOf("video") !== -1
     };
     return (
       <div
@@ -1302,9 +1247,7 @@ class PhotoCentric extends Widget {
           <calcite-loader key={buildKey("loadingApp")} label={`${this.commonMessages?.loading}`} />
         ) : supportsAttachment === false ? (
           <div class={CSS.layerNotSupported}>{this.photoCentricMessages?.notSupported}</div>
-        ) : !this.selectedAttachmentViewerData ||
-          (attachments && attachments.length === 0) ||
-          noVisibleLayers ? (
+        ) : !this.selectedAttachmentViewerData || (attachments && attachments.length === 0) || noVisibleLayers ? (
           this._renderNoAttachmentsContainer()
         ) : (
           media
@@ -1315,12 +1258,7 @@ class PhotoCentric extends Widget {
 
   private _renderVideo(currentImageUrl: string): VNode {
     return (
-      <video
-        bind={this}
-        key={buildKey(`video-${currentImageUrl}`)}
-        class={CSS.videoContainer}
-        controls
-      >
+      <video bind={this} key={buildKey(`video-${currentImageUrl}`)} class={CSS.videoContainer} controls>
         <source src={currentImageUrl} type="video/mp4" />
         <source src={currentImageUrl} type="video/quicktime" />
         <source src={currentImageUrl} type="video/ogg" />
@@ -1331,14 +1269,7 @@ class PhotoCentric extends Widget {
   }
 
   private _renderPDF(currentImageUrl: string): VNode {
-    return (
-      <iframe
-        class={CSS.pdf}
-        key={buildKey(`pdf-${currentImageUrl}`)}
-        src={currentImageUrl}
-        frameborder="0"
-      />
-    );
+    return <iframe class={CSS.pdf} key={buildKey(`pdf-${currentImageUrl}`)} src={currentImageUrl} frameborder="0" />;
   }
 
   private _renderCurrentImage(): VNode {
@@ -1399,9 +1330,7 @@ class PhotoCentric extends Widget {
     const attachment = this._getCurrentAttachment(attachments);
 
     const attachmentScrollContent =
-      attachments && attachments.length > 0
-        ? this._renderAttachmentScrollContent(attachments)
-        : null;
+      attachments && attachments.length > 0 ? this._renderAttachmentScrollContent(attachments) : null;
     const contentType = attachment && (attachment.get("contentType") as string);
 
     const downloadButton =
@@ -1444,9 +1373,7 @@ class PhotoCentric extends Widget {
     );
   }
 
-  private _renderAttachmentScrollContent(
-    attachments: __esri.Collection<__esri.AttachmentInfo>
-  ): VNode {
+  private _renderAttachmentScrollContent(attachments: __esri.Collection<__esri.AttachmentInfo>): VNode {
     const attachment = this._getCurrentAttachment(attachments) as __esri.AttachmentInfo;
     const attachmentScroll = this._renderAttachmentScroll(attachments);
     const imageDirection = this._renderImageDirection(attachment);
@@ -1460,8 +1387,7 @@ class PhotoCentric extends Widget {
 
   private _renderAttachmentScroll(attachments: __esri.Collection<__esri.AttachmentInfo>): VNode {
     const { selectedAttachmentViewerData } = this;
-    const currentIndex =
-      selectedAttachmentViewerData && selectedAttachmentViewerData.attachmentIndex + 1;
+    const currentIndex = selectedAttachmentViewerData && selectedAttachmentViewerData.attachmentIndex + 1;
     const totalNumberOfAttachments = this.viewModel.getTotalNumberOfAttachments();
 
     return (
@@ -1470,17 +1396,12 @@ class PhotoCentric extends Widget {
           bind={this}
           onclick={this._previousImage}
           onkeydown={this._previousImage}
-          disabled={
-            this.onboardingPanelIsOpen || (attachments && attachments.length < 2) ? true : false
-          }
+          disabled={this.onboardingPanelIsOpen || (attachments && attachments.length < 2) ? true : false}
           tabIndex={0}
           class={CSS.leftArrowContainer}
           title={this.photoCentricMessages?.previousImage}
         >
-          <calcite-icon
-            icon={this.docDirection === "rtl" ? "chevron-right" : "chevron-left"}
-            scale="m"
-          />
+          <calcite-icon icon={this.docDirection === "rtl" ? "chevron-right" : "chevron-left"} scale="m" />
         </button>
         <span class={CSS.attachmentNumberText}>
           {`${this.photoCentricMessages?.upperCaseAttachments}: ${currentIndex} / ${totalNumberOfAttachments}`}
@@ -1489,26 +1410,19 @@ class PhotoCentric extends Widget {
           bind={this}
           onclick={this._nextImage}
           onkeydown={this._nextImage}
-          disabled={
-            this.onboardingPanelIsOpen || (attachments && attachments.length < 2) ? true : false
-          }
+          disabled={this.onboardingPanelIsOpen || (attachments && attachments.length < 2) ? true : false}
           tabIndex={0}
           class={CSS.rightArrowContainer}
           title={this.photoCentricMessages?.nextImage}
         >
-          <calcite-icon
-            icon={this.docDirection === "rtl" ? "chevron-left" : "chevron-right"}
-            scale="m"
-          />
+          <calcite-icon icon={this.docDirection === "rtl" ? "chevron-left" : "chevron-right"} scale="m" />
         </button>
       </div>
     );
   }
 
   private _renderImageDirection(attachment: __esri.AttachmentInfo): any {
-    const imageDirectionValue = this.imageDirectionEnabled
-      ? this.viewModel.getGPSInformation(attachment)
-      : null;
+    const imageDirectionValue = this.imageDirectionEnabled ? this.viewModel.getGPSInformation(attachment) : null;
 
     return imageDirectionValue ? (
       <div
@@ -1533,10 +1447,7 @@ class PhotoCentric extends Widget {
           title={`${this.photoCentricMessages?.gpsImageDirection}: ${imageDirectionValue}\u00B0`}
           class={CSS.imageDirection}
         >
-          <svg
-            styles={{ transform: `rotateZ(${imageDirectionValue}deg)` }}
-            class={CSS.photoCentricCamera}
-          >
+          <svg styles={{ transform: `rotateZ(${imageDirectionValue}deg)` }} class={CSS.photoCentricCamera}>
             <g>
               <path
                 d="M19.1,10.8h-0.3h-0.3h-1.3v2h-1v-0.7v-0.3h-11l0,0h-1v1.1v5.8v0h16v-1.9v-3.9v-1.1
@@ -1559,15 +1470,13 @@ class PhotoCentric extends Widget {
       "selectedAttachmentViewerData.selectedFeatureAttachments.attachments"
     ) as __esri.Collection<__esri.AttachmentInfo>;
     const { clientWidth } = document.body;
-    const attachmentsMobile =
-      attachments && clientWidth < 830 ? this._renderAttachmentsMobile(attachments) : null;
+    const attachmentsMobile = attachments && clientWidth < 830 ? this._renderAttachmentsMobile(attachments) : null;
 
     const titleContainer = this._renderTitleContainer();
     const selectedFeatureAddress = this.get("selectedAttachmentViewerData.selectedFeatureAddress");
 
     const featureInformation = this._renderFeatureInformation();
-    const minimizeZoomToContainer =
-      document.body.clientWidth > 813 ? this._renderMinimizeZoomToContainer() : null;
+    const minimizeZoomToContainer = document.body.clientWidth > 813 ? this._renderMinimizeZoomToContainer() : null;
     const relatedFeatures = {
       [CSS.relatedFeatures]: (this.viewModel.relatedFeatures?.relatedFeatures?.length as number) > 0
     };
@@ -1594,9 +1503,7 @@ class PhotoCentric extends Widget {
     const layerFeaturesLength = this.get("selectedAttachmentViewerData.layerFeatures.length");
     const zoomTo = layerFeaturesLength ? this._renderZoomTo() : null;
     const attrEditButton =
-      this.attributeEditing && this.viewModel.verifyEditPermissions()
-        ? this._renderAttributeEditButton()
-        : null;
+      this.attributeEditing && this.viewModel.verifyEditPermissions() ? this._renderAttributeEditButton() : null;
     const theme = this.viewModel.getTheme("secondary", "secondary");
     const buttonTheme = this.viewModel.getThemeButtonColor("secondary", "secondary");
     return (
@@ -1638,9 +1545,7 @@ class PhotoCentric extends Widget {
   }
 
   private _renderFeatureInformation(): VNode {
-    const featureWidgetContent = this.get(
-      "viewModel.featureWidget.viewModel.content"
-    ) as __esri.Content[];
+    const featureWidgetContent = this.get("viewModel.featureWidget.viewModel.content") as __esri.Content[];
     const fieldsInfoContent =
       (featureWidgetContent &&
         featureWidgetContent.filter((contentItem) => {
@@ -1665,30 +1570,22 @@ class PhotoCentric extends Widget {
       [];
 
     if (this._featureContentAvailable === null) {
-      if (
-        (fieldsInfoContent && fieldsInfoContent.length > 0) ||
-        (fieldsInfoText && fieldsInfoText.length > 0)
-      ) {
+      if ((fieldsInfoContent && fieldsInfoContent.length > 0) || (fieldsInfoText && fieldsInfoText.length > 0)) {
         this._featureContentAvailable = true;
       }
     }
 
     const featureTotal =
-      this.selectedAttachmentViewerData &&
-      (this.selectedAttachmentViewerData.get("featureObjectIds.length") as number);
+      this.selectedAttachmentViewerData && (this.selectedAttachmentViewerData.get("featureObjectIds.length") as number);
 
-    const unsupportedAttachmentTypesData = this.get(
-      "selectedAttachmentViewerData.unsupportedAttachmentTypes"
-    ) as any[];
+    const unsupportedAttachmentTypesData = this.get("selectedAttachmentViewerData.unsupportedAttachmentTypes") as any[];
     const unsupportedAttachmentTypes =
       unsupportedAttachmentTypesData && unsupportedAttachmentTypesData.length > 0
         ? this._renderUnsupportedAttachmentTypes()
         : null;
 
     const layerId = this.get("selectedAttachmentViewerData.layerData.featureLayer.id");
-    const objectIdField = this.get(
-      "selectedAttachmentViewerData.layerData.featureLayer.objectIdField"
-    ) as string;
+    const objectIdField = this.get("selectedAttachmentViewerData.layerData.featureLayer.objectIdField") as string;
     const attributes = this.get("selectedAttachmentViewerData.selectedFeature.attributes");
     const objectId = attributes && attributes[objectIdField];
 
@@ -1699,35 +1596,22 @@ class PhotoCentric extends Widget {
         this._featureContentAvailable ? (
           <div>
             {this._featureContentAvailable ? (
-              <div
-                key={buildKey(`feature-info-${layerId}-${objectId}`)}
-                class={CSS.featureInfoContainer}
-              >
+              <div key={buildKey(`feature-info-${layerId}-${objectId}`)} class={CSS.featureInfoContainer}>
                 {this._renderFeatureInfoContent()}
               </div>
             ) : null}
-            {(mediaInfoContent && mediaInfoContent.length > 0) ||
-            (fieldsInfoText && fieldsInfoText.length > 0) ? (
-              <div
-                key={buildKey(`feature-widget-${layerId}-${objectId}`)}
-                class={CSS.featureInfoContainer}
-              >
+            {(mediaInfoContent && mediaInfoContent.length > 0) || (fieldsInfoText && fieldsInfoText.length > 0) ? (
+              <div key={buildKey(`feature-widget-${layerId}-${objectId}`)} class={CSS.featureInfoContainer}>
                 {this._renderFeatureWidgetContent()}
               </div>
             ) : null}
           </div>
         ) : this._featureContentAvailable && featureTotal ? (
-          <div
-            key={buildKey(`feature-loader-${layerId}-${objectId}`)}
-            class={CSS.featureInfoLoader}
-          >
+          <div key={buildKey(`feature-loader-${layerId}-${objectId}`)} class={CSS.featureInfoLoader}>
             {this._renderFeatureContentLoader()}
           </div>
         ) : (
-          <div
-            key={buildKey(`no-feature-info-${layerId}-${objectId}`)}
-            class={CSS.noFeatureContentContainer}
-          >
+          <div key={buildKey(`no-feature-info-${layerId}-${objectId}`)} class={CSS.noFeatureContentContainer}>
             {this._renderNoFeatureContentInfo()}
           </div>
         )}
@@ -1801,11 +1685,9 @@ class PhotoCentric extends Widget {
   }
 
   private _renderFeatureContentInfos(): VNode {
-    const featureContentInfos = this.selectedAttachmentViewerData?.selectedFeatureInfo.map(
-      (contentInfo) => {
-        return this._renderFeatureContentInfo(contentInfo);
-      }
-    );
+    const featureContentInfos = this.selectedAttachmentViewerData?.selectedFeatureInfo.map((contentInfo) => {
+      return this._renderFeatureContentInfo(contentInfo);
+    });
     return <div>{featureContentInfos}</div>;
   }
 
@@ -1814,37 +1696,19 @@ class PhotoCentric extends Widget {
     const contentCheck =
       contentInfo &&
       contentInfo.content &&
-      ((typeof contentInfo.content === "string" && contentInfo.content.trim() !== "") ||
-        contentInfo.content !== null);
+      ((typeof contentInfo.content === "string" && contentInfo.content.trim() !== "") || contentInfo.content !== null);
 
     return (
-      <div
-        key={buildKey(`${contentInfo.attribute}-${contentInfo.content}`)}
-        class={CSS.featureContentInfo}
-      >
-        <h4
-          class={CSS.attributeHeading}
-          innerHTML={this._sanitizer.sanitize(contentInfo.attribute)}
-        />
+      <div key={buildKey(`${contentInfo.attribute}-${contentInfo.content}`)} class={CSS.featureContentInfo}>
+        <h4 class={CSS.attributeHeading} innerHTML={this._sanitizer.sanitize(contentInfo.attribute)} />
         {contentInfo && contentInfo.content && contentCheck ? (
           isHyperLink ? (
             <p class={CSS.attributeContent}>
-              <div
-                innerHTML={this._sanitizer.sanitize(
-                  contentInfo.content.replace(contentInfo.content, "")
-                )}
-              />
-              <span
-                innerHTML={this._sanitizer.sanitize(
-                  autoLink(contentInfo.content, this.commonMessages)
-                )}
-              />
+              <div innerHTML={this._sanitizer.sanitize(contentInfo.content.replace(contentInfo.content, ""))} />
+              <span innerHTML={this._sanitizer.sanitize(autoLink(contentInfo.content, this.commonMessages))} />
             </p>
           ) : (
-            <p
-              class={CSS.attributeContent}
-              innerHTML={this._sanitizer.sanitize(contentInfo.content)}
-            />
+            <p class={CSS.attributeContent} innerHTML={this._sanitizer.sanitize(contentInfo.content)} />
           )
         ) : (
           <p>{this.photoCentricMessages?.noContentAvailable}</p>
@@ -1891,21 +1755,15 @@ class PhotoCentric extends Widget {
     );
   }
 
-  private _renderAttachmentsMobile(
-    selectedFeatureAttachments: __esri.Collection<__esri.AttachmentInfo>
-  ): any {
+  private _renderAttachmentsMobile(selectedFeatureAttachments: __esri.Collection<__esri.AttachmentInfo>): any {
     if (!selectedFeatureAttachments) {
       return;
     }
-    const featureContentInfos = selectedFeatureAttachments
-      .toArray()
-      .map((attachment: __esri.AttachmentInfo) => {
-        return this._renderAttachmentMobile(attachment);
-      });
+    const featureContentInfos = selectedFeatureAttachments.toArray().map((attachment: __esri.AttachmentInfo) => {
+      return this._renderAttachmentMobile(attachment);
+    });
     const attachmentCount =
-      selectedFeatureAttachments && selectedFeatureAttachments.length > 0
-        ? selectedFeatureAttachments.length
-        : null;
+      selectedFeatureAttachments && selectedFeatureAttachments.length > 0 ? selectedFeatureAttachments.length : null;
 
     const darkText = {
       [CSS.darkText]: this.theme === "dark"
@@ -1933,9 +1791,7 @@ class PhotoCentric extends Widget {
     const contentType = attachment && (attachment.get("contentType") as string);
 
     const mobileAttachment = this._renderMobileAttachment(attachment);
-    const imageDirectionValue = this.imageDirectionEnabled
-      ? this.viewModel.getGPSInformation(attachment)
-      : null;
+    const imageDirectionValue = this.imageDirectionEnabled ? this.viewModel.getGPSInformation(attachment) : null;
     const mobileImageDirection =
       this.imageDirectionEnabled && imageDirectionValue
         ? this._renderMobileImageDirection(attachmentUrl, imageDirectionValue)
@@ -1981,14 +1837,8 @@ class PhotoCentric extends Widget {
 
   private _renderMobileImageDirection(attachmentUrl: string, imageDirectionValue: number): VNode {
     return (
-      <div
-        key={buildKey(`mobile-image-direction-${attachmentUrl}`)}
-        class={CSS.imageDirectionMobile}
-      >
-        <svg
-          styles={{ transform: `rotateZ(${imageDirectionValue}deg)` }}
-          class={CSS.photoCentricCamera}
-        >
+      <div key={buildKey(`mobile-image-direction-${attachmentUrl}`)} class={CSS.imageDirectionMobile}>
+        <svg styles={{ transform: `rotateZ(${imageDirectionValue}deg)` }} class={CSS.photoCentricCamera}>
           <g>
             <path
               d="M19.1,10.8h-0.3h-0.3h-1.3v2h-1v-0.7v-0.3h-11l0,0h-1v1.1v5.8v0h16v-1.9v-3.9v-1.1
@@ -2013,11 +1863,7 @@ c6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z"
     return (
       <div class={CSS.mobileAttachmentContainer}>
         {attachment && attachment.contentType && attachment.contentType.indexOf("video") !== -1 ? (
-          <video
-            key={buildKey(`mobile-video-${attachmentUrl}`)}
-            class={CSS.videoContainer}
-            controls
-          >
+          <video key={buildKey(`mobile-video-${attachmentUrl}`)} class={CSS.videoContainer} controls>
             <source src={attachmentUrl} type="video/mp4" />
             <source src={attachmentUrl} type="video/ogg" />
             <source src={attachmentUrl} type="video/mov" />
@@ -2030,9 +1876,7 @@ c6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z"
             src={this.currentImageUrl}
             type="application/pdf"
           />
-        ) : attachment &&
-          attachment.contentType &&
-          attachment.contentType.indexOf("image") !== -1 ? (
+        ) : attachment && attachment.contentType && attachment.contentType.indexOf("image") !== -1 ? (
           <img
             key={buildKey(`mobile-image-${attachmentUrl}`)}
             class={this.classes(
@@ -2210,8 +2054,7 @@ c6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z"
 
   private _testHyperLink(contentInfo): boolean | null {
     const content = contentInfo?.content;
-    const regex =
-      /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
+    const regex = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
     return content ? regex.test(content) : null;
   }
 
@@ -2219,14 +2062,11 @@ c6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z"
     if (!this.selectedAttachmentViewerData) {
       return;
     }
-    const featureLayer = this.selectedAttachmentViewerData.get(
-      "layerData.featureLayer"
-    ) as __esri.FeatureLayer;
+    const featureLayer = this.selectedAttachmentViewerData.get("layerData.featureLayer") as __esri.FeatureLayer;
     const parentPortalUrl = featureLayer?.get("parent.portalItem.portal.url") as string;
 
     const portalUrl = featureLayer?.get("portalItem.portal.url") as string;
-    const portalIsHTTPS =
-      portalUrl?.indexOf("https") !== -1 || parentPortalUrl?.indexOf("https") !== -1;
+    const portalIsHTTPS = portalUrl?.indexOf("https") !== -1 || parentPortalUrl?.indexOf("https") !== -1;
 
     if (portalIsHTTPS && attachmentUrl?.indexOf("https") === -1) {
       return attachmentUrl.replace(/^http:\/\//i, "https://");
@@ -2277,22 +2117,14 @@ c6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z"
     }
   }
 
-  private _getCurrentAttachment(
-    attachments: __esri.Collection<__esri.AttachmentInfo>
-  ): __esri.AttachmentInfo | null {
+  private _getCurrentAttachment(attachments: __esri.Collection<__esri.AttachmentInfo>): __esri.AttachmentInfo | null {
     const attachmentIndex = this.get("selectedAttachmentViewerData.attachmentIndex") as number;
     return attachments?.length > 0 ? attachments.getItemAt(attachmentIndex) : null;
   }
 
   private _validateContentType(attachment: __esri.AttachmentInfo): boolean {
     const contentType = attachment?.get("contentType") as string;
-    const supportedTypes = [
-      "image/gif",
-      "video/mp4",
-      "video/mov",
-      "video/quicktime",
-      "application/pdf"
-    ];
+    const supportedTypes = ["image/gif", "video/mp4", "video/mov", "video/quicktime", "application/pdf"];
     return supportedTypes.indexOf(contentType) === -1;
   }
 
@@ -2328,8 +2160,7 @@ c6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z"
     if (!this.viewModel?.featureWidget?.graphic) {
       return;
     }
-    (this.viewModel.featureFormWidget as __esri.FeatureForm).feature =
-      this.viewModel.featureWidget.graphic;
+    (this.viewModel.featureFormWidget as __esri.FeatureForm).feature = this.viewModel.featureWidget.graphic;
     const attrEditModal = this.attrEditModal as HTMLCalciteModalElement;
     attrEditModal.open = true;
     this.scheduleRender();
