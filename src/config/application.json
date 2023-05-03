@@ -1,9 +1,9 @@
 {
-  "appid": "",
+  "appid": "20af326729304f479bfa16020bb15284",
   "type": "webmap",
   "webmap": "default",
-  "portalUrl": "https://arcgis.com",
-  "oauthappid": "",
+  "portalUrl": "https://gisoneviewent.fmi.com/portal",
+  "oauthappid": "WewO0NBPcqM3TASR",
   "proxyUrl": "",
   "googleAnalytics": false,
   "googleAnalyticsKey": null,

@@ -1,39 +1,39 @@
 {
-  "name": "attachment-viewer",
-  "private": false,
-  "version": "0.0.0",
-  "type": "module",
-  "scripts": {
-    "start": "npm run mkdirT9nAssets && npm run copy && vite",
-    "build": "npm run mkdirT9nAssets && npm run copy && tsc && vite build",
-    "deploy": "npm run build",
-    "copy": "npm run copyArcGISCoreAssets && npm run copyCalciteComponentsAssets && npm run copyInstantAppsComponentsAssets && npm run copyT9n",
-    "copyArcGISCoreAssets": "ncp node_modules/@arcgis/core/assets public/assets",
-    "copyCalciteComponentsAssets": "ncp node_modules/@esri/calcite-components/dist/calcite/assets public/assets",
-    "copyInstantAppsComponentsAssets": "ncp node_modules/@esri/instant-apps-components/dist/assets public/assets/assets",
-    "copyT9n": "ncp src/t9n public/assets/t9n",
-    "mkdirT9nAssets": "mkdirp public/assets && mkdirp public/assets/t9n && mkdirp public/assets/components && mkdirp public/assets/components/t9n && ncp ./src/t9n ./public/assets/t9n",
-    "preview": "vite preview",
-    "check:prettier": "prettier --check 'src'",
-    "fix:prettier": "prettier --write 'src'"
-  },
-  "devDependencies": {
-    "@types/node": "^18.11.9",
-    "mkdirp": "^1.0.4",
-    "ncp": "^2.0.0",
-    "sass": "^1.56.1",
-    "typescript": "^4.6.4",
-    "vite": "^3.2.3",
-    "vite-tsconfig-paths": "^3.5.2"
-  },
-  "dependencies": {
-    "@arcgis/core": "^4.26.5",
-    "@esri/arcgis-html-sanitizer": "^3.0.1",
-    "@esri/calcite-components": "1.0.7",
-    "@esri/instant-apps-components": "^1.0.0-beta.47",
-    "@types/iv-viewer": "^2.0.1",
-    "iv-viewer": "^2.0.1",
-    "resize-observer-polyfill": "^1.5.1",
-    "templates-common-library": "0.0.168-esm"
-  }
+    "name": "attachment-viewer",
+    "private": false,
+    "version": "0.0.0",
+    "type": "module",
+    "scripts": {
+        "start": "npm run mkdirT9nAssets && npm run copy && vite",
+        "build": "npm run mkdirT9nAssets && npm run copy && tsc && vite build",
+        "deploy": "npm run build",
+        "copy": "npm run copyArcGISCoreAssets && npm run copyCalciteComponentsAssets && npm run copyInstantAppsComponentsAssets && npm run copyT9n",
+        "copyArcGISCoreAssets": "ncp node_modules/@arcgis/core/assets public/assets",
+        "copyCalciteComponentsAssets": "ncp node_modules/@esri/calcite-components/dist/calcite/assets public/assets",
+        "copyInstantAppsComponentsAssets": "ncp node_modules/@esri/instant-apps-components/dist/assets public/assets/assets",
+        "copyT9n": "ncp src/t9n public/assets/t9n",
+        "mkdirT9nAssets": "mkdirp public/assets && mkdirp public/assets/t9n && mkdirp public/assets/components && mkdirp public/assets/components/t9n && ncp ./src/t9n ./public/assets/t9n",
+        "preview": "vite preview",
+        "check:prettier": "prettier --check 'src'",
+        "fix:prettier": "prettier --write 'src'"
+    },
+    "devDependencies": {
+        "@types/node": "^18.11.9",
+        "mkdirp": "^1.0.4",
+        "ncp": "^2.0.0",
+        "sass": "^1.56.1",
+        "typescript": "^4.6.4",
+        "vite": "^3.2.3",
+        "vite-tsconfig-paths": "^3.5.2"
+    },
+    "dependencies": {
+        "@arcgis/core": "^4.26.5",
+        "@esri/arcgis-html-sanitizer": "^3.0.1",
+        "@esri/calcite-components": "1.0.7",
+        "@esri/instant-apps-components": "^1.0.0-beta.63",
+        "@types/iv-viewer": "^2.0.1",
+        "iv-viewer": "^2.0.1",
+        "resize-observer-polyfill": "^1.5.1",
+        "templates-common-library": "0.0.168-esm"
+    }
 }

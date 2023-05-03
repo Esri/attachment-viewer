@@ -38,6 +38,33 @@ import Common_t9n from "../../t9n/Common/common.json";
 import PhotoCentric_t9n from "../../t9n/Components/PhotoCentric/resources.json";
 import OnboardingContent from "./OnboardingContent";
 
+const layerExpression = [{
+  id: "SunflowerValleyF2018_97",
+  title: "SunflowerValleyF2018",
+  operator: ' AND ',
+  expressions: [
+    {
+      id: 0,
+      name: 'StateWellN',
+      type: 'string',
+      field: 'StateWellN',
+      index: 0,
+    },
+    {
+      id: 4,
+      definitionExpression: "StateWellN = '25S18E15D001M'",
+      name: 'STATEWELL DEF',
+      index: 4,
+    },
+    {
+      id: 0,
+      name: 'CreationDate',
+      type: 'number',
+      field: 'CreationDate',
+      index: 0,
+    },
+  ],
+}];
 const CSS = {
   base: "esri-photo-centric",
   // onboarding
@@ -602,7 +629,9 @@ class PhotoCentric extends Widget {
     return on(
       () => this.selectedAttachmentViewerData?.layerFeatures,
       "change",
-      () => this.scheduleRender()
+      // () => this.scheduleRender()
+      () => null
+
     );
   }
 
@@ -624,6 +653,7 @@ class PhotoCentric extends Widget {
   render(): VNode {
     const header = this._renderHeader();
     const homePage = this._renderHomePage();
+    const filterList = this._renderInstantAppsFilter();
     const attrEditModal = this.attributeEditing ? this._renderAttributeEditModal() : null;
     return (
       <div
@@ -635,6 +665,7 @@ class PhotoCentric extends Widget {
       >
         {!this._imageCarouselIsOpen ? header : null}
         {homePage}
+        {filterList}
         {attrEditModal}
         {this.attributeEditing ? (
           <calcite-alert
@@ -720,6 +751,30 @@ class PhotoCentric extends Widget {
         {socialShare}
       </instant-apps-header>
     );
+  }
+
+  
+  private _renderInstantAppsFilter(): any {
+    this.view?.when(async () => {
+          const filterList = document.getElementById('filter-list');
+          if (filterList) {
+            filterList.view = this.view;
+            filterList.layerExpressions = layerExpression;
+          }
+    });
+
+    return (
+      <div>
+        <instant-apps-filter-list 
+        id="filter-list"
+        // openFilters={true}
+        layerExpressions={
+          layerExpression
+        } view={this.view?.map}>
+          <div class="filter-header" slot="filter-header-content"><calcite-icon scale="s" icon="filter"></calcite-icon>Filter List</div>
+        </instant-apps-filter-list>
+      </div>
+    )
   }
 
   private _renderSocialShare(): any {
