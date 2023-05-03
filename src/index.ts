@@ -13,14 +13,21 @@ import "@esri/calcite-components/dist/components/calcite-button";
 import "@esri/calcite-components/dist/components/calcite-slider";
 import "@esri/calcite-components/dist/components/calcite-alert";
 import "@esri/calcite-components/dist/components/calcite-modal";
+import "@esri/calcite-components/dist/components/calcite-checkbox";
+import "@esri/calcite-components/dist/components/calcite-combobox";
+import "@esri/calcite-components/dist/components/calcite-combobox-item";
+import "@esri/calcite-components/dist/components/calcite-combobox-item-group";
+import "@esri/calcite-components/dist/components/calcite-block";
+import "@esri/calcite-components/dist/components/calcite-date-picker";
+import "@esri/calcite-components/dist/components/calcite-date-picker-day";
+import "@esri/calcite-components/dist/components/calcite-date-picker-month";
+import "@esri/calcite-components/dist/components/calcite-date-picker-month-header";
+import "@esri/calcite-components/dist/components/calcite-input-date-picker";
 
 // Instant Apps Components
 import "@esri/instant-apps-components";
 import "@esri/instant-apps-components/dist/components/instant-apps-header";
-import { InstantAppsHeader } from "@esri/instant-apps-components/dist/components/instant-apps-header";
-import { InstantAppsSocialShare } from "@esri/instant-apps-components/dist/components/instant-apps-social-share";
-customElements.define("instant-apps-header", InstantAppsHeader);
-customElements.define("instant-apps-social-share", InstantAppsSocialShare);
+import "@esri/instant-apps-components/dist/components/instant-apps-filter-list";
 
 // App
 import "./Main.scss";
