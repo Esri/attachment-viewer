@@ -1,0 +1,64 @@
+[
+  {
+    "id": "187e02944b3-layer-2",
+    "title": "TSF Inspection Observations",
+    "operator": " AND ",
+    "expressions": [
+      {
+        "id": 0,
+        "definitionExpression": "site IS NOT NULL",
+        "name": "Has Attachment",
+        "index": 0
+      },
+      {
+        "id": 1,
+        "name": "Site",
+        "type": "string",
+        "field": "site",
+        "index": 1
+      },
+      {
+        "id": 2,
+        "name": "Facility Type",
+        "type": "string",
+        "field": "facilitytype",
+        "index": 2
+      },
+      {
+        "id": 3,
+        "name": "Facility",
+        "type": "string",
+        "field": "facility",
+        "index": 3
+      },
+      {
+        "id": 3,
+        "name": "Component",
+        "type": "string",
+        "field": "component",
+        "index": 3
+      },
+      {
+        "id": 3,
+        "name": "Observation",
+        "type": "string",
+        "field": "observation",
+        "index": 3
+      },
+      {
+        "id": 3,
+        "name": "Severity",
+        "type": "coded-value",
+        "field": "severity",
+        "index": 3
+      },
+      {
+        "id": "ODATE_INPUT",
+        "name": "created_date",
+        "type": "date",
+        "field": "odate",
+        "index": 10
+      }
+    ]
+  }
+]
