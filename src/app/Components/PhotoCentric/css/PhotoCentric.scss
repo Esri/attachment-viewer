@@ -1489,7 +1489,22 @@ html[dir="rtl"] {
 
 // customizations Freeport McMoran
 .filter-panel {
+  border-right: 1px solid lightgray;
+}
+.filter-panel-title {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+}
+.filter-panel-expanded {
   width: 250px;
+}
+.filter-panel-collapsed {
+  width: 40px;
+}
+.filter-panel-header {
+  display: flex;
+  justify-content: space-between;
 }
 .containers-components {
   display: flex;

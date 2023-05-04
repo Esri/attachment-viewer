@@ -165,6 +165,10 @@ const CSS = {
 
   // freeport customizations
   filterPanel: "filter-panel",
+  filterPanelCollapsed: "filter-panel-collapsed",
+  filterPanelExpanded: "filter-panel-expanded",
+  filterPanelHeader: "filter-panel-header",
+  filterPanelTitle: "filter-panel-title",
   containerComponents: "containers-components"
 };
 
@@ -311,6 +315,9 @@ class PhotoCentric extends Widget {
 
   @property()
   onboardingPanelIsOpen: boolean | null = null;
+
+  @property()
+  filterPanelIsOpen = true;
 
   @aliasOf("viewModel.withinConfigurationExperience")
   withinConfigurationExperience: boolean | null = null;
@@ -720,11 +727,37 @@ class PhotoCentric extends Widget {
     });
 
     return (
-      <div class={this.classes(CSS.filterPanel)}>
-          <div class="filter-header" slot="filter-header-content">
-            <calcite-icon scale="s" icon="filter"></calcite-icon>Filter List
+      <div
+        class={
+          this.filterPanelIsOpen
+            ? this.classes(CSS.filterPanel, CSS.filterPanelExpanded)
+            : this.classes(CSS.filterPanel, CSS.filterPanelCollapsed)
+        }
+      >
+        <div class={this.classes(CSS.filterPanelHeader)}>
+          {this.filterPanelIsOpen ? (
+            <div class={this.classes(CSS.filterPanelTitle)}>
+              <calcite-icon scale="s" icon="filter"></calcite-icon>Filter List
+            </div>
+          ) : null}
+
+          <calcite-icon
+            scale="l"
+            icon={this.filterPanelIsOpen ? "x" : "filter"}
+            onclick={() => {
+              this._toggleFilterPanel();
+            }}
+          ></calcite-icon>
+        </div>
+        {this.filterPanelIsOpen ? (
+          <div>
+            <instant-apps-filter-list
+              id="filter-list"
+              layerExpressions={layerExpression}
+              view={this.view?.map}
+            ></instant-apps-filter-list>
           </div>
-        </instant-apps-filter-list>
+        ) : null}
       </div>
     );
   }
@@ -1918,6 +1951,15 @@ c6.6,0,12-5.4,12-12S18.6,0,12,0L12,0z"
   @accessibleHandler()
   private _toggleExpand(): void {
     this.photoCentricMobileMapExpanded = !this.photoCentricMobileMapExpanded;
+    this.scheduleRender();
+  }
+
+  private _toggleFilterPanel(): void {
+    if (this.filterPanelIsOpen) {
+      this.filterPanelIsOpen = false;
+    } else {
+      this.filterPanelIsOpen = true;
+    }
     this.scheduleRender();
   }
 
