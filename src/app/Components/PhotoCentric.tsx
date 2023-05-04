@@ -161,7 +161,11 @@ const CSS = {
   darkText: "esri-photo-centric--dark-text",
   svg: {
     media: "esri-photo-centric__media-svg"
-  }
+  },
+
+  // freeport customizations
+  filterPanel: "filter-panel",
+  containerComponents: "containers-components"
 };
 
 const WIDGET_KEY_PARTIAL = "esri-photo-centric";
@@ -618,7 +622,7 @@ class PhotoCentric extends Widget {
         class={CSS.base}
       >
         {!this._imageCarouselIsOpen ? header : null}
-        <div style="display: flex; height: 100%">
+        <div class={this.classes(CSS.containerComponents)}>
           {filterList}
           {homePage}
           {attrEditModal}
@@ -716,13 +720,7 @@ class PhotoCentric extends Widget {
     });
 
     return (
-      <div style="width: 400px">
-        <instant-apps-filter-list
-          id="filter-list"
-          // openFilters={true}
-          layerExpressions={layerExpression}
-          view={this.view?.map}
-        >
+      <div class={this.classes(CSS.filterPanel)}>
           <div class="filter-header" slot="filter-header-content">
             <calcite-icon scale="s" icon="filter"></calcite-icon>Filter List
           </div>
