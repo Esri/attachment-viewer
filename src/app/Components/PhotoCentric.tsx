@@ -33,35 +33,7 @@ import Common_t9n from "../../t9n/Common/common.json";
 import PhotoCentric_t9n from "../../t9n/Components/PhotoCentric/resources.json";
 import OnboardingContent from "./OnboardingContent";
 
-const layerExpression = [
-  {
-    id: "SunflowerValleyF2018_97",
-    title: "SunflowerValleyF2018",
-    operator: " AND ",
-    expressions: [
-      {
-        id: 0,
-        name: "StateWellN",
-        type: "string",
-        field: "StateWellN",
-        index: 0
-      },
-      {
-        id: 4,
-        definitionExpression: "StateWellN = '25S18E15D001M'",
-        name: "STATEWELL DEF",
-        index: 4
-      },
-      {
-        id: 0,
-        name: "CreationDate",
-        type: "number",
-        field: "CreationDate",
-        index: 0
-      }
-    ]
-  }
-];
+import layerExpression from "./../../config/layerExpression.json";
 const CSS = {
   base: "esri-photo-centric",
   // onboarding
@@ -646,9 +618,11 @@ class PhotoCentric extends Widget {
         class={CSS.base}
       >
         {!this._imageCarouselIsOpen ? header : null}
-        {homePage}
-        {filterList}
-        {attrEditModal}
+        <div style="display: flex; height: 100%">
+          {filterList}
+          {homePage}
+          {attrEditModal}
+        </div>
         {this.attributeEditing ? (
           <calcite-alert
             bind={this}
@@ -742,7 +716,7 @@ class PhotoCentric extends Widget {
     });
 
     return (
-      <div>
+      <div style="width: 400px">
         <instant-apps-filter-list
           id="filter-list"
           // openFilters={true}
