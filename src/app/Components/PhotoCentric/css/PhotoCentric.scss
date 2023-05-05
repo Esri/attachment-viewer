@@ -1506,6 +1506,9 @@ html[dir="rtl"] {
   display: flex;
   justify-content: space-between;
 }
+.filter-action-button:hover {
+  cursor: pointer;
+}
 .containers-components {
   display: flex;
   height: 100%;

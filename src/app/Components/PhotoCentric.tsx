@@ -169,6 +169,7 @@ const CSS = {
   filterPanelExpanded: "filter-panel-expanded",
   filterPanelHeader: "filter-panel-header",
   filterPanelTitle: "filter-panel-title",
+  filterActionButton: "filter-action-button",
   containerComponents: "containers-components"
 };
 
@@ -744,6 +745,7 @@ class PhotoCentric extends Widget {
           <calcite-icon
             scale="l"
             icon={this.filterPanelIsOpen ? "x" : "filter"}
+            class={this.classes(CSS.filterActionButton)}
             onclick={() => {
               this._toggleFilterPanel();
             }}
