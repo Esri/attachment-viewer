@@ -1490,6 +1490,7 @@ html[dir="rtl"] {
 // customizations Freeport McMoran
 .filter-panel {
   border-right: 1px solid lightgray;
+  overflow: auto;
 }
 .filter-panel-title {
   display: flex;
