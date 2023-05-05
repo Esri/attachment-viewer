@@ -734,6 +734,13 @@ class PhotoCentric extends Widget {
             ? this.classes(CSS.filterPanel, CSS.filterPanelExpanded)
             : this.classes(CSS.filterPanel, CSS.filterPanelCollapsed)
         }
+        styles={
+          this._header
+            ? {
+                height: `calc(100% - ${this._header?.offsetHeight}px)`
+              }
+            : {}
+        }
       >
         <div class={this.classes(CSS.filterPanelHeader)}>
           {this.filterPanelIsOpen ? (
