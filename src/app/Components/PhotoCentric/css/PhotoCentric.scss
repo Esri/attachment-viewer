@@ -1486,3 +1486,32 @@ html[dir="rtl"] {
 .esri-photo-centric--dark-text {
   color: #fff;
 }
+
+// customizations Freeport McMoran
+.filter-panel {
+  border-right: 1px solid lightgray;
+  overflow: auto;
+}
+.filter-panel-title {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+}
+.filter-panel-expanded {
+  width: 250px;
+}
+.filter-panel-collapsed {
+  width: 40px;
+}
+.filter-panel-header {
+  display: flex;
+  justify-content: space-between;
+}
+.filter-action-button:hover {
+  cursor: pointer;
+}
+.containers-components {
+  display: flex;
+  height: 100%;
+}
+// customizations

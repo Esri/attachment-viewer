@@ -377,19 +377,25 @@ class PhotoCentricViewModel extends AttachmentViewerViewModel {
     const featureLayer = attachmentViewerData?.layerData?.featureLayer;
 
     const returnMetadata = this.imageDirectionEnabled ? true : false;
-    const config = {
+    const query = {
       where: "1=1",
       returnMetadata,
       objectIds
     };
-    const attachmentsWhere = featureLayer?.definitionExpression;
-    const attachmentConfig = attachmentsWhere
+
+    // attachmentsWhere used to take the definition expression from
+    // featureLayer, but since we added instant-apps-filter-list,
+    // a bug is caused where attachments dont have the same "fields"
+    // as the featureLayer and crashes the app.
+    let attachmentsWhere = "2=2";
+
+    const attachmentQuery = attachmentsWhere
       ? {
-          ...config,
+          ...query,
           attachmentsWhere
         }
-      : config;
-    return await featureLayer?.queryAttachments(attachmentConfig);
+      : query;
+    return await featureLayer?.queryAttachments(attachmentQuery);
   }
 
   private _handleLayerViewPromiseResults(layerViewPromiseResults: __esri.FeatureLayerView[]): void {
@@ -1648,6 +1654,7 @@ class PhotoCentricViewModel extends AttachmentViewerViewModel {
         this._queryingAttachments = true;
         this.notifyChange("state");
         this.notifyChange("queryingState");
+        console.log("HERE11111");
         const attachments = await this._handleQueryAttachments({
           attachmentViewerData: selectedAttachmentViewerData,
           queriedFeatures
