@@ -5,12 +5,6 @@
     "operator": " AND ",
     "expressions": [
       {
-        "id": 0,
-        "definitionExpression": "site IS NOT NULL",
-        "name": "Has Attachment",
-        "index": 0
-      },
-      {
         "id": 1,
         "name": "Site",
         "type": "string",
