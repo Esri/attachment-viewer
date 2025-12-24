@@ -949,7 +949,7 @@ $calcite-blue: #0079c1;
     .esri-map-centric__onboarding-overlay {
       width: 100%;
       height: 100%;
-      display: flex;
+      display: none;
       justify-content: center;
       align-items: center;
       background-color: rgba(0, 0, 0, 0.44);

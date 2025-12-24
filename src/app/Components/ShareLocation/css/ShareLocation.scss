@@ -1,0 +1,151 @@
+.share-location-widget {
+  .share-popup {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    width: 90%;
+    max-width: 350px;
+    z-index: 1000;
+    animation: slideUp 0.3s ease-out;
+
+    @media (min-width: 768px) {
+      bottom: 40px;
+    }
+  }
+
+  .share-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    border-bottom: 1px solid #e0e0e0;
+
+    h3 {
+      margin: 0;
+      font-size: 18px;
+      color: #333;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 24px;
+      color: #666;
+      cursor: pointer;
+      padding: 0;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: background 0.2s;
+
+      &:hover {
+        background: #f0f0f0;
+      }
+    }
+  }
+
+  .share-content {
+    padding: 16px;
+  }
+
+  .coordinates {
+    background: #f5f5f5;
+    padding: 12px;
+    border-radius: 8px;
+    font-family: monospace;
+    font-size: 15px;
+    margin: 0 0 16px 0;
+    color: #333;
+    line-height: 1.5;
+  }
+
+  .share-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .share-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    width: 100%;
+
+    svg {
+      flex-shrink: 0;
+    }
+
+    &.whatsapp {
+      background: #25d366;
+      color: white;
+
+      &:hover {
+        background: #1da851;
+      }
+    }
+
+    &.copy {
+      background: #f0f0f0;
+      color: #333;
+
+      &:hover {
+        background: #e0e0e0;
+      }
+    }
+  }
+
+  @keyframes slideUp {
+    from {
+      transform: translateX(-50%) translateY(100%);
+    }
+    to {
+      transform: translateX(-50%) translateY(0);
+    }
+  }
+}
+
+// Add floating action button for mobile
+@media (max-width: 767px) {
+  .share-location-fab {
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: #007ac2;
+    color: white;
+    border: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    transition: background 0.2s;
+
+    &:hover {
+      background: #005a92;
+    }
+
+    svg {
+      width: 24px;
+      height: 24px;
+    }
+  }
+}

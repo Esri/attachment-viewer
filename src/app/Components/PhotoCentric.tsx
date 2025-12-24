@@ -534,7 +534,7 @@ class PhotoCentric extends Widget {
   }
 
   private _handleOnboardingPanel(): void {
-    this.onboardingPanelIsOpen = this.showOnboardingOnStart;
+    this.onboardingPanelIsOpen = false;
     this.scheduleRender();
   }
 
